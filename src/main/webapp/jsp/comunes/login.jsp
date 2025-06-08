@@ -10,7 +10,7 @@
     <div class="login-container">
         <h2>Iniciar Sesión</h2>
 
-        <form action="LoginServlet" method="post">
+        <form action="ServletLogin" method="post">
             <label for="usuario">Usuario:</label>
             <input type="text" id="usuario" name="usuario" required>
 
