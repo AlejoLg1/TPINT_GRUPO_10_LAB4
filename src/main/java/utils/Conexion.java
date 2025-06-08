@@ -13,10 +13,12 @@ public class Conexion
 	{
 		try
 		{	
-			// Cambios de driver deben hacerse en una copia local.
-			// Class.forName("com.mysql.cj.jdbc.Driver"); para conector 8.0 para arriba
-			// Class.forName("com.mysql.jdbc.Driver"); // para conector 5.1.47
-			this.connection = DriverManager.getConnection("jdbc:mysql://localhost:3306/segurosgroup","root","root");
+			// Para MySQL Connector 8.0+
+			Class.forName("com.mysql.cj.jdbc.Driver");
+
+			// Para MySQL Connector 5.1.x
+			// Class.forName("com.mysql.jdbc.Driver");
+			this.connection = DriverManager.getConnection("jdbc:mysql://localhost:3306/[DBNAME]","root","root");
 			this.connection.setAutoCommit(false);
 		}
 		catch(Exception e)
