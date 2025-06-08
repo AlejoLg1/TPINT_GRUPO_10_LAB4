@@ -27,8 +27,19 @@ public class ServletLogin extends HttpServlet {
 	
 	
 	protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-		// TODO Auto-generated method stub
-		doGet(request, response);
-	}
+        // Obtener parámetros del formulario
+        String usuario = request.getParameter("usuario");
+        String clave = request.getParameter("clave");
+
+        // Simulación: usuario = admin, clave = 1234
+        if ("admin".equals(usuario) && "1234".equals(clave)) {
+            // Redirigir a menú admin por ahora
+            response.sendRedirect("jsp/admin/menuAdmin.jsp");
+        } else {
+            // Login fallido, mostrar mensaje
+            request.setAttribute("errorLogin", "Usuario o contraseña incorrectos.");
+            request.getRequestDispatcher("jsp/comunes/login.jsp").forward(request, response);
+        }
+    }
 
 }
