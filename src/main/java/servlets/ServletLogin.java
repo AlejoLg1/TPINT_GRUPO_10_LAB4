@@ -5,6 +5,8 @@ import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import jakarta.servlet.http.HttpSession;
+
 import java.io.IOException;
 
 
@@ -27,18 +29,20 @@ public class ServletLogin extends HttpServlet {
 	
 	
 	protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-        String usuario = request.getParameter("usuario");
-        String clave = request.getParameter("clave");
+		 String usuario = request.getParameter("usuario");
+	        String clave = request.getParameter("clave");
 
-        // Ejemplo de prueba: usuario = admin, clave = 1234
-        if ("admin".equals(usuario) && "1234".equals(clave)) {
-            // Redirigir a menú admin por ahora
-            response.sendRedirect("jsp/admin/menuAdmin.jsp"); // Aún no existe 
-        } else {
-            // Login fallido, mostrar mensaje
-            request.setAttribute("errorLogin", "Usuario o contraseña incorrectos.");
-            request.getRequestDispatcher("jsp/comunes/login.jsp").forward(request, response);
-        }
+	        // Autenticación de prueba
+	        if ("admin".equals(usuario) && "1234".equals(clave)) {
+	            HttpSession session = request.getSession();
+	            session.setAttribute("usuario", usuario);
+	            session.setAttribute("rol", "admin");
+	            
+	            response.sendRedirect(request.getContextPath() + "/ServletMenuAdmin");
+	        } else {
+	            request.setAttribute("errorLogin", "Usuario o contraseña incorrectos.");
+	            request.getRequestDispatcher("/jsp/comunes/login.jsp").forward(request, response);
+	        }
     }
 
 }
