@@ -1,6 +1,10 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8"
     pageEncoding="UTF-8"%>
     
+<!-- Navbar para usuarios de tipo cliente, incluir archivo en cada jsp -->
+<!-- Ademas incluir archivo css navbarClientesEstilos en cada archivo css -->
+
+    
 <div class="navbar">
     <ul class="nav-left">
         <li><a href="menuCliente.jsp" class="<%= "inicio".equals(request.getAttribute("activePage")) ? "active" : "" %>">Inicio</a></li>
