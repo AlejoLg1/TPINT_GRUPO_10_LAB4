@@ -1,0 +1,63 @@
+.navbar {
+    background-color: #2c3e50;
+    overflow: hidden;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.navbar ul {
+    list-style-type: none;
+    margin: 0;
+    padding: 0;
+    display: flex;
+}
+
+.navbar li a {
+    display: block;
+    color: white;
+    text-align: center;
+    padding: 14px 20px;
+    text-decoration: none;
+    font-weight: 500;
+    transition: background-color 0.3s;
+}
+
+.navbar li a:hover {
+    background-color: #34495e;
+}
+
+.navbar li a.active {
+    background-color: #3498db;
+}
+
+
+.logout {
+	color: white;
+    margin-right: 20px;
+    font-weight: 500;
+}
+
+.logout a {
+    color: inherit; /* Hereda el blanco del contenedor */
+    text-decoration: none;
+    transition: color 0.3s ease;
+}
+
+.logout a:hover {
+    color: red;
+}
+
+/*Footer*/
+footer {
+    width: 100%;
+    text-align: center;
+    padding: 20px 0;
+    background-color: #2c3e50;
+    color: #f0f0f0;
+    font-size: 16px;
+    font-weight: 600;
+    letter-spacing: 0.7px;
+    color: white;
+}
