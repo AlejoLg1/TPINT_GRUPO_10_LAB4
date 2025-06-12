@@ -21,9 +21,9 @@
 <div class="navbar">
     <ul>
         <li><a href="menuCliente.jsp" class="active">Inicio</a></li>
-        <li><a href="${pageContext.request.contextPath}/jsp/cliente/verCuentas.jsp">Ver cuentas</a></li>
+        <li><a href="${pageContext.request.contextPath}/jsp/cliente/verCuentas.jsp">Mis cuentas</a></li>
         <li><a href="${pageContext.request.contextPath}/jsp/cliente/transferencias.jsp">Transferencias</a></li>
-        <li><a href="#">Préstamos</a></li>
+        <li><a href="${pageContext.request.contextPath}/jsp/cliente/solicitarPrestamo.jsp">Préstamos</a></li>
         <li><a href="#">Pago de cuotas</a></li>
         <li><a href="#">Mis datos</a></li>
     </ul>
