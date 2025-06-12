@@ -1,0 +1,100 @@
+@import url("navbarAdminEstilos.css");
+
+html, body {
+    height: 100%;
+    margin: 0;
+    padding: 0;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    background-color: #f5f7fa;
+    color: #333;
+    display: flex;
+    flex-direction: column;
+}
+
+.main-container {
+    flex: 1;
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 20px;
+}
+
+.welcome-card {
+    background: white;
+    border-radius: 10px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+    padding: 30px;
+    margin-top: 30px;
+    text-align: center;
+}
+
+.welcome-card h1 {
+    color: #2c3e50;
+    margin-bottom: 20px;
+    font-size: 2.2em;
+}
+
+table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 20px;
+}
+
+th, td {
+    padding: 12px;
+    text-align: center;
+    border: 1px solid #ddd;
+}
+
+.acciones-superiores {
+    display: flex;
+    justify-content: flex-end;
+    margin-bottom: 20px;
+}
+
+.crear-cliente-button {
+    background-color: #3498db;
+    color: white;
+    padding: 10px 20px;
+    border-radius: 8px;
+    text-decoration: none;
+    font-weight: 600;
+    transition: background-color 0.3s ease;
+}
+
+.crear-cliente-button:hover {
+    background-color: #2c80b4;
+}
+
+.tabla-clientes th, .tabla-clientes td {
+    padding: 16px;
+    font-size: 1rem;
+}
+
+.boton-modificar,
+.boton-eliminar {
+    padding: 6px 12px;
+    margin: 0 5px;
+    border-radius: 6px;
+    font-size: 0.9rem;
+    text-decoration: none;
+    font-weight: 500;
+    transition: all 0.2s ease;
+}
+
+.boton-modificar {
+    background-color: #f1c40f;
+    color: white;
+}
+
+.boton-modificar:hover {
+    background-color: #d4ac0d;
+}
+
+.boton-eliminar {
+    background-color: #e74c3c;
+    color: white;
+}
+
+.boton-eliminar:hover {
+    background-color: #c0392b;
+}

@@ -30,15 +30,9 @@
 	    <div class="actions-section">
 	        <h2>¿Qué deseas hacer hoy?</h2>
 	        <div class="action-buttons">
-	            <a href="cuentas.jsp" class="action-button">
-	                Ver cuentas
-	            </a>
-	            <a href="transferencias.jsp" class="action-button">
-	                Hacer una transferencia
-	            </a>
-	            <a href="movimientos.jsp" class="action-button">
-	                Consultar movimientos
-	            </a>
+	            <a href="${pageContext.request.contextPath}/jsp/admin/clientes.jsp" class="action-button">Ver clientes</a>
+	            <a href="${pageContext.request.contextPath}/jsp/admin/usuarios.jsp" class="action-button">Gestionar usuarios</a>
+  	            <a href="${pageContext.request.contextPath}/jsp/admin/cuentas.jsp" class="action-button">Ver cuentas</a>            
 	        </div>
 	    </div>
 	</div>
