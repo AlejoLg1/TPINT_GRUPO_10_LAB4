@@ -46,15 +46,32 @@ body {
     box-shadow: 0 6px 12px rgba(0, 0, 0, 0.15);
 }
 
-
-/* Inputs */
-input[type="text"],
-input[type="number"],
-select {
-    width: 100%;
-    padding: 10px;
-    margin: 5px 0 15px;
-    border-radius: 5px;
-    border: 1px solid #ccc;
-    box-sizing: border-box;
+.form-group {
+  display: flex;
+  flex-wrap: wrap; /* para que bajen si no hay espacio */
+  gap: 30px; /* espacio entre columnas */
+  margin-bottom: 30px;
 }
+
+.form-item {
+  display: flex;
+  flex-direction: column;
+  width: 250px; /* ajustá según tu diseño */
+}
+
+.form-item label {
+  margin-bottom: 5px;
+  font-weight: bold;
+}
+
+.form-item input[readonly] {
+  padding: 10px;
+  border: 1px solid #ccc;
+  border-radius: 6px;
+  background-color: #f0f0f0;
+  font-size: 15px;
+}
+
+
+
+

@@ -13,6 +13,7 @@
 <head>
     <meta charset="UTF-8">
     <title>Solicitar Prestmao - Banco UTN</title>
+    <link rel="stylesheet" href="${pageContext.request.contextPath}/css/misDatosEstilos.css">
 </head>
 <body>
 
@@ -22,6 +23,8 @@
 
 
 <%
+	// obtener datos de un request a futuro
+
 	String Nombre = "Nombre Usuario";
 	String Apellido = "Apellido Usuario";
 	String Dni = "34567890";
