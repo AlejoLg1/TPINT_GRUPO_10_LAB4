@@ -17,19 +17,10 @@
 </head>
 <body>
 
-<div class="navbar">
-    <ul class="nav-left">
-        <li><a href="menuCliente.jsp">Inicio</a></li>
-        <li><a href="verCuentas.jsp" class="active">Mis cuentas</a></li>
-        <li><a href="transferencias.jsp">Transferencias</a></li>
-        <li><a href="solicitarPrestamo.jsp">Préstamos</a></li>
-        <li><a href="pagarCuotas.jsp">Pago de cuotas</a></li>
-        <li><a href="misDatos.jsp">Mis datos</a></li>
-    </ul>
-    <div class="user-info">
-        Usuario: <strong><%= session.getAttribute("usuario") %></strong>
-    </div>
-</div>
+<!--  incluye navbar y envia un request con la pagina actual-->
+<% request.setAttribute("activePage", "cuentas"); %>
+<%@ include file="navbarClientes.jsp" %>
+
 
 <div class="main-container">
     <div class="welcome-card">
