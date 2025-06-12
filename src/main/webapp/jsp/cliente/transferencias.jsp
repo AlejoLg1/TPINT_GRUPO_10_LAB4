@@ -25,9 +25,21 @@
 <div class="main-container">
     <div class="welcome-card">
         <h1>Transferencia entre cuentas</h1>
+			
+		<%  // Mensaje de confirmacion de exito de solicitud
+			boolean estado = (request.getAttribute("estado") != null ? (boolean)request.getAttribute("estado") : false);
+			
+			if(estado == true)
+			{%>
+				<div class="panelSuccess">
+				  ¡Operación realizada con éxito!
+				</div>
+			
+			<%}
+		%>
 
         <%-- FORMULARIO DE TRANSFERENCIA DE EJEMPLO --%>
-        <form action="TransferenciaServlet" method="post">
+        <form action="${pageContext.request.contextPath}/ServletTransferenciasUsuario" method="post">
             <label for="cuentaOrigen">Cuenta de origen:</label><br>
             <select name="cuentaOrigen" id="cuentaOrigen" required>
                 <option value="12345678">12345678 - Caja de Ahorro</option>
@@ -40,7 +52,7 @@
             <label for="monto">Monto a transferir:</label><br>
             <input type="number" name="monto" id="monto" step="0.01" min="1" required><br><br>
 
-            <input type="submit" value="Transferir" class="action-button">
+            <input type="submit" name="btnTransferir" value="Transferir" class="action-button">
         </form>
     </div>
 </div>

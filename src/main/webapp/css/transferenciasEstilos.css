@@ -14,6 +14,12 @@ body {
     min-height: 100vh;
 }
 
+.panelSuccess{
+	background-color: green !important; 
+	color: white !important;
+	padding: 10px !important;
+}
+
 /* Contenedor principal */
 .main-container {
     max-width: 900px;

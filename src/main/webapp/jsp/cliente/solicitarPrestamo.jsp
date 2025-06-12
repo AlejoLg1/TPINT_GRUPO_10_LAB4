@@ -64,9 +64,7 @@
 	    </div>
 	</div>
 	
-	
 
-	
 
 	<%@ include file="../comunes/footer.jsp" %>
 
