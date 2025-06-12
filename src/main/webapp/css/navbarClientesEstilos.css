@@ -32,12 +32,22 @@
     background-color: #3498db;
 }
 
-.user-info {
-    color: white;
+
+.logout {
+	color: white;
     margin-right: 20px;
     font-weight: 500;
 }
 
+.logout a {
+    color: inherit; /* Hereda el blanco del contenedor */
+    text-decoration: none;
+    transition: color 0.3s ease;
+}
+
+.logout a:hover {
+    color: red;
+}
 
 /*Footer*/
 footer {

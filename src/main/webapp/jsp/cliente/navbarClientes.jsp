@@ -15,7 +15,8 @@
         <li><a href="misDatos.jsp" class="<%= "datos".equals(request.getAttribute("activePage")) ? "active" : "" %>">Mis datos</a></li>
     </ul>
     
-    <div class="user-info">
-        Usuario: <strong><%= session.getAttribute("usuario") %></strong>
-    </div>
+    <div class="logout">
+	    <a href="<%= request.getContextPath() %>/jsp/comunes/login.jsp" class="logout-link">Salir</a>
+	</div>
+	    
 </div>
