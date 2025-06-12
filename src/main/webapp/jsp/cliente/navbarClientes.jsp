@@ -7,12 +7,12 @@
     
 <div class="navbar">
     <ul class="nav-left">
-        <li><a href="menuCliente.jsp" class="<%= "inicio".equals(request.getAttribute("activePage")) ? "active" : "" %>">Inicio</a></li>
-        <li><a href="verCuentas.jsp" class="<%= "cuentas".equals(request.getAttribute("activePage")) ? "active" : "" %>">Mis cuentas</a></li>
-        <li><a href="transferencias.jsp" class="<%= "transferencias".equals(request.getAttribute("activePage")) ? "active" : "" %>">Transferencias</a></li>
-        <li><a href="solicitarPrestamo.jsp" class="<%= "prestamos".equals(request.getAttribute("activePage")) ? "active" : "" %>">Préstamos</a></li>
-        <li><a href="pagarCuotas.jsp" class="<%= "cuotas".equals(request.getAttribute("activePage")) ? "active" : "" %>">Pago de cuotas</a></li>
-        <li><a href="misDatos.jsp" class="<%= "datos".equals(request.getAttribute("activePage")) ? "active" : "" %>">Mis datos</a></li>
+        <li><a href="<%= request.getContextPath() %>/jsp/cliente/menuCliente.jsp" class="<%= "inicio".equals(request.getAttribute("activePage")) ? "active" : "" %>">Inicio</a></li>
+        <li><a href="<%= request.getContextPath() %>/jsp/cliente/verCuentas.jsp" class="<%= "cuentas".equals(request.getAttribute("activePage")) ? "active" : "" %>">Mis cuentas</a></li>
+        <li><a href="<%= request.getContextPath() %>/jsp/cliente/transferencias.jsp" class="<%= "transferencias".equals(request.getAttribute("activePage")) ? "active" : "" %>">Transferencias</a></li>
+        <li><a href="<%= request.getContextPath() %>/jsp/cliente/solicitarPrestamo.jsp" class="<%= "prestamos".equals(request.getAttribute("activePage")) ? "active" : "" %>">Préstamos</a></li>
+        <li><a href="<%= request.getContextPath() %>/jsp/cliente/pagarCuotas.jsp" class="<%= "cuotas".equals(request.getAttribute("activePage")) ? "active" : "" %>">Pago de cuotas</a></li>
+        <li><a href="<%= request.getContextPath() %>/jsp/cliente/misDatos.jsp" class="<%= "datos".equals(request.getAttribute("activePage")) ? "active" : "" %>">Mis datos</a></li>
     </ul>
     
     <div class="logout">
