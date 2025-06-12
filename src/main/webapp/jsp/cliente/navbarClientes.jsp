@@ -10,7 +10,7 @@
         <li><a href="<%= request.getContextPath() %>/jsp/cliente/menuCliente.jsp" class="<%= "inicio".equals(request.getAttribute("activePage")) ? "active" : "" %>">Inicio</a></li>
         <li><a href="<%= request.getContextPath() %>/jsp/cliente/verCuentas.jsp" class="<%= "cuentas".equals(request.getAttribute("activePage")) ? "active" : "" %>">Mis cuentas</a></li>
         <li><a href="<%= request.getContextPath() %>/jsp/cliente/transferencias.jsp" class="<%= "transferencias".equals(request.getAttribute("activePage")) ? "active" : "" %>">Transferencias</a></li>
-        <li><a href="<%= request.getContextPath() %>/jsp/cliente/solicitarPrestamo.jsp" class="<%= "prestamos".equals(request.getAttribute("activePage")) ? "active" : "" %>">Préstamos</a></li>
+        <li><a href="<%= request.getContextPath() %>/ServletSolicitarPrestamo" class="<%= "prestamos".equals(request.getAttribute("activePage")) ? "active" : "" %>">Préstamos</a></li>
         <li><a href="<%= request.getContextPath() %>/jsp/cliente/pagarCuotas.jsp" class="<%= "cuotas".equals(request.getAttribute("activePage")) ? "active" : "" %>">Pago de cuotas</a></li>
         <li><a href="<%= request.getContextPath() %>/jsp/cliente/misDatos.jsp" class="<%= "datos".equals(request.getAttribute("activePage")) ? "active" : "" %>">Mis datos</a></li>
     </ul>
