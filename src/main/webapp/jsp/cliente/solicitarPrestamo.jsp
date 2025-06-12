@@ -13,6 +13,7 @@
 <head>
     <meta charset="UTF-8">
     <title>Solicitar Prestmao - Banco UTN</title>
+    <link rel="stylesheet" href="${pageContext.request.contextPath}/css/solicitudPrestamoEstilos.css">
 </head>
 <body>
 
@@ -20,8 +21,8 @@
     <ul class="nav-left">
         <li><a href="menuCliente.jsp">Inicio</a></li>
         <li><a href="verCuentas.jsp">Mis cuentas</a></li>
-        <li><a href="transferencias.jsp" class="active">Transferencias</a></li>
-        <li><a href="solicitarPrestamo.jsp">Préstamos</a></li>
+        <li><a href="transferencias.jsp">Transferencias</a></li>
+        <li><a href="solicitarPrestamo.jsp" class="active">Préstamos</a></li>
         <li><a href="pagarCuotas.jsp">Pago de cuotas</a></li>
         <li><a href="misDatos.jsp">Mis datos</a></li>
     </ul>
