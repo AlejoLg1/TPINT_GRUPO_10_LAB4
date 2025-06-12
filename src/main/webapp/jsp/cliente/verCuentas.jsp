@@ -38,26 +38,26 @@
                 </tr>
             </thead>
             <tbody>
-                <tr>
-                    <td>12345678</td>
-                    <td>2850590940090412345671</td>
-                    <td>Caja de Ahorro</td>            <%-- Estos datos de las cuentas son de ejemplo, después van a venir de la base de datos --%>
-                    <td>2024-05-10</td>
-                    <td>$15.000,00</td>
-                </tr>
-                <tr>
-                    <td>87654321</td>
-                    <td>2850590940090476543210</td>
-                    <td>Cuenta Corriente</td>                <%-- Estos datos de las cuentas son de ejemplo, después van a venir de la base de datos --%>
-                    <td>2024-03-22</td>
-                    <td>$8.500,00</td>
-                </tr>
+                <tr> <%-- DATOS MOCKEADOS --%>
+				    <td>12345678</td>
+				    <td class="cbu" onclick="copiarCBU(this)">2850590940090412345671</td>
+				    <td>Caja de Ahorro</td>
+				    <td>2024-05-10</td>
+				    <td>$15.000,00</td>
+				</tr>
+				<tr>
+				    <td>87654321</td>
+				    <td class="cbu" onclick="copiarCBU(this)">2850590940090476543210</td>
+				    <td>Cuenta Corriente</td>
+				    <td>2024-03-22</td>
+				    <td>$8.500,00</td>
+				</tr>
             </tbody>
         </table>
     </div>
 </div>
 
-<%@ include file="../comunes/footer.jsp" %>
-
+<%@ include file="../comunes/footer.jsp"%>
+<script src="${pageContext.request.contextPath}/js/verCuentas.js"></script>
 </body>
 </html>
