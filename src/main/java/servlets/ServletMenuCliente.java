@@ -9,27 +9,29 @@ import jakarta.servlet.http.HttpSession;
 
 import java.io.IOException;
 
-
-@WebServlet("/ServletMenuAdmin")
-public class ServletMenuAdmin extends HttpServlet {
+/**
+ * Servlet implementation class ServletMenuCliente
+ */
+@WebServlet("/ServletMenuCliente")
+public class ServletMenuCliente extends HttpServlet {
 	private static final long serialVersionUID = 1L;
        
 
-    public ServletMenuAdmin() {
+    public ServletMenuCliente() {
         super();
         // TODO Auto-generated constructor stub
     }
 
 
 	protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-		 HttpSession session = request.getSession(false);
+		HttpSession session = request.getSession(false);
 
-	        if (session == null || session.getAttribute("usuario") == null) {
-	            response.sendRedirect(request.getContextPath() + "/jsp/comunes/login.jsp");
-	            return;
-	        }
+        if (session == null || session.getAttribute("usuario") == null) {
+            response.sendRedirect(request.getContextPath() + "/jsp/comunes/login.jsp");
+            return;
+        }
 
-	        request.getRequestDispatcher("/jsp/admin/menuAdmin.jsp").forward(request, response);
+        request.getRequestDispatcher("/jsp/cliente/menuCliente.jsp").forward(request, response);
 	}
 
 

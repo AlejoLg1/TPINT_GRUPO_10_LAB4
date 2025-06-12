@@ -39,7 +39,15 @@ public class ServletLogin extends HttpServlet {
 	            session.setAttribute("rol", "admin");
 	            
 	            response.sendRedirect(request.getContextPath() + "/ServletMenuAdmin");
-	        } else {
+	        } 
+	        else if ("cliente".equals(usuario) && "4321".equals(clave)) {
+	        	HttpSession session = request.getSession();
+	            session.setAttribute("usuario", usuario);
+	            session.setAttribute("rol", "admin");
+	            
+	            response.sendRedirect(request.getContextPath() + "/ServletMenuCliente");
+	        }
+	        else {
 	            request.setAttribute("errorLogin", "Usuario o contraseña incorrectos.");
 	            request.getRequestDispatcher("/jsp/comunes/login.jsp").forward(request, response);
 	        }
