@@ -23,7 +23,18 @@
     <div class="welcome-card">
         <h1>Alta de Usuario</h1>
 
-        <form action="ServletAltaUsuario" method="post">
+		<%  // Mensaje de confirmacion de exito de solicitud
+			boolean estado = (request.getAttribute("estado") != null ? (boolean)request.getAttribute("estado") : false);
+			
+			if(estado == true)
+			{%>
+				<div class="panelSuccess">
+				  ¡Operación realizada con éxito!
+				</div>	
+			<%}
+		%>
+
+        <form action="${pageContext.request.contextPath}/ServletAltaUsuario" method="post">
             <div class="form-group">
                 <div class="form-item">
                     <label for="nombre">Nombre:</label>
@@ -53,8 +64,8 @@
                 </div>
                 
                 <div class="form-item">
-                	<label for="tipoUsuario">Tipo de Usuario:</label>
-                    <select name="tipoUsuario" id="tipoUsuario" required>
+                	<label for="tipoUser">Tipo de Usuario:</label>
+                    <select name="tipoUser" id="tipoUser" required>
 		                <option value="Admin">Administrador</option>
 		                <option value="Usuario"> Usuario</option>     
 		            </select>
@@ -73,19 +84,19 @@
                 </div>
 
                 <div class="form-item">
-                    <label for="psw">Esciba una contraseña:</label>
-                    <input type="password" id="psw" name="psw" required>
+                    <label for="pass">Esciba una contraseña:</label>
+                    <input type="password" id="pass" name="pass" required>
                 </div>
 
                 <div class="form-item">
-                    <label for="pswRepetida">Repita la contraseña:</label>
-                    <input type="password" id="pswRepetida" name="pswRepetida" required>
+                    <label for="passRepetida">Repita la contraseña:</label>
+                    <input type="password" id="passRepetida" name="passRepetida" required>
                 </div>
 
             </div>
 
             <div style="text-align: center; margin-top: 30px;">
-			    <a href="${pageContext.request.contextPath}/jsp/admin/usuarios.jsp" class="action-button">Crear Usuario</a>            
+			    <input type="submit" name="btnAltaUsuario" value="Crear Usuario" class="action-button">           
 			    <a href="${pageContext.request.contextPath}/jsp/admin/usuarios.jsp" class="action-button volver-button">Volver </a>            
 			</div>
             
