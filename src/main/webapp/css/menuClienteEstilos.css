@@ -1,7 +1,5 @@
-/*Incluye archivo con estilos del navbar*/
-
 @import url("navbarClientesEstilos.css");
-    
+
     /* Estilos generales */
 html, body {
     font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;

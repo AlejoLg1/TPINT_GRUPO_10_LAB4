@@ -1,29 +1,31 @@
-/*Incluye archivo con estilos del navbar*/
-
 @import url("navbarClientesEstilos.css");
 
-/* Estilo general del cuerpo */
-body {
-    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+* {
+    box-sizing: border-box;
+}
+
+html, body {
     margin: 0;
     padding: 0;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
     background-color: #f5f7fa;
     color: #333;
-    
     display: flex;
     flex-direction: column;
     min-height: 100vh;
+    overflow-x: hidden;
+    width: 100%;
 }
 
 /* Contenedor principal */
 .main-container {
-    max-width: 900px;
+    flex: 1;
+    max-width: 1000px;
     margin: 30px auto;
     padding: 20px;
-    flex: 1;
 }
 
-/* Tarjeta de contenido */
+/* Tarjeta principal */
 .welcome-card {
     background: white;
     border-radius: 10px;
@@ -31,58 +33,42 @@ body {
     padding: 30px;
 }
 
-/* Botón de acción */
-.action-button {
-    background: #3498db;
-    color: white;
-    border: none;
-    padding: 12px 25px;
-    border-radius: 8px;
-    text-decoration: none;
-    font-weight: 500;
-    transition: all 0.3s ease;
-    cursor: pointer;
-    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+.welcome-card h1 {
+    text-align: center;
+    margin-bottom: 30px;
 }
 
-.action-button:hover {
-    background: #2980b9;
-    transform: translateY(-3px);
-    box-shadow: 0 6px 12px rgba(0, 0, 0, 0.15);
-}
-
+/* Grupos de campos en grilla */
 .form-group {
-  display: flex;
-  flex-wrap: wrap; /* para que bajen si no hay espacio */
-  gap: 30px; /* espacio entre columnas */
-  margin-bottom: 30px;
+    display: grid;
+    grid-template-columns: repeat(3, 1fr); /* 3 columnas iguales */
+    gap: 30px;
+    margin-bottom: 30px;
 }
 
+/* Cada ítem */
 .form-item {
-  display: flex;
-  flex-direction: column;
-  width: 250px; /* ajustá según tu diseño */
+    display: flex;
+    flex-direction: column;
 }
 
 .form-item label {
-  margin-bottom: 5px;
-  font-weight: bold;
+    margin-bottom: 5px;
+    font-weight: bold;
 }
 
 .form-item input[readonly] {
-  padding: 10px;
-  border: 1px solid #ccc;
-  border-radius: 6px;
-  background-color: #f0f0f0;
-  font-size: 15px;
+    padding: 10px;
+    border: 1px solid #ccc;
+    border-radius: 6px;
+    background-color: #f0f0f0;
+    font-size: 15px;
 }
 
+/* Footer */
 footer {
-   background-color: #2c3e50;
-   color: white;
-   text-align: center;
-   padding: 15px;
+    background-color: #2c3e50;
+    color: white;
+    text-align: center;
+    padding: 15px;
 }
-
-
-
