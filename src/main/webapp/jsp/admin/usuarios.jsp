@@ -24,7 +24,7 @@
         <h1>Listado de Usuarios</h1>
 
         <div class="acciones-superiores">
-            <a href="altaUsuario.jsp" class="crear-usuario-button">+ Crear Usuario</a>
+            <a href="${pageContext.request.contextPath}/jsp/admin/altaUsuario.jsp" class="crear-usuario-button">+ Crear Usuario</a>
         </div>
 
         <table class="tabla-usuario">
