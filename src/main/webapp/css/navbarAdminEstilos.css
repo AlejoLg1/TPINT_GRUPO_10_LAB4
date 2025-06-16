@@ -34,10 +34,30 @@
 
 
 .logout {
-	color: white;
-    margin-right: 20px;
-    font-weight: 500;
+    text-align: right;
+    padding: 10px 15px;
+    font-size: 14px;
+    color: white;
 }
+
+.logout .user-info {
+    font-weight: normal;
+}
+
+.logout .logout-link {
+    color: white;
+    text-decoration: none;
+    margin-left: 5px;
+}
+
+.logout .logout-link:hover {
+    text-decoration: underline;
+}
+
+.separator {
+    margin: 0 5px;
+}
+
 
 .logout a {
     color: inherit; /* Hereda el blanco del contenedor */
