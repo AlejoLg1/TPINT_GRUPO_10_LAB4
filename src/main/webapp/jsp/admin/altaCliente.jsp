@@ -23,7 +23,18 @@
     <div class="welcome-card">
         <h1>Alta de Cliente</h1>
 
-        <form action="ServletAltaCliente" method="post">
+		<%  // Mensaje de confirmacion de exito de solicitud
+			boolean estado = (request.getAttribute("estado") != null ? (boolean)request.getAttribute("estado") : false);
+			
+			if(estado == true)
+			{%>
+				<div class="panelSuccess">
+				  ¡Operación realizada con éxito!
+				</div>	
+			<%}
+		%>
+
+        <form action="${pageContext.request.contextPath}/ServletAltaCliente" method="post">
             <div class="form-group">
                 <div class="form-item">
                     <label for="nombre">Nombre:</label>
@@ -107,21 +118,18 @@
                 </div>
 
                 <div class="form-item">
-                    <label for="password">Contraseña:</label>
-                    <input type="password" id="password" name="password" required>
+                    <label for="pass">Escriba una contraseña:</label>
+                    <input type="password" id="pass" name="pass" required>
                 </div>
 
                 <div class="form-item">
-                    <label for="estado">Estado:</label>
-                    <select id="estado" name="estado">
-                        <option value="Activo">Activo</option>
-                        <option value="Inactivo">Inactivo</option>
-                    </select>
+                    <label for="passRepetida">Repita la contraseña:</label>
+                    <input type="password" id="passRepetida" name="passRepetida" required>
                 </div>
             </div>
 
             <div style="text-align: center; margin-top: 30px;">
-			    <a href="${pageContext.request.contextPath}/jsp/admin/clientes.jsp" class="action-button">Crear Cliente</a>            
+			    <input type="submit" name="btnAltaUsuario" value="Crear Usuario" class="action-button">                 
 			    <a href="${pageContext.request.contextPath}/jsp/admin/clientes.jsp" class="action-button volver-button">Volver </a>            
 			</div>
             
