@@ -1,0 +1,75 @@
+/* NAVBAR */
+.navbar {
+    background-color: #2c3e50;
+    overflow: hidden;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.nav-left {
+    list-style-type: none;
+    margin: 0;
+    padding: 0;
+    display: flex;
+}
+
+.nav-left li {
+    float: left;
+}
+
+.nav-left li a {
+    display: block;
+    color: white;
+    text-align: center;
+    padding: 14px 20px;
+    text-decoration: none;
+    font-weight: 500;
+    transition: background-color 0.3s;
+}
+
+.nav-left li a:hover {
+    background-color: #34495e;
+}
+
+.nav-left li a.active {
+    background-color: #3498db;
+}
+
+/* Usuario logueado */
+.user-info {
+    color: white;
+    margin-right: 20px;
+    font-weight: 500;
+}
+
+/* GENERALES */
+.tabla-movimientos {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 30px;
+    font-size: 1em;
+}
+
+.tabla-movimientos th,
+.tabla-movimientos td {
+    border: 1px solid #ddd;
+    padding: 12px;
+    text-align: left;
+}
+
+.tabla-movimientos thead {
+    background-color: #3498db;
+    color: white;
+}
+
+.positivo {
+    color: green;
+    font-weight: bold;
+}
+
+.negativo {
+    color: red;
+    font-weight: bold;
+}
