@@ -1,0 +1,121 @@
+@import url("navbarAdminEstilos.css");
+
+html, body {
+    height: 100%;
+    margin: 0;
+    padding: 0;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    background-color: #f5f7fa;
+    color: #333;
+    display: flex;
+    flex-direction: column;
+}
+
+.main-container {
+    flex: 1;
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 20px;
+}
+
+.welcome-card {
+    background: white;
+    border-radius: 10px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+    padding: 30px;
+    margin-top: 30px;
+}
+
+.welcome-card h1 {
+    color: #2c3e50;
+    margin-bottom: 20px;
+    font-size: 2.2em;
+    text-align: center;
+}
+
+.acciones-superiores {
+    display: flex;
+    justify-content: flex-end;
+    margin-bottom: 20px;
+}
+
+.filtros-form {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+    align-items: center;
+    margin-bottom: 20px;
+}
+
+.filtros-form label {
+    font-weight: 600;
+}
+
+.filtros-form input,
+.filtros-form select {
+    padding: 8px;
+    border-radius: 5px;
+    border: 1px solid #ccc;
+}
+
+.boton-filtrar {
+    background-color: #2ecc71;
+    color: white;
+    padding: 8px 16px;
+    border-radius: 6px;
+    border: none;
+    cursor: pointer;
+    font-weight: 600;
+}
+
+.boton-filtrar:hover {
+    background-color: #27ae60;
+}
+
+table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 20px;
+}
+
+.tabla-prestamos th, .tabla-prestamos td {
+    padding: 12px;
+    text-align: center;
+    border: 1px solid #ddd;
+}
+
+.acciones-botones {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 10px;
+}
+
+.boton-aprobar,
+.boton-rechazar {
+    padding: 6px 12px;
+    margin: 0 5px;
+    border-radius: 6px;
+    font-size: 0.9rem;
+    text-decoration: none;
+    font-weight: 500;
+    transition: all 0.2s ease;
+}
+
+.boton-aprobar {
+    background-color: #2ecc71;
+    color: white;
+}
+
+.boton-aprobar:hover {
+    background-color: #27ae60;
+}
+
+.boton-rechazar {
+    background-color: #e74c3c;
+    color: white;
+}
+
+.boton-rechazar:hover {
+    background-color: #c0392b;
+}
