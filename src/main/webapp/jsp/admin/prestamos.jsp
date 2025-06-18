@@ -52,7 +52,7 @@
                 <button type="submit" class="boton-filtrar">Filtrar</button>
             </form>
 
-            <!-- Tabla de cuentas -->
+            <!-- Tabla de prestamos -->
             <form action="ServletAprobacionPrestamos" method="get"> 
 	            <table class="tabla-prestamos">
 	                <thead>
