@@ -49,8 +49,7 @@
 
             <div style="text-align: center; margin-top: 30px;">
 			    <input type="submit" name="btnGenerarReporte" value="Generar Reporte" class="action-button">    
-			</div>
-            
+			</div>            
         </form>
     </div>
     <div class="reportes-generados">
