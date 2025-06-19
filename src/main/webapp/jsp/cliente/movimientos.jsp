@@ -13,6 +13,7 @@
 <head>
     <meta charset="UTF-8">
     <title>Movimientos - Banco UTN</title>
+    <link rel="stylesheet" href="${pageContext.request.contextPath}/css/navbarClientesEstilos.css">
     <link rel="stylesheet" href="${pageContext.request.contextPath}/css/movimientosEstilos.css">
 </head>
 <body>
@@ -23,6 +24,10 @@
 <div class="main-container">
     <div class="welcome-card">
         <h1>Movimientos de cuenta</h1>
+
+        <!-- Filtro -->
+        <input type="text" id="filtroInput" placeholder="Filtrar movimientos...">
+
         <table class="tabla-movimientos">
             <thead>
                 <tr>
@@ -31,9 +36,8 @@
                     <th>Importe</th>
                 </tr>
             </thead>
-            <tbody>
+            <tbody id="tablaBody">
                 <%
-                    // Datos ficticios por ahora
                     String[][] movimientos = {
                         {"2025-06-01", "Transferencia recibida", "5000"},
                         {"2025-06-03", "Compra supermercado", "-3200"},
@@ -60,6 +64,19 @@
 </div>
 
 <%@ include file="../comunes/footer.jsp" %>
+
+<script>
+// Filtro de tabla
+document.getElementById('filtroInput').addEventListener('keyup', function() {
+    let filtro = this.value.toLowerCase();
+    let filas = document.querySelectorAll('#tablaBody tr');
+
+    filas.forEach(function(fila) {
+        let texto = fila.textContent.toLowerCase();
+        fila.style.display = texto.includes(filtro) ? '' : 'none';
+    });
+});
+</script>
 
 </body>
 </html>

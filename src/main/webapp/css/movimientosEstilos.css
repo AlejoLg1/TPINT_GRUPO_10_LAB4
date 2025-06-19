@@ -1,66 +1,49 @@
-/* NAVBAR */
-.navbar {
-    background-color: #2c3e50;
-    overflow: hidden;
-    box-shadow: 0 2px 5px rgba(0,0,0,0.2);
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-}
 
-.nav-left {
-    list-style-type: none;
+@import url("navbarClientesEstilos.css");
+
+body {
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
     margin: 0;
     padding: 0;
+    background-color: #f5f7fa;
+    color: #333;
     display: flex;
+    flex-direction: column;
+    min-height: 100vh;
 }
 
-.nav-left li {
-    float: left;
+/* Contenedor principal */
+.main-container {
+    max-width: 900px;
+    margin: 30px auto;
+    padding: 20px;
+    flex: 1; /* hace que empuje el footer abajo */
 }
 
-.nav-left li a {
-    display: block;
-    color: white;
-    text-align: center;
-    padding: 14px 20px;
-    text-decoration: none;
-    font-weight: 500;
-    transition: background-color 0.3s;
+/* Tarjeta de contenido */
+.welcome-card {
+    background: white;
+    border-radius: 10px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+    padding: 30px;
 }
 
-.nav-left li a:hover {
-    background-color: #34495e;
-}
-
-.nav-left li a.active {
-    background-color: #3498db;
-}
-
-/* Usuario logueado */
-.user-info {
-    color: white;
-    margin-right: 20px;
-    font-weight: 500;
-}
-
-/* GENERALES */
+/* Tabla */
 .tabla-movimientos {
     width: 100%;
     border-collapse: collapse;
-    margin-top: 30px;
-    font-size: 1em;
+    margin-top: 20px;
 }
 
 .tabla-movimientos th,
 .tabla-movimientos td {
-    border: 1px solid #ddd;
-    padding: 12px;
+    padding: 12px 15px;
+    border-bottom: 1px solid #ddd;
     text-align: left;
 }
 
-.tabla-movimientos thead {
-    background-color: #3498db;
+.tabla-movimientos th {
+    background-color: #2c3e50;
     color: white;
 }
 
@@ -72,4 +55,27 @@
 .negativo {
     color: red;
     font-weight: bold;
+}
+
+/* Input de filtro */
+#filtroInput {
+    width: 100%;
+    padding: 10px;
+    margin-bottom: 20px;
+    border-radius: 5px;
+    border: 1px solid #ccc;
+    box-sizing: border-box;
+}
+
+/* Footer fijo al final si hay poco contenido */
+footer {
+    width: 100%;
+    text-align: center;
+    padding: 20px 0;
+    background-color: #2c3e50;
+    color: #f0f0f0;
+    font-size: 16px;
+    font-weight: 600;
+    letter-spacing: 0.7px;
+    margin-top: auto; /* clave para empujar footer abajo */
 }

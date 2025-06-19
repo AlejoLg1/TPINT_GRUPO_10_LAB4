@@ -35,6 +35,7 @@
                     <th>Tipo de Cuenta</th>
                     <th>Fecha de Alta</th>
                     <th>Saldo</th>
+                    <th>Mis movimientos</th>
                 </tr>
             </thead>
             <tbody>
@@ -44,6 +45,11 @@
 				    <td>Caja de Ahorro</td>
 				    <td>2024-05-10</td>
 				    <td>$15.000,00</td>
+				    <td> <button type="button" class="boton-ir-movimientos"
+    onclick="window.location.href='<%= request.getContextPath() %>/jsp/cliente/movimientos.jsp';">
+    Ir a Movimientos
+  </button></td>
+				    
 				</tr>
 				<tr>
 				    <td>87654321</td>
@@ -51,6 +57,10 @@
 				    <td>Cuenta Corriente</td>
 				    <td>2024-03-22</td>
 				    <td>$8.500,00</td>
+				    <td> <button type="button" class="boton-ir-movimientos"
+    onclick="window.location.href='<%= request.getContextPath() %>/jsp/cliente/movimientos.jsp';">
+    Ir a Movimientos
+  </button></td>
 				</tr>
             </tbody>
         </table>
