@@ -113,3 +113,14 @@ input[readonly] {
     cursor: not-allowed;
 }
 
+.panelError {
+    background-color: #f8d7da;
+    color: #721c24;
+    padding: 15px;
+    margin: 20px 0;
+    border: 1px solid #f5c6cb;
+    border-radius: 8px;
+    font-weight: 500;
+    text-align: center;
+}
+

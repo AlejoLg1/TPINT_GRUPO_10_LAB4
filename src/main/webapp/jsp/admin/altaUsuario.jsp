@@ -33,7 +33,17 @@
         %>
             <div class="panelSuccess">¡Operación realizada con éxito!</div>    
         <% } %>
-
+		
+		<%
+		    String mensajeError = (String) request.getAttribute("mensajeError");
+		    if (mensajeError != null) {
+		%>
+		    <div class="panelError"><%= mensajeError %></div>
+		<%
+		    }
+		%>
+		
+		
         <form action="${pageContext.request.contextPath}/<%= esModificacion ? "ServletModificarUsuario" : "ServletAltaUsuario" %>" method="post">
             <% if (esModificacion) { %>
                 <input type="hidden" name="id" value="<%= usuarioMod.getIdUsuario() %>">
