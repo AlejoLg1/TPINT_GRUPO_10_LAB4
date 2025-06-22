@@ -23,7 +23,7 @@
     <div class="welcome-card">
         <h1>Alta de Usuario</h1>
 
-		<%  // Mensaje de confirmacion de exito de solicitud
+		<%
 			boolean estado = (request.getAttribute("estado") != null ? (boolean)request.getAttribute("estado") : false);
 			
 			if(estado == true)
@@ -35,34 +35,7 @@
 		%>
 
         <form action="${pageContext.request.contextPath}/ServletAltaUsuario" method="post">
-            <div class="form-group">
-                <div class="form-item">
-                    <label for="nombre">Nombre:</label>
-                    <input type="text" id="nombre" name="nombre" required>
-                </div>
-
-                <div class="form-item">
-                    <label for="apellido">Apellido:</label>
-                    <input type="text" id="apellido" name="apellido" required>
-                </div>
-
-                <div class="form-item">
-                    <label for="dni">DNI:</label>
-                    <input type="text" id="dni" name="dni" required>
-                </div>
-            </div>
-
-            <div class="form-group">
-                <div class="form-item">
-                    <label for="fechanac">Fecha de Nacimiento:</label>
-                    <input type="date" id="fechanac" name="fechanac" required>
-                </div>
-                
-                <div class="form-item">
-                    <label for="email">Email:</label>
-                    <input type="email" id="email" name="email" required>
-                </div>
-                
+            <div class="form-group">                
                 <div class="form-item">
                 	<label for="tipoUser">Tipo de Usuario:</label>
                     <select name="tipoUser" id="tipoUser" required>
@@ -70,7 +43,6 @@
 		                <option value="Usuario"> Usuario</option>     
 		            </select>
                 </div>
-
             </div>
 
             <hr style="margin: 30px 0;">
