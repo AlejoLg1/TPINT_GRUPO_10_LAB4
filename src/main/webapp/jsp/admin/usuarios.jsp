@@ -46,7 +46,7 @@
 	        %>
 	        <tr>
 	            <td><%= u.getNombreUsuario() %></td>
-	            <td><%= u.isAdmin()? "Admin" : "Cliente" %></td>
+	            <td><%= u.isAdmin()? "Admin" : "Usuario" %></td>
 	            <td><%= u.isEstado() ? "Activo" : "Inactivo" %></td>
 	            <td>
 	                <a href="modificarUsuario.jsp?id=<%= u.getIdUsuario() %>" class="boton-modificar">Modificar</a>
