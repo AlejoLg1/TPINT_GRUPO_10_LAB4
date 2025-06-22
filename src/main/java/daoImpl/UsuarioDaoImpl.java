@@ -1,6 +1,9 @@
 package daoImpl;
 
 import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.util.ArrayList;
 import java.util.List;
 
 import dao.UsuarioDao;
@@ -66,7 +69,32 @@ public class UsuarioDaoImpl implements UsuarioDao {
 
     @Override
     public List<Usuario> Listar() {
-        // TODO: implementar lógica para listar todos los usuarios
-        return null;
+        Connection cn = Conexion.getConexion().getSQLConexion();
+        List<Usuario> lista = new ArrayList<>();
+
+        String query = "SELECT id_usuario, nombre_usuario, clave, tipo, is_admin, estado FROM Usuario";
+
+        try {
+            PreparedStatement pst = cn.prepareStatement(query);
+            ResultSet rs = pst.executeQuery();
+
+            while (rs.next()) {
+                Usuario u = new Usuario();
+                u.setIdUsuario(rs.getInt("id_usuario"));
+                u.setNombreUsuario(rs.getString("nombre_usuario"));
+                u.setClave(rs.getString("clave"));
+                u.setTipo(rs.getString("tipo"));
+                u.setIsAdmin(rs.getBoolean("is_admin"));
+                u.setEstado(rs.getBoolean("estado"));
+
+                lista.add(u);
+            }
+
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+        return lista;
     }
+
 }

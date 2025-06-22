@@ -1,5 +1,6 @@
-<%@ page language="java" contentType="text/html; charset=UTF-8"
-    pageEncoding="UTF-8"%>
+<%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
+<%@ page import="java.util.List" %>
+<%@ page import="dominio.Usuario" %>
 <%
     Object usuario = session.getAttribute("usuario");
     if (usuario == null) {
@@ -7,6 +8,7 @@
         return;
     }
 %>
+
 <!DOCTYPE html>
 <html>
 <head>
@@ -28,48 +30,35 @@
         </div>
 
         <table class="tabla-usuario">
-            <thead>
-                <tr>
-                    <th>Username</th>
-		            <th>Email</th>
-		            <th>Rol</th>
-		            <th>Estado</th>
-		            <th>Acciones</th>
-                </tr>
-            </thead>
-            <tbody>
-                <tr>
-                    <td>admin01</td>
-		            <td>admin@banco.com</td>
-		            <td>Admin</td>
-		            <td>Activo</td>
-                    <td>
-                        <a href="modificarUsuario.jsp?id=1" class="boton-modificar">Modificar</a>
-                        <a href="bajaUsuario.jsp?id=1" class="boton-eliminar">Eliminar</a>
-                    </td>
-                </tr>
-                <tr>
-                    <td>pedro123</td>
-		            <td>pedro@gmail.com</td>
-		            <td>Cliente</td>
-		            <td>Activo</td>
-                    <td>
-                        <a href="modificarUsuario.jsp?id=2" class="boton-modificar">Modificar</a>
-                        <a href="bajaUsuario.jsp?id=2" class="boton-eliminar">Eliminar</a>
-                    </td>
-                </tr>
-                <tr>
-                    <td>admin02</td>
-		            <td>admin2@banco.com</td>
-		            <td>Admin</td>
-		            <td>Activo</td>
-                    <td>
-                        <a href="modificarUsuario.jsp?id=3" class="boton-modificar">Modificar</a>
-                        <a href="bajaUsuario.jsp?id=3" class="boton-eliminar">Eliminar</a>
-                    </td>
-                </tr>
-            </tbody>
-        </table>
+    <thead>
+        <tr>
+            <th>Usuario</th>
+            <th>Rol</th>
+            <th>Estado</th>
+            <th>Acciones</th>
+        </tr>
+    </thead>
+    <tbody>
+	        <%
+	            List<dominio.Usuario> listaUsuarios = (List<dominio.Usuario>) request.getAttribute("usuarios");
+	            if (listaUsuarios != null) {
+	                for (dominio.Usuario u : listaUsuarios) {
+	        %>
+	        <tr>
+	            <td><%= u.getNombreUsuario() %></td>
+	            <td><%= u.isAdmin()? "Admin" : "Cliente" %></td>
+	            <td><%= u.isEstado() ? "Activo" : "Inactivo" %></td>
+	            <td>
+	                <a href="modificarUsuario.jsp?id=<%= u.getIdUsuario() %>" class="boton-modificar">Modificar</a>
+	                <a href="bajaUsuario.jsp?id=<%= u.getIdUsuario() %>" class="boton-eliminar">Eliminar</a>
+	            </td>
+	        </tr>
+	        <%
+	                }
+	            }
+	        %>
+	    </tbody>
+	</table>
     </div>
 </div>
 
