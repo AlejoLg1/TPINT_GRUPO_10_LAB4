@@ -30,35 +30,50 @@
         </div>
 
         <table class="tabla-usuario">
-    <thead>
-        <tr>
-            <th>Usuario</th>
-            <th>Rol</th>
-            <th>Estado</th>
-            <th>Acciones</th>
-        </tr>
-    </thead>
-    <tbody>
-	        <%
-	            List<dominio.Usuario> listaUsuarios = (List<dominio.Usuario>) request.getAttribute("usuarios");
-	            if (listaUsuarios != null) {
-	                for (dominio.Usuario u : listaUsuarios) {
-	        %>
-	        <tr>
-	            <td><%= u.getNombreUsuario() %></td>
-	            <td><%= u.isAdmin()? "Admin" : "Usuario" %></td>
-	            <td><%= u.isEstado() ? "Activo" : "Inactivo" %></td>
-	            <td>
-	                <a href="modificarUsuario.jsp?id=<%= u.getIdUsuario() %>" class="boton-modificar">Modificar</a>
-	                <a href="bajaUsuario.jsp?id=<%= u.getIdUsuario() %>" class="boton-eliminar">Eliminar</a>
-	            </td>
-	        </tr>
-	        <%
-	                }
-	            }
-	        %>
-	    </tbody>
-	</table>
+            <thead>
+                <tr>
+                    <th>Usuario</th>
+                    <th>Rol</th>
+                    <th>Estado</th>
+                    <th>Acciones</th>
+                </tr>
+            </thead>
+            <tbody>
+                <%
+                    List<dominio.Usuario> listaUsuarios = (List<dominio.Usuario>) request.getAttribute("usuarios");
+                    if (listaUsuarios != null) {
+                        for (dominio.Usuario u : listaUsuarios) {
+                %>
+                <tr>
+                    <td><%= u.getNombreUsuario() %></td>
+                    <td><%= u.isAdmin() ? "Admin" : "Usuario" %></td>
+                    <td>
+					    <span class="<%= u.isEstado() ? "estado-activo" : "estado-inactivo" %>">
+					        <%= u.isEstado() ? "Activo" : "Inactivo" %>
+					    </span>
+					</td>
+
+                    <td>
+                        <% if (u.isEstado()) { %>
+                            <form action="${pageContext.request.contextPath}/ServletBajaUsuario" method="post" style="display:inline;">
+                                <input type="hidden" name="id" value="<%= u.getIdUsuario() %>">
+                                <button type="submit" class="boton-accion boton-eliminar">Desactivar</button>
+                            </form>
+                            <a href="modificarUsuario.jsp?id=<%= u.getIdUsuario() %>" class="boton-accion boton-modificar">Modificar</a>
+                        <% } else { %>
+                            <form action="${pageContext.request.contextPath}/ServletActivarUsuario" method="post" style="display:inline;">
+                                <input type="hidden" name="id" value="<%= u.getIdUsuario() %>">
+                                <button type="submit" class="boton-accion boton-activar">Activar</button>
+                            </form>
+                        <% } %>
+                    </td>
+                </tr>
+                <%
+                        }
+                    }
+                %>
+            </tbody>
+        </table>
     </div>
 </div>
 

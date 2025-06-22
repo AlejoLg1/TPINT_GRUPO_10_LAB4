@@ -70,8 +70,8 @@ th, td {
     font-size: 1rem;
 }
 
-.boton-modificar,
-.boton-eliminar {
+/* 🔽 Base para todos los botones de acción */
+.boton-accion {
     padding: 6px 12px;
     margin: 0 5px;
     border-radius: 6px;
@@ -79,13 +79,14 @@ th, td {
     text-decoration: none;
     font-weight: 500;
     transition: all 0.2s ease;
+    border: none;
+    cursor: pointer;
 }
 
 .boton-modificar {
     background-color: #f1c40f;
     color: white;
 }
-
 .boton-modificar:hover {
     background-color: #d4ac0d;
 }
@@ -94,7 +95,26 @@ th, td {
     background-color: #e74c3c;
     color: white;
 }
-
 .boton-eliminar:hover {
     background-color: #c0392b;
 }
+
+.boton-activar {
+    background-color: #3cc13b;
+    color: white;
+}
+
+.boton-activar:hover {
+    background-color: #2e9c2a;
+}
+
+.estado-activo {
+    color: #2ecc71;
+    font-weight: bold;
+}
+
+.estado-inactivo {
+    color: #434c4d;
+    font-weight: bold;
+}
+

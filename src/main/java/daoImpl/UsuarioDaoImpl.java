@@ -43,16 +43,71 @@ public class UsuarioDaoImpl implements UsuarioDao {
 
 
 
-    @Override
-    public boolean Modificar(Usuario usuario) {
-        // TODO: implementar lógica para modificar un usuario existente
-        return false;
-    }
+	@Override
+	public boolean Modificar(Usuario usuario, String accion) {
+	    Connection cn = Conexion.getConexion().getSQLConexion();
+	    boolean modificado = false;
+
+	    String query = "";
+	    java.sql.PreparedStatement pst = null;
+
+	    try {
+	        switch (accion) {
+	            case "estado":
+	                query = "UPDATE Usuario SET estado = ? WHERE id_usuario = ?";
+	                pst = cn.prepareStatement(query);
+	                pst.setBoolean(1, usuario.isEstado());
+	                pst.setInt(2, usuario.getIdUsuario());
+	                break;
+
+	            case "datos":
+	                query = "UPDATE Usuario SET tipo = ?, clave = ?, is_admin = ? WHERE id_usuario = ?";
+	                pst = cn.prepareStatement(query);
+	                pst.setString(1, usuario.getTipo());
+	                pst.setString(2, usuario.getClave());
+	                pst.setBoolean(3, usuario.isAdmin());
+	                pst.setInt(4, usuario.getIdUsuario());
+	                break;
+
+	            default:
+	                return false; // acción inválida
+	        }
+
+	        int filas = pst.executeUpdate();
+	        if (filas > 0) {
+	            cn.commit();
+	            modificado = true;
+	        }
+
+	    } catch (Exception e) {
+	        e.printStackTrace();
+	    }
+
+	    return modificado;
+	}
+
 
     @Override
     public boolean Eliminar(Usuario usuario) {
-        // TODO: implementar lógica para eliminar (o desactivar) un usuario
-        return false;
+        Connection cn = Conexion.getConexion().getSQLConexion();
+        boolean eliminado = false;
+
+        String query = "UPDATE Usuario SET estado = false WHERE id_usuario = ?";
+
+        try {
+            PreparedStatement pst = cn.prepareStatement(query);
+            pst.setInt(1, usuario.getIdUsuario());
+
+            int filas = pst.executeUpdate();
+            if (filas > 0) {
+                cn.commit();
+                eliminado = true;
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+        return eliminado;
     }
 
     @Override
