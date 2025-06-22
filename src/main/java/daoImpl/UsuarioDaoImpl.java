@@ -195,5 +195,28 @@ public class UsuarioDaoImpl implements UsuarioDao {
 
         return lista;
     }
+    
+    @Override
+    public boolean ExisteNombreUsuario(String nombreUsuario) {
+        boolean existe = false;
+
+        try (Connection cn = Conexion.getConexion().getSQLConexion();
+             PreparedStatement stmt = cn.prepareStatement("SELECT COUNT(*) FROM Usuario WHERE nombre_usuario = ?")) {
+
+            stmt.setString(1, nombreUsuario);
+            try (ResultSet rs = stmt.executeQuery()) {
+                if (rs.next()) {
+                    existe = rs.getInt(1) > 0;
+                }
+            }
+
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+        return existe;
+    }
+
+
 
 }
