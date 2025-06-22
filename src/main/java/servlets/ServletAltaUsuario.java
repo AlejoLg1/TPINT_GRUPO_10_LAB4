@@ -27,7 +27,7 @@ public class ServletAltaUsuario extends HttpServlet {
 
 	protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 
-		if (request.getParameter("btnAltaUsuario") != null) {
+		if (request.getParameter("btnUsuario") != null) {
 			boolean status = false;
 
 			try {

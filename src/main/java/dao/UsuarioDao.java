@@ -10,6 +10,7 @@ public interface UsuarioDao {
 	public boolean Modificar(Usuario usuario, String accion);
 	public boolean Eliminar(Usuario usuario);
 	public boolean ValidarUsuario(Usuario usuario);
+	public Usuario obtenerPorId(int id);
 	public int ObtenerNuevoId();
 	public List<Usuario> Listar();
 	

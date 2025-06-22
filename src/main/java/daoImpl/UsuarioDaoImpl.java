@@ -49,10 +49,32 @@ public class UsuarioDaoImpl implements UsuarioDao {
 	    boolean modificado = false;
 
 	    String query = "";
-	    java.sql.PreparedStatement pst = null;
+	    PreparedStatement pst = null;
 
 	    try {
 	        switch (accion) {
+	            case "tipo":
+	                query = "UPDATE Usuario SET is_admin = ? WHERE id_usuario = ?";
+	                pst = cn.prepareStatement(query);
+	                pst.setBoolean(1, usuario.isAdmin());
+	                pst.setInt(2, usuario.getIdUsuario());
+	                break;
+
+	            case "clave":
+	                query = "UPDATE Usuario SET clave = ? WHERE id_usuario = ?";
+	                pst = cn.prepareStatement(query);
+	                pst.setString(1, usuario.getClave());
+	                pst.setInt(2, usuario.getIdUsuario());
+	                break;
+
+	            case "ambos":
+	                query = "UPDATE Usuario SET clave = ?, is_admin = ? WHERE id_usuario = ?";
+	                pst = cn.prepareStatement(query);
+	                pst.setString(1, usuario.getClave());
+	                pst.setBoolean(2, usuario.isAdmin());
+	                pst.setInt(3, usuario.getIdUsuario());
+	                break;
+
 	            case "estado":
 	                query = "UPDATE Usuario SET estado = ? WHERE id_usuario = ?";
 	                pst = cn.prepareStatement(query);
@@ -60,17 +82,8 @@ public class UsuarioDaoImpl implements UsuarioDao {
 	                pst.setInt(2, usuario.getIdUsuario());
 	                break;
 
-	            case "datos":
-	                query = "UPDATE Usuario SET tipo = ?, clave = ?, is_admin = ? WHERE id_usuario = ?";
-	                pst = cn.prepareStatement(query);
-	                pst.setString(1, usuario.getTipo());
-	                pst.setString(2, usuario.getClave());
-	                pst.setBoolean(3, usuario.isAdmin());
-	                pst.setInt(4, usuario.getIdUsuario());
-	                break;
-
 	            default:
-	                return false; // acción inválida
+	                return false; // Acción inválida
 	        }
 
 	        int filas = pst.executeUpdate();
@@ -85,6 +98,7 @@ public class UsuarioDaoImpl implements UsuarioDao {
 
 	    return modificado;
 	}
+
 
 
     @Override
@@ -115,7 +129,37 @@ public class UsuarioDaoImpl implements UsuarioDao {
         // TODO: implementar lógica para validar credenciales del usuario
         return false;
     }
+    
+    @Override
+    public Usuario obtenerPorId(int id) {
+        Connection cn = Conexion.getConexion().getSQLConexion();
+        Usuario usuario = null;
 
+        String query = "SELECT * FROM Usuario WHERE id_usuario = ?";
+
+        try {
+            PreparedStatement pst = cn.prepareStatement(query);
+            pst.setInt(1, id);
+            ResultSet rs = pst.executeQuery();
+
+            if (rs.next()) {
+                usuario = new Usuario();
+                usuario.setIdUsuario(rs.getInt("id_usuario"));
+                usuario.setNombreUsuario(rs.getString("nombre_usuario"));
+                usuario.setClave(rs.getString("clave"));
+                usuario.setTipo(rs.getString("tipo"));
+                usuario.setIsAdmin(rs.getBoolean("is_admin"));
+                usuario.setEstado(rs.getBoolean("estado"));
+            }
+
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+        return usuario;
+    }
+
+    
     @Override
     public int ObtenerNuevoId() {
         // TODO: implementar lógica para obtener el próximo ID disponible
