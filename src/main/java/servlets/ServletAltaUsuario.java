@@ -8,6 +8,8 @@ import dao.UsuarioDao;
 import daoImpl.UsuarioDaoImpl;
 import dominio.Usuario;
 import excepciones.NombreUsuarioExistenteException;
+import excepciones.ContrasenasNoCoincidenException;
+import excepciones.TodosLosCamposObligatorios;
 
 import java.io.IOException;
 
@@ -36,11 +38,11 @@ public class ServletAltaUsuario extends HttpServlet {
 
                 if (tipoUser == null || username == null || pass == null || passRepetida == null ||
                     tipoUser.isEmpty() || username.isEmpty() || pass.isEmpty() || passRepetida.isEmpty()) {
-                    throw new IllegalArgumentException("Todos los campos son obligatorios.");
+                    throw new TodosLosCamposObligatorios("Todos los campos son obligatorios.");
                 }
 
                 if (!pass.equals(passRepetida)) {
-                    throw new IllegalArgumentException("Las contraseñas no coinciden.");
+                    throw new ContrasenasNoCoincidenException("Las contraseñas no coinciden.");
                 }
 
                 UsuarioDao dao = new UsuarioDaoImpl();
@@ -59,9 +61,15 @@ public class ServletAltaUsuario extends HttpServlet {
 
             } catch (NombreUsuarioExistenteException e) {
                 mensajeError = e.getMessage();
-            } catch (IllegalArgumentException e) {
+            } catch (TodosLosCamposObligatorios e) {
                 mensajeError = e.getMessage();
-            } catch (Exception e) {
+	        } catch (ContrasenasNoCoincidenException e) {
+	            request.setAttribute("mensajeError", e.getMessage());
+	            RequestDispatcher rd = request.getRequestDispatcher("/jsp/admin/altaUsuario.jsp");
+	            rd.forward(request, response);
+	            return;
+	        }
+            catch (Exception e) {
                 mensajeError = "Error inesperado al procesar la solicitud.";
                 e.printStackTrace();
             }
