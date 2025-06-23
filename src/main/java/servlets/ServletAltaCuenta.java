@@ -7,6 +7,7 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.util.List;
+import java.math.BigDecimal;
 
 import dao.ClienteDao;
 import dao.CuentaDao;
@@ -28,45 +29,75 @@ public class ServletAltaCuenta extends HttpServlet {
 
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-        cargarDatosFormulario(request);
-        request.getRequestDispatcher("/jsp/admin/altaCuentas.jsp").forward(request, response);
-    }
+        String idParam = request.getParameter("id");
 
-    @Override
-    protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-        try {
-            int idCliente = Integer.parseInt(request.getParameter("clienteId"));
-            int idTipoCuenta = Integer.parseInt(request.getParameter("tipoCuenta"));
-            String monto = request.getParameter("montoInicial");
+        if (idParam != null) {
+            try {
+                int idCuenta = Integer.parseInt(idParam);
+                CuentaDao cuentaDao = new CuentaDaoImpl();
+                Cuenta cuenta = cuentaDao.obtenerCuentaPorId(idCuenta);
 
-            Cuenta cuenta = new Cuenta();
-            cuenta.setSaldo(new java.math.BigDecimal(monto));
-            cuenta.setFechaCreacion(java.time.LocalDateTime.now());
-
-            CuentaDao cuentaDao = new CuentaDaoImpl();
-
-            // Validación: hasta 3 cuentas activas
-            int cuentasActivas = cuentaDao.contarCuentasActivasPorCliente(idCliente);
-            if (cuentasActivas >= 3) {
-                request.setAttribute("mensaje", "❌ El cliente ya tiene 3 cuentas activas. No se puede crear otra.");
-            } else {
-                boolean creada = cuentaDao.agregar(cuenta, idCliente, idTipoCuenta);
-                if (creada) {
-                    request.setAttribute("mensaje", "✅ Cuenta creada correctamente.");
-                } else {
-                    request.setAttribute("mensaje", "❌ Hubo un error al crear la cuenta.");
+                if (cuenta != null) {
+                    request.setAttribute("cuentaMod", cuenta);
                 }
+            } catch (NumberFormatException e) {
+                e.printStackTrace();
             }
-
-        } catch (Exception e) {
-            e.printStackTrace();
-            request.setAttribute("mensaje", "❌ Error inesperado al procesar los datos.");
         }
 
         cargarDatosFormulario(request);
         request.getRequestDispatcher("/jsp/admin/altaCuentas.jsp").forward(request, response);
     }
 
+    @Override
+    protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+        CuentaDao cuentaDao = new CuentaDaoImpl();
+
+        try {
+            String idCuentaParam = request.getParameter("cuentaId");
+            int idCliente = Integer.parseInt(request.getParameter("clienteId"));
+            int idTipoCuenta = Integer.parseInt(request.getParameter("tipoCuenta"));
+            BigDecimal monto = new BigDecimal(request.getParameter("montoInicial"));
+
+            if (idCuentaParam != null && !idCuentaParam.isEmpty()) {
+                // MODO MODIFICACIÓN
+                int idCuenta = Integer.parseInt(idCuentaParam);
+                Cuenta cuenta = cuentaDao.obtenerCuentaPorId(idCuenta);
+                if (cuenta != null) {
+                    cuenta.setIdCliente(idCliente);
+                    cuenta.setIdTipoCuenta(idTipoCuenta);
+                    cuenta.setSaldo(monto);
+
+                    boolean actualizado = cuentaDao.actualizar(cuenta);
+                    request.setAttribute("mensaje", actualizado ? "✅ Cuenta modificada correctamente." : "❌ Error al modificar la cuenta.");
+                    request.setAttribute("cuentaMod", cuenta);
+                } else {
+                    request.setAttribute("mensaje", "❌ No se encontró la cuenta a modificar.");
+                }
+            } else {
+                // MODO CREACIÓN
+                int cuentasActivas = cuentaDao.contarCuentasActivasPorCliente(idCliente);
+                if (cuentasActivas >= 3) {
+                    request.setAttribute("mensaje", "❌ El cliente ya tiene 3 cuentas activas.");
+                } else {
+                    Cuenta nueva = new Cuenta();
+                    nueva.setSaldo(monto);
+                    nueva.setFechaCreacion(java.time.LocalDateTime.now());
+
+                    boolean creada = cuentaDao.agregar(nueva, idCliente, idTipoCuenta);
+                    request.setAttribute("mensaje", creada ? "✅ Cuenta creada correctamente." : "❌ Error al crear la cuenta.");
+                }
+            }
+
+            cargarDatosFormulario(request);
+            request.getRequestDispatcher("/jsp/admin/altaCuentas.jsp").forward(request, response);
+
+        } catch (Exception e) {
+            e.printStackTrace();
+            request.getSession().setAttribute("mensajeCuenta", "❌ Error inesperado al procesar los datos.");
+            response.sendRedirect("ServletCuenta");
+        }
+    }
 
     private void cargarDatosFormulario(HttpServletRequest request) {
         ClienteDao clienteDao = new ClienteDaoImpl();

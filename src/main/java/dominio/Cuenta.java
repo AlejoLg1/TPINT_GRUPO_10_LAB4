@@ -4,9 +4,11 @@ import java.math.BigDecimal;
 import java.time.LocalDateTime;
 
 public class Cuenta {
-
+	
     private int nroCuenta;
-    private String cbu;
+    private int idCliente;
+    private int idTipoCuenta;
+	private String cbu;
     private String tipoCuenta; 
     private LocalDateTime fechaCreacion;
     private BigDecimal saldo;
@@ -34,7 +36,26 @@ public class Cuenta {
     public void setNroCuenta(int nroCuenta) {
         this.nroCuenta = nroCuenta;
     }
+    
+    public int getIdCliente() {
+		return idCliente;
+	}
 
+
+	public void setIdCliente(int idCliente) {
+		this.idCliente = idCliente;
+	}
+
+
+	public int getIdTipoCuenta() {
+		return idTipoCuenta;
+	}
+
+
+	public void setIdTipoCuenta(int idTipoCuenta) {
+		this.idTipoCuenta = idTipoCuenta;
+	}
+	
     public String getCbu() {
         return cbu;
     }

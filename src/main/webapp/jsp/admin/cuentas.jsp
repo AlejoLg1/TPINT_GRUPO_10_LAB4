@@ -124,7 +124,7 @@
                                     })">
                                     Desactivar
                                 </button>
-                                <a href="modificarCuenta.jsp?id=<%= nroCuenta %>" class="btn btn-warning btn-sm">Modificar</a>
+                                <a href="<%= request.getContextPath() %>/ServletAltaCuenta?id=<%= nroCuenta %>" class="btn btn-warning btn-sm">Modificar</a>
                             <% } else { %>
                                 <button 
                                     type="button"

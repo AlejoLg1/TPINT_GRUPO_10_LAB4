@@ -26,6 +26,7 @@ public class CuentaDaoImpl implements CuentaDao {
 		""";
     private static final String UPDATE_ESTADO_CUENTAS = "UPDATE Cuenta SET estado = ? WHERE nro_cuenta = ?";
 	private static final String OBTENER_ID_CLIENTE = "SELECT id_cliente FROM Cuenta WHERE nro_cuenta = ?";
+	private static final String OBTENER_CUENTA = "SELECT nro_cuenta, cbu, id_cliente, id_tipo_cuenta, saldo, fecha_creacion, estado FROM Cuenta WHERE nro_cuenta = ?";
 
     
     @Override
@@ -204,5 +205,71 @@ public class CuentaDaoImpl implements CuentaDao {
 	    }
 	    return idCliente;
 	}
+	
+	@Override
+	public Cuenta obtenerCuentaPorId(int idCuenta) {
+	    Cuenta cuenta = null;
+
+	    try (Connection conn = Conexion.getConexion().getSQLConexion();
+	         PreparedStatement stmt = conn.prepareStatement(OBTENER_CUENTA)) {
+
+	        stmt.setInt(1, idCuenta);
+	        ResultSet rs = stmt.executeQuery();
+
+	        if (rs.next()) {
+	            cuenta = new Cuenta();
+	            cuenta.setNroCuenta(rs.getInt("nro_cuenta"));
+	            cuenta.setCbu(rs.getString("cbu"));
+	            cuenta.setIdCliente(rs.getInt("id_cliente"));
+	            cuenta.setIdTipoCuenta(rs.getInt("id_tipo_cuenta"));
+	            cuenta.setSaldo(rs.getBigDecimal("saldo"));
+	            cuenta.setFechaCreacion(rs.getTimestamp("fecha_creacion").toLocalDateTime());
+	            cuenta.setEstado(rs.getBoolean("estado"));
+	        }
+
+	        rs.close();
+
+	    } catch (SQLException e) {
+	        e.printStackTrace();
+	    }
+
+	    return cuenta;
+	}
+	
+	@Override
+	public boolean actualizar(Cuenta cuenta) {
+	    boolean actualizado = false;
+	    Connection conexion = null;
+	    PreparedStatement stmt = null;
+
+	    try {
+	        conexion = Conexion.getConexion().getSQLConexion();
+	        String query = "UPDATE cuenta SET id_cliente = ?, id_tipo_cuenta = ?, saldo = ? WHERE nro_cuenta = ?";
+	        stmt = conexion.prepareStatement(query);
+	        stmt.setInt(1, cuenta.getIdCliente());
+	        stmt.setInt(2, cuenta.getIdTipoCuenta());
+	        stmt.setBigDecimal(3, cuenta.getSaldo());
+	        stmt.setInt(4, cuenta.getNroCuenta());
+
+	        int filas = stmt.executeUpdate();
+	        if (filas > 0) {
+	            conexion.commit();  // ✅ Confirmamos los cambios
+	            actualizado = true;
+	        }
+
+	    } catch (SQLException e) {
+	        e.printStackTrace();
+	    } finally {
+	        try {
+	            if (stmt != null) stmt.close();
+	            if (conexion != null) conexion.close();
+	        } catch (SQLException e) {
+	            e.printStackTrace();
+	        }
+	    }
+
+	    return actualizado;
+	}
+
 
 }

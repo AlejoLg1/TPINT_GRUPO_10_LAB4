@@ -4,6 +4,7 @@
 <%@ page import="java.util.List" %>
 <%@ page import="dominio.Cliente" %>
 <%@ page import="dominio.TipoCuenta" %>
+<%@ page import="dominio.Cuenta" %>
 
 <%
     Object usuario = session.getAttribute("usuario");
@@ -11,12 +12,15 @@
         response.sendRedirect(request.getContextPath() + "/jsp/comunes/login.jsp");
         return;
     }
+
+    Cuenta cuentaMod = (Cuenta) request.getAttribute("cuentaMod");
+    boolean esModificacion = cuentaMod != null;
 %>
 
 <!DOCTYPE html>
 <html>
 <head>
-    <title>Alta de Cuenta</title>
+    <title><%= esModificacion ? "Modificar Cuenta" : "Alta de Cuenta" %></title>
     <link rel="stylesheet" href="${pageContext.request.contextPath}/css/cuentaEstilos.css">
 </head>
 <body>
@@ -25,7 +29,7 @@
 
     <div class="main-container">
         <div class="welcome-card">
-            <h1>Alta de Cuenta</h1>
+            <h1><%= esModificacion ? "Modificar Cuenta" : "Alta de Cuenta" %></h1>
 
             <%
                 String mensaje = (String) request.getAttribute("mensaje");
@@ -37,15 +41,24 @@
             %>
 
             <form action="ServletAltaCuenta" method="post" class="form-alta-cuenta">
+                <% if (esModificacion) { %>
+                    <input type="hidden" name="cuentaId" value="<%= cuentaMod.getNroCuenta() %>">
+                <% } %>
+
                 <label>Cliente:</label>
-                <select name="clienteId" required>
+				<% if (esModificacion) { %>
+				    <input type="hidden" name="clienteId" value="<%= cuentaMod.getIdCliente() %>">
+				<% } %>
+				<select name="clienteId" required <%= esModificacion ? "disabled" : "" %>>
+
                     <option value="">-- Seleccionar Cliente --</option>
                     <%
                         List<Cliente> listaClientes = (List<Cliente>) request.getAttribute("listaClientes");
                         if (listaClientes != null) {
                             for (Cliente c : listaClientes) {
+                                boolean seleccionado = esModificacion && cuentaMod.getIdCliente() == c.getIdCliente();
                     %>
-                        <option value="<%= c.getIdCliente() %>"><%= c.getNombre() + " " + c.getApellido() %></option>
+                        <option value="<%= c.getIdCliente() %>" <%= seleccionado ? "selected" : "" %>><%= c.getNombre() + " " + c.getApellido() %></option>
                     <%
                             }
                         }
@@ -59,8 +72,9 @@
                         List<TipoCuenta> listaTiposCuenta = (List<TipoCuenta>) request.getAttribute("listaTiposCuenta");
                         if (listaTiposCuenta != null) {
                             for (TipoCuenta tipo : listaTiposCuenta) {
+                                boolean seleccionado = esModificacion && cuentaMod.getIdTipoCuenta() == tipo.getIdTipoCuenta();
                     %>
-                        <option value="<%= tipo.getIdTipoCuenta() %>"><%= tipo.getDescripcion() %></option>
+                        <option value="<%= tipo.getIdTipoCuenta() %>" <%= seleccionado ? "selected" : "" %>><%= tipo.getDescripcion() %></option>
                     <%
                             }
                         }
@@ -68,9 +82,16 @@
                 </select>
 
                 <label>Monto Inicial:</label>
-                <input type="number" name="montoInicial" value="10000.00" readonly step="0.01">
+                <input type="number" name="montoInicial" 
+                       value="<%= esModificacion ? cuentaMod.getSaldo() : "10000.00" %>" 
+                       <%= esModificacion ? "" : "readonly" %> step="0.01">
 
-                <button type="submit" class="boton-guardar">Crear Cuenta</button>
+				<button type="submit" class="boton-formulario boton-guardar">
+				    <%= esModificacion ? "Guardar Cambios" : "Crear Cuenta" %>
+				</button>
+				
+
+				<button type="button" onclick="location.href='ServletCuenta'" class="boton-formulario boton-volver">Volver</button>
             </form>
         </div>
     </div>

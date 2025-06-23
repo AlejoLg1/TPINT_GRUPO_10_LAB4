@@ -10,5 +10,7 @@ public interface CuentaDao {
 	 int contarCuentasActivasPorCliente(int idCliente);
 	 boolean cambiarEstado(int idCuenta, boolean nuevoEstado);
 	 int obtenerIdClientePorCuenta(int nroCuenta);
+	 Cuenta obtenerCuentaPorId(int idCuenta);
+	 public boolean actualizar(Cuenta cuenta);
 
 }
