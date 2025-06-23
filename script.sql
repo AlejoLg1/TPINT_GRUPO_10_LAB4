@@ -122,3 +122,12 @@ CREATE TABLE Cuota (
 );
 
 
+-- Usuario administrador bancario
+INSERT INTO Usuario (nombre_usuario, clave, tipo, is_admin, estado)
+VALUES ('admin', '1234', 'BANCARIO', TRUE, TRUE);
+
+-- Usuario cliente común
+INSERT INTO Usuario (nombre_usuario, clave, tipo, is_admin, estado)
+VALUES ('cliente', '4321', 'CLIENTE', FALSE, TRUE);
+
+
