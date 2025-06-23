@@ -11,6 +11,9 @@ import java.util.List;
 import dao.ClienteDao;
 import daoImpl.ClienteDaoImpl;
 import dominio.Cliente;
+import dao.TipoCuentaDao;
+import daoImpl.TipoCuentaDaoImpl;
+import dominio.TipoCuenta;
 
 @WebServlet("/ServletAltaCuenta")
 public class ServletAltaCuenta extends HttpServlet {
@@ -29,6 +32,11 @@ public class ServletAltaCuenta extends HttpServlet {
         List<Cliente> listaClientes = clienteDao.Listar();
 
         request.setAttribute("listaClientes", listaClientes);
+        
+        TipoCuentaDao tipoCuentaDao = new TipoCuentaDaoImpl();
+        List<TipoCuenta> listaTiposCuenta = tipoCuentaDao.listar();
+        request.setAttribute("listaTiposCuenta", listaTiposCuenta);
+
 
         request.getRequestDispatcher("/jsp/admin/altaCuentas.jsp").forward(request, response);
     }
