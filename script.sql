@@ -138,7 +138,7 @@ INSERT INTO Tipo_cuenta (descripcion) VALUES ('Caja de ahorro'), ('Cuenta corrie
 
 DELIMITER //
 
-CREATE PROCEDURE InsertarCliente(
+CREATE PROCEDURE `insertarCliente`(
     IN p_nombre_usuario VARCHAR(50),
     IN p_clave VARCHAR(100),
     IN p_calle VARCHAR(100),
@@ -156,41 +156,48 @@ CREATE PROCEDURE InsertarCliente(
     IN p_telefono VARCHAR(20)
 )
 BEGIN
-    DECLARE v_id_usuario INT DEFAULT NULL;
+    DECLARE v_id_usuario INT;
     DECLARE v_id_direccion INT;
+    DECLARE existe_usuario INT DEFAULT 0;
+    DECLARE existe_dni INT DEFAULT 0;
 
-    -- Verificar existencia de usuario
-    IF NOT EXISTS (
-        SELECT 1 FROM usuario WHERE nombre_usuario = p_nombre_usuario
-    ) THEN
-        INSERT INTO usuario (nombre_usuario, clave, tipo, is_admin, estado)
-        VALUES (p_nombre_usuario, p_clave, 'CLIENTE', FALSE, TRUE);
-        SET v_id_usuario = LAST_INSERT_ID();
-    ELSE
-        SELECT id_usuario INTO v_id_usuario
-        FROM usuario
-        WHERE nombre_usuario = p_nombre_usuario;
+    -- Validar existencia
+    SELECT COUNT(*) INTO existe_usuario
+    FROM usuario
+    WHERE nombre_usuario = p_nombre_usuario;
+
+    SELECT COUNT(*) INTO existe_dni
+    FROM cliente
+    WHERE dni = p_dni;
+
+    IF existe_usuario > 0 THEN
+       SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT = 'El nombre de usuario ya existe.';
     END IF;
+
+    IF existe_dni > 0 THEN
+        SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT = 'El DNI de usuario ya esta registrado.';
+    END IF;
+
+    -- Insertar en Usuario
+    INSERT INTO usuario (nombre_usuario, clave, tipo, is_admin, estado)
+    VALUES (p_nombre_usuario, p_clave, 'CLIENTE', FALSE, TRUE);
+    SET v_id_usuario = LAST_INSERT_ID();
 
     -- Insertar en Direccion
     INSERT INTO Direccion (calle, numero, localidad, provincia)
     VALUES (p_calle, p_numero, p_localidad, p_provincia);
     SET v_id_direccion = LAST_INSERT_ID();
 
-    -- Verificar existencia de cliente por DNI
-    IF NOT EXISTS (
-        SELECT 1 FROM cliente WHERE dni = p_dni
-    ) THEN
-        INSERT INTO cliente (
-            id_usuario, id_direccion, dni, cuil, nombre, apellido,
-            sexo, nacionalidad, fecha_nacimiento, correo, telefono, estado
-        )
-        VALUES (
-            v_id_usuario, v_id_direccion, p_dni, p_cuil, p_nombre, p_apellido,
-            p_sexo, p_nacionalidad, p_fecha_nacimiento, p_correo, p_telefono, TRUE
-        );
-    END IF;
-END;
+    -- Insertar en Cliente
+    INSERT INTO cliente (
+        id_usuario, id_direccion, dni, cuil, nombre, apellido,
+        sexo, nacionalidad, fecha_nacimiento, correo, telefono, estado
+    )
+    VALUES (
+        v_id_usuario, v_id_direccion, p_dni, p_cuil, p_nombre, p_apellido,
+        p_sexo, p_nacionalidad, p_fecha_nacimiento, p_correo, p_telefono, TRUE
+    );
+END
 //
 
 DELIMITER ;

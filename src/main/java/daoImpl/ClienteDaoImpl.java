@@ -13,6 +13,8 @@ import dominio.Cliente;
 import utils.Conexion;
 import dominio.Direccion;
 import dominio.Usuario;
+import excepciones.DniYaRegistradoException;
+import excepciones.NombreUsuarioExistenteException;
 
 public class ClienteDaoImpl implements ClienteDao {
 	
@@ -20,7 +22,7 @@ public class ClienteDaoImpl implements ClienteDao {
 			  "{CALL InsertarCliente(?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)}";
 
 	@Override
-	public boolean Agregar(Cliente cliente, Usuario usuario , Direccion direccion) {
+	public boolean Agregar(Cliente cliente, Usuario usuario , Direccion direccion) throws NombreUsuarioExistenteException, DniYaRegistradoException {
 	    Connection conexion = null;
 	    CallableStatement stmt = null;
 	    
@@ -64,6 +66,19 @@ public class ClienteDaoImpl implements ClienteDao {
 
 	    } catch (SQLException e) {
 	        System.err.println("Error al insertar cliente: " + e.getMessage());
+	        
+	        System.err.println("SQLState: " + e.getSQLState());
+	        
+	        // Si el mensaje contiene el texto de usuario existente
+	        if (e.getMessage().contains("El nombre de usuario ya existe.")) {
+	            throw new NombreUsuarioExistenteException("El nombre de usuario ya está en uso.");
+	        }
+	        
+	        if (e.getMessage().contains("El DNI de usuario ya esta registrado.")) {
+	        	throw new DniYaRegistradoException("El Dni ya se encuentra registrado");
+	        }
+	        
+	        
 	    }
 	    
 	    return agregado;
