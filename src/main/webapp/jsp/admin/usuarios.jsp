@@ -23,27 +23,6 @@
 
     <!-- TU CSS personalizado -->
     <link rel="stylesheet" href="${pageContext.request.contextPath}/css/usuariosEstilos.css">
-
-    <!-- jQuery -->
-    <script src="https://code.jquery.com/jquery-3.7.0.min.js"></script>
-
-    <!-- DataTables JS -->
-    <script src="https://cdn.datatables.net/1.13.6/js/jquery.dataTables.min.js"></script>
-    <script src="https://cdn.datatables.net/1.13.6/js/dataTables.bootstrap5.min.js"></script>
-
-    <!-- Configuración de idioma ES para DataTables -->
-    <script src="${pageContext.request.contextPath}/js/datatables-es.js"></script>
-
-    <script>
-        $(document).ready(function () {
-            $('.tabla-usuario').DataTable({
-                language: spanishLanguageSettings,
-                pageLength: 5,
-                lengthMenu: [5, 10, 25, 50],
-                responsive: true
-            });
-        });
-    </script>
 </head>
 
 <body>
@@ -84,16 +63,32 @@
                         </td>
                         <td>
                             <% if (u.isEstado()) { %>
-                                <form action="${pageContext.request.contextPath}/ServletBajaUsuario" method="post" style="display:inline;">
-                                    <input type="hidden" name="id" value="<%= u.getIdUsuario() %>">
-                                    <button type="submit" class="btn btn-danger btn-sm me-1">Desactivar</button>
-                                </form>
+                                <button 
+								  type="button"
+								  class="btn btn-danger btn-sm me-1"
+								  onclick="abrirConfirmacion({
+								    action: '${pageContext.request.contextPath}/ServletBajaUsuario',
+								    mensaje: '¿Estás seguro que deseas desactivar al usuario <%= u.getNombreUsuario() %>?',
+								    botonTexto: 'Desactivar',
+								    botonClase: 'btn-danger',
+								    inputs: [{ name: 'id', value: '<%= u.getIdUsuario() %>' }]
+								  })">
+								  Desactivar
+								</button>
                                 <a href="${pageContext.request.contextPath}/ServletModificarUsuario?id=<%= u.getIdUsuario() %>" class="btn btn-warning btn-sm">Modificar</a>
                             <% } else { %>
-                                <form action="${pageContext.request.contextPath}/ServletActivarUsuario" method="post" style="display:inline;">
-                                    <input type="hidden" name="id" value="<%= u.getIdUsuario() %>">
-                                    <button type="submit" class="btn btn-success btn-sm">Activar</button>
-                                </form>
+                                <button 
+								  type="button"
+								  class="btn btn-success btn-sm"
+								  onclick="abrirConfirmacion({
+								    action: '${pageContext.request.contextPath}/ServletActivarUsuario',
+								    mensaje: '¿Deseas activar nuevamente al usuario <%= u.getNombreUsuario() %>?',
+								    botonTexto: 'Activar',
+								    botonClase: 'btn-success',
+								    inputs: [{ name: 'id', value: '<%= u.getIdUsuario() %>' }]
+								  })">
+								  Activar
+								</button>
                             <% } %>
                         </td>
                     </tr>
@@ -107,6 +102,31 @@
     </div>
 </div>
 
+<!-- jQuery -->
+  <script src="https://code.jquery.com/jquery-3.7.0.min.js"></script>
+
+  <!-- DataTables JS -->
+  <script src="https://cdn.datatables.net/1.13.6/js/jquery.dataTables.min.js"></script>
+  <script src="https://cdn.datatables.net/1.13.6/js/dataTables.bootstrap5.min.js"></script>
+
+  <!-- Configuración de idioma ES para DataTables -->
+  <script src="${pageContext.request.contextPath}/js/datatables-es.js"></script>
+  
+<!-- Bootstrap Bundle JS (incluye Popper) -->
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+
+  <script>
+      $(document).ready(function () {
+          $('.tabla-usuario').DataTable({
+              language: spanishLanguageSettings,
+              pageLength: 5,
+              lengthMenu: [5, 10, 25, 50],
+              responsive: true
+          });
+      });
+  </script>
+   
+<%@ include file="../comunes/modalConfirmacion.jsp" %>
 <%@ include file="../comunes/footer.jsp" %>
 </body>
 </html>
