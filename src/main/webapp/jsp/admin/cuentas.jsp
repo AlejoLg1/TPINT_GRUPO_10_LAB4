@@ -26,7 +26,7 @@
 
             <!-- Acciones superiores -->
             <div class="acciones-superiores">
-                <a href="altaCuentas.jsp" class="crear-cliente-button">Crear nueva Cuenta</a>
+                <a href="<%= request.getContextPath() %>/ServletAltaCuenta" class="crear-cliente-button">Crear nueva Cuenta</a>
             </div>
             
 

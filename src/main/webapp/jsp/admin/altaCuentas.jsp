@@ -1,6 +1,9 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8"
     pageEncoding="UTF-8"%>
 <%@ page session="true" %>
+<%@ page import="java.util.List" %>
+<%@ page import="dominio.Cliente" %>
+
 <%
     Object usuario = session.getAttribute("usuario");
     if (usuario == null) {
@@ -23,13 +26,22 @@
         <div class="welcome-card">
             <h1>Alta de Cuenta</h1>
 
-            <form action="ServletCuenta" method="post" class="form-alta-cuenta">
+            <form action="ServletAltaCuenta" method="post" class="form-alta-cuenta">
                 <label>Cliente:</label>
                 <select name="clienteId" required>
                     <option value="">-- Seleccionar Cliente --</option>
                     <!-- Aquí el Servlet debe cargar lista de clientes -->
-                    <option value="1">Juan Pérez</option>
-                    <option value="2">Ana López</option>
+                    <%
+					    List<dominio.Cliente> listaClientes = (List<dominio.Cliente>) request.getAttribute("listaClientes");
+					    if (listaClientes != null) {
+					        for (dominio.Cliente c : listaClientes) {
+					%>
+					        <option value="<%= c.getIdCliente() %>"><%= c.getNombre() + " " + c.getApellido() %></option>
+					<%
+					        }
+					    }
+					%>
+
                 </select>
 
                 <label>Tipo de cuenta:</label>

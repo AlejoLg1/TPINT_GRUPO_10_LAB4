@@ -5,6 +5,7 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.util.ArrayList;
 import java.util.List;
 
 import dao.ClienteDao;
@@ -91,9 +92,40 @@ public class ClienteDaoImpl implements ClienteDao {
 
 	@Override
 	public List<Cliente> Listar() {
-		// TODO Auto-generated method stub
-		return null;
+	    List<Cliente> clientes = new ArrayList<>();
+	    Connection conexion = null;
+	    PreparedStatement stmt = null;
+	    ResultSet rs = null;
+
+	    try {
+	        conexion = Conexion.getConexion().getSQLConexion();
+	        String query = "SELECT id_cliente, nombre, apellido FROM Cliente WHERE estado = 1";
+	        stmt = conexion.prepareStatement(query);
+	        rs = stmt.executeQuery();
+
+	        while (rs.next()) {
+	            Cliente cliente = new Cliente();
+	            cliente.setIdCliente(rs.getInt("id_cliente"));
+	            cliente.setNombre(rs.getString("nombre"));
+	            cliente.setApellido(rs.getString("apellido"));
+	            clientes.add(cliente);
+	        }
+
+	    } catch (SQLException e) {
+	        e.printStackTrace();
+	    } finally {
+	        try {
+	            if (rs != null) rs.close();
+	            if (stmt != null) stmt.close();
+	            if (conexion != null) conexion.close();
+	        } catch (SQLException e) {
+	            e.printStackTrace();
+	        }
+	    }
+
+	    return clientes;
 	}
+
 	
 	@Override
 	public Cliente obtenerPorIdUsuario(int idUsuario) {
