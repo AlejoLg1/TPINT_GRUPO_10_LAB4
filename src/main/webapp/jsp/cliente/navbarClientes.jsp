@@ -8,7 +8,7 @@
 <div class="navbar">
     <ul class="nav-left">
 	 	<li><a href="${pageContext.request.contextPath}/jsp/cliente/menuCliente.jsp">Inicio</a></li>
-	    <li><a href="${pageContext.request.contextPath}/jsp/cliente/verCuentas.jsp">Mis cuentas</a></li>
+	    <li><a href="${pageContext.request.contextPath}/ServletVerCuentas">Mis cuentas</a></li>
 	    <li><a href="${pageContext.request.contextPath}/jsp/cliente/transferencias.jsp">Transferencias</a></li>
 	    <li><a href="${pageContext.request.contextPath}/jsp/cliente/solicitarPrestamo.jsp">Préstamos</a></li>
 	    <li><a href="${pageContext.request.contextPath}/jsp/cliente/pagarCuotas.jsp">Pago de cuotas</a></li>
@@ -24,3 +24,4 @@
 
 	    
 </div>
+	

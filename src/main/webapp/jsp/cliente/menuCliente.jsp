@@ -31,7 +31,7 @@
 	    <div class="actions-section">
 	        <h2>¿Qué deseas hacer hoy?</h2>
 	        <div class="action-buttons">
-		<a href="${pageContext.request.contextPath}/jsp/cliente/verCuentas.jsp" class="action-button">Ver mis cuentas</a>
+		<a href="${pageContext.request.contextPath}/ServletVerCuentas" class="action-button">Ver mis cuentas</a>
         <a href="${pageContext.request.contextPath}/jsp/cliente/transferencias.jsp" class="action-button">Hacer una transferencia</a>
         <a href="${pageContext.request.contextPath}/jsp/cliente/pagarCuotas.jsp" class="action-button">Pagar mis préstamos</a>
 	        </div>

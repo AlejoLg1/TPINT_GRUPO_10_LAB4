@@ -23,7 +23,7 @@
 
 <div class="main-container">
     <div class="welcome-card">
-        <h1>Movimientos de cuenta</h1>
+        <h1>Movimientos de cuenta: <%= request.getAttribute("nroCuenta") %></h1>
 
         <!-- Filtro -->
         <input type="text" id="filtroInput" placeholder="Filtrar movimientos...">
@@ -38,26 +38,23 @@
             </thead>
             <tbody id="tablaBody">
                 <%
-                    String[][] movimientos = {
-                        {"2025-06-01", "Transferencia recibida", "5000"},
-                        {"2025-06-03", "Compra supermercado", "-3200"},
-                        {"2025-06-05", "Pago préstamo", "-1500"},
-                        {"2025-06-06", "Depósito", "4000"}
-                    };
-
-                    for (int i = 0; i < movimientos.length; i++) {
-                        String fecha = movimientos[i][0];
-                        String descripcion = movimientos[i][1];
-                        double importe = Double.parseDouble(movimientos[i][2]);
+                    java.util.List movimientos = (java.util.List) request.getAttribute("movimientos");
+                    if (movimientos != null) {
+                        for (Object obj : movimientos) {
+                            dominio.Movimiento mov = (dominio.Movimiento) obj;
+                            java.time.format.DateTimeFormatter formatter = java.time.format.DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
+                            String fechaFormateada = mov.getFecha().format(formatter);
+                            String claseImporte = mov.getImporte().compareTo(java.math.BigDecimal.ZERO) >= 0 ? "positivo" : "negativo";
                 %>
                 <tr>
-                    <td><%= fecha %></td>
-                    <td><%= descripcion %></td>
-                    <td class="<%= (importe >= 0) ? "positivo" : "negativo" %>">
-                        $<%= importe %>
-                    </td>
+                    <td><%= fechaFormateada %></td>
+                    <td><%= mov.getDetalle() %></td>
+                    <td class="<%= claseImporte %>">$<%= mov.getImporte() %></td>
                 </tr>
-                <% } %>
+                <%
+                        }
+                    }
+                %>
             </tbody>
         </table>
     </div>
@@ -66,7 +63,6 @@
 <%@ include file="../comunes/footer.jsp" %>
 
 <script>
-// Filtro de tabla
 document.getElementById('filtroInput').addEventListener('keyup', function() {
     let filtro = this.value.toLowerCase();
     let filas = document.querySelectorAll('#tablaBody tr');

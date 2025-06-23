@@ -1,4 +1,4 @@
-<%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
+<%@ page language="java" contentType="text/html; charset=UTF-8"%>
 <%@ page session="true" %>
 <%
     Object usuario = session.getAttribute("usuario");
@@ -7,7 +7,6 @@
         return;
     }
 %>
-
 <!DOCTYPE html>
 <html>
 <head>
@@ -17,15 +16,12 @@
 </head>
 <body>
 
-<!--  incluye navbar y envia un request con la pagina actual-->
 <% request.setAttribute("activePage", "cuentas"); %>
 <%@ include file="navbarClientes.jsp" %>
-
 
 <div class="main-container">
     <div class="welcome-card">
         <h1>Mis cuentas</h1>
-        
 
         <table border="1" style="width: 100%; margin-top: 20px; border-collapse: collapse;">
             <thead>
@@ -39,35 +35,35 @@
                 </tr>
             </thead>
             <tbody>
-                <tr> <%-- DATOS MOCKEADOS --%>
-				    <td>12345678</td>
-				    <td class="cbu" onclick="copiarCBU(this)">2850590940090412345671</td>
-				    <td>Caja de Ahorro</td>
-				    <td>2024-05-10</td>
-				    <td>$15.000,00</td>
-				    <td> <button type="button" class="boton-ir-movimientos"
-    onclick="window.location.href='<%= request.getContextPath() %>/jsp/cliente/movimientos.jsp';">
-    Ir a Movimientos
-  </button></td>
-				    
-				</tr>
-				<tr>
-				    <td>87654321</td>
-				    <td class="cbu" onclick="copiarCBU(this)">2850590940090476543210</td>
-				    <td>Cuenta Corriente</td>
-				    <td>2024-03-22</td>
-				    <td>$8.500,00</td>
-				    <td> <button type="button" class="boton-ir-movimientos"
-    onclick="window.location.href='<%= request.getContextPath() %>/jsp/cliente/movimientos.jsp';">
-    Ir a Movimientos
-  </button></td>
-				</tr>
+                <%
+                    java.util.List cuentas = (java.util.List) request.getAttribute("cuentas");
+                    if (cuentas != null) {
+                        for (Object obj : cuentas) {
+                            dominio.Cuenta cuenta = (dominio.Cuenta) obj;
+                %>
+                <tr>
+                    <td><%= cuenta.getNroCuenta() %></td>
+                    <td class="cbu" onclick="copiarCBU(this)"><%= cuenta.getCbu() %></td>
+                    <td><%= cuenta.getTipoCuenta() %></td>
+                    <td><%= cuenta.getFechaCreacion() %></td>
+                    <td>$<%= cuenta.getSaldo() %></td>
+                    <td>
+                       <button type="button" class="boton-ir-movimientos"
+                        onclick="window.location.href='<%= request.getContextPath() %>/ServletMovimientos?nroCuenta=<%= cuenta.getNroCuenta() %>'">
+                        Ir a Movimientos
+                      </button>
+                    </td>
+                </tr>
+                <%
+                        }
+                    }
+                %>
             </tbody>
         </table>
     </div>
 </div>
 
-<%@ include file="../comunes/footer.jsp"%>
+<%@ include file="../comunes/footer.jsp" %>
 <script src="${pageContext.request.contextPath}/js/verCuentas.js"></script>
 </body>
 </html>

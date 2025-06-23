@@ -2,6 +2,8 @@ package daoImpl;
 
 import java.sql.CallableStatement;
 import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.List;
 
@@ -91,6 +93,52 @@ public class ClienteDaoImpl implements ClienteDao {
 	public List<Cliente> Listar() {
 		// TODO Auto-generated method stub
 		return null;
+	}
+	
+	@Override
+	public Cliente obtenerPorIdUsuario(int idUsuario) {
+	    Cliente cliente = null;
+	    Connection conexion = null;
+	    PreparedStatement stmt = null;
+	    ResultSet rs = null;
+
+	    try {
+	        conexion = Conexion.getConexion().getSQLConexion();
+	        String query = "SELECT * FROM Cliente WHERE id_usuario = ?";
+	        stmt = conexion.prepareStatement(query);
+	        stmt.setInt(1, idUsuario);
+	        rs = stmt.executeQuery();
+
+	        if (rs.next()) {
+	            cliente = new Cliente();
+	            cliente.setIdCliente(rs.getInt("id_cliente"));
+	            cliente.setIdUsuario(rs.getInt("id_usuario"));
+	            cliente.setIdDireccion(rs.getInt("id_direccion"));
+	            cliente.setDni(rs.getString("dni"));
+	            cliente.setCuil(rs.getString("cuil"));
+	            cliente.setNombre(rs.getString("nombre"));
+	            cliente.setApellido(rs.getString("apellido"));
+	            cliente.setSexo(rs.getString("sexo"));
+	            cliente.setNacionalidad(rs.getString("nacionalidad"));
+	            cliente.setFechaNacimiento(rs.getDate("fecha_nacimiento").toLocalDate());
+	            cliente.setCorreo(rs.getString("correo"));
+	            cliente.setTelefono(rs.getString("telefono"));
+	            cliente.setEstado(rs.getBoolean("estado"));
+	        }
+
+	    } catch (SQLException e) {
+	        e.printStackTrace();
+	    } finally {
+	        try {
+	            if (rs != null) rs.close();
+	            if (stmt != null) stmt.close();
+	            if (conexion != null) conexion.close();
+	        } catch (SQLException e) {
+	            e.printStackTrace();
+	        }
+	    }
+
+	    return cliente;
 	}
 
 }
