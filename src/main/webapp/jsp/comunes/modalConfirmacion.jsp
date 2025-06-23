@@ -1,6 +1,5 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
 
-<!-- Modal de Confirmación Reutilizable -->
 <div class="modal fade" id="confirmModal" tabindex="-1" aria-labelledby="confirmModalLabel" aria-hidden="true">
   <div class="modal-dialog modal-dialog-centered">
     <div class="modal-content">
@@ -21,7 +20,6 @@
   </div>
 </div>
 
-<!-- Script para manejar la lógica del modal -->
 <script>
   let confirmForm = document.getElementById('confirmModalForm');
   let confirmModalBody = document.getElementById('confirmModalBody');

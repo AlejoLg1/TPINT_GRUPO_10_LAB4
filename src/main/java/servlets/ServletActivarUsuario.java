@@ -37,7 +37,7 @@ public class ServletActivarUsuario extends HttpServlet {
             u.setIdUsuario(id);
             u.setEstado(true);
 
-            dao.Modificar(u, "estado"); // Usa Modificar si ya existe. O hacé uno específico como dao.Activar()
+            dao.Modificar(u, "estado");
 
         } catch (Exception e) {
             e.printStackTrace();
