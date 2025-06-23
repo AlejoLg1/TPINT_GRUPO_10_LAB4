@@ -6,4 +6,12 @@ public class NombreUsuarioExistenteException extends Exception {
 	public NombreUsuarioExistenteException(String mensaje) {
         super(mensaje);
     }
+
+	@Override
+	public String getMessage() {
+		// TODO Auto-generated method stub
+		return "El nombre de usuario ya existe";
+	}
+	
+	
 }
