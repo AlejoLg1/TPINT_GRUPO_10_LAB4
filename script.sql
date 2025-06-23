@@ -130,6 +130,9 @@ VALUES ('admin', '1234', 'BANCARIO', TRUE, TRUE);
 INSERT INTO Usuario (nombre_usuario, clave, tipo, is_admin, estado)
 VALUES ('cliente', '4321', 'CLIENTE', FALSE, TRUE);
 
+-- Insert Tipos de Cuentas
+INSERT INTO Tipo_cuenta (descripcion) VALUES ('Caja de ahorro'), ('Cuenta corriente');
+
 
 -- Procedure Insertar Cliente
 
@@ -209,6 +212,41 @@ BEGIN
         JOIN Tipo_cuenta t ON c.id_tipo_cuenta = t.id_tipo_cuenta
     WHERE 
         c.id_cliente = p_id_cliente AND c.estado = TRUE;
+END //
+
+DELIMITER ;
+
+-- Procedure InsertarCuenta
+
+DELIMITER //
+
+CREATE DEFINER=`root`@`localhost` PROCEDURE `InsertarCuenta`(
+    IN p_id_cliente INT,
+    IN p_id_tipo_cuenta INT,
+    IN p_saldo DECIMAL(15,2),
+    OUT p_nro_cuenta INT
+)
+BEGIN
+    DECLARE nuevo_nro_cuenta INT;
+    DECLARE nuevo_cbu VARCHAR(22);
+
+    -- Insertar nueva cuenta con el id del tipo de cuenta
+    INSERT INTO Cuenta (id_cliente, id_tipo_cuenta, saldo, fecha_creacion, estado, cbu)
+    VALUES (p_id_cliente, p_id_tipo_cuenta, p_saldo, NOW(), TRUE, 'TEMP');
+
+    -- Obtener el número de cuenta generado (auto_increment)
+    SET nuevo_nro_cuenta = LAST_INSERT_ID();
+
+    -- Generar CBU ficticio de 22 dígitos
+    SET nuevo_cbu = LPAD(CONCAT('310000', p_id_cliente, nuevo_nro_cuenta), 22, '0');
+
+    -- Actualizar CBU generado
+    UPDATE Cuenta
+    SET cbu = nuevo_cbu
+    WHERE nro_cuenta = nuevo_nro_cuenta;
+
+    -- Devolver nro_cuenta generado
+    SET p_nro_cuenta = nuevo_nro_cuenta;
 END //
 
 DELIMITER ;

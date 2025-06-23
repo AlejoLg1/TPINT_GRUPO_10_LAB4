@@ -3,6 +3,7 @@
 <%@ page session="true" %>
 <%@ page import="java.util.List" %>
 <%@ page import="dominio.Cliente" %>
+<%@ page import="dominio.TipoCuenta" %>
 
 <%
     Object usuario = session.getAttribute("usuario");
@@ -26,32 +27,46 @@
         <div class="welcome-card">
             <h1>Alta de Cuenta</h1>
 
+            <%
+                String mensaje = (String) request.getAttribute("mensaje");
+                if (mensaje != null) {
+            %>
+                <p style="color: green; font-weight: bold; margin-bottom: 15px;"><%= mensaje %></p>
+            <%
+                }
+            %>
+
             <form action="ServletAltaCuenta" method="post" class="form-alta-cuenta">
                 <label>Cliente:</label>
                 <select name="clienteId" required>
                     <option value="">-- Seleccionar Cliente --</option>
-                    <!-- Aquí el Servlet debe cargar lista de clientes -->
                     <%
-					    List<dominio.Cliente> listaClientes = (List<dominio.Cliente>) request.getAttribute("listaClientes");
-					    if (listaClientes != null) {
-					        for (dominio.Cliente c : listaClientes) {
-					%>
-					        <option value="<%= c.getIdCliente() %>"><%= c.getNombre() + " " + c.getApellido() %></option>
-					<%
-					        }
-					    }
-					%>
-
+                        List<Cliente> listaClientes = (List<Cliente>) request.getAttribute("listaClientes");
+                        if (listaClientes != null) {
+                            for (Cliente c : listaClientes) {
+                    %>
+                        <option value="<%= c.getIdCliente() %>"><%= c.getNombre() + " " + c.getApellido() %></option>
+                    <%
+                            }
+                        }
+                    %>
                 </select>
 
                 <label>Tipo de cuenta:</label>
                 <select name="tipoCuenta" required>
                     <option value="">-- Seleccionar Tipo --</option>
-                    <option value="Caja de ahorro">Caja de ahorro</option>
-                    <option value="Cuenta corriente">Cuenta corriente</option>
+                    <%
+                        List<TipoCuenta> listaTiposCuenta = (List<TipoCuenta>) request.getAttribute("listaTiposCuenta");
+                        if (listaTiposCuenta != null) {
+                            for (TipoCuenta tipo : listaTiposCuenta) {
+                    %>
+                        <option value="<%= tipo.getIdTipoCuenta() %>"><%= tipo.getDescripcion() %></option>
+                    <%
+                            }
+                        }
+                    %>
                 </select>
 
-                <!-- Monto inicial fijo según consigna -->
                 <label>Monto Inicial:</label>
                 <input type="number" name="montoInicial" value="10000.00" readonly step="0.01">
 

@@ -14,6 +14,7 @@ import utils.Conexion;
 public class CuentaDaoImpl implements CuentaDao {
 
     private static final String LISTAR_CUENTAS_POR_CLIENTE = "{CALL ListarCuentasPorCliente(?)}";
+    private static final String INSERTAR_CUENTA = "{CALL InsertarCuenta(?, ?, ?, ?)}";
 
     @Override
     public List<Cuenta> listarPorCliente(int idCliente) {
@@ -52,4 +53,43 @@ public class CuentaDaoImpl implements CuentaDao {
 
         return cuentas;
     }
+    
+
+    @Override
+    public boolean agregar(Cuenta cuenta, int idCliente, int idTipoCuenta) {
+        boolean exito = false;
+        Connection conexion = null;
+        CallableStatement stmt = null;
+
+        try {
+            conexion = Conexion.getConexion().getSQLConexion();
+            stmt = conexion.prepareCall(INSERTAR_CUENTA);
+
+            stmt.setInt(1, idCliente);
+            stmt.setInt(2, idTipoCuenta);
+            stmt.setBigDecimal(3, cuenta.getSaldo());
+            stmt.registerOutParameter(4, java.sql.Types.INTEGER);
+
+            stmt.execute();
+            int nroCuenta = stmt.getInt(4);
+            cuenta.setNroCuenta(nroCuenta);
+
+            conexion.commit();
+            exito = true;
+
+        } catch (Exception e) {
+            e.printStackTrace();
+        } finally {
+            try {
+                if (stmt != null) stmt.close();
+                if (conexion != null) conexion.close();
+            } catch (SQLException e) {
+                e.printStackTrace();
+            }
+        }
+
+        return exito;
+    }
+
+
 }
