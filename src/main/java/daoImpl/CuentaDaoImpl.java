@@ -17,7 +17,14 @@ public class CuentaDaoImpl implements CuentaDao {
     private static final String LISTAR_CUENTAS_POR_CLIENTE = "{CALL ListarCuentasPorCliente(?)}";
     private static final String INSERTAR_CUENTA = "{CALL InsertarCuenta(?, ?, ?, ?)}";
     private static final String CONTAR_CUENTAS_ACTIVAS = "SELECT COUNT(*) FROM Cuenta WHERE id_cliente = ? AND estado = TRUE";
-
+    private static final String LISTAR_CUENTAS = """
+		    SELECT c.nro_cuenta, c.cbu, tc.descripcion AS tipo_cuenta,
+		           cl.nombre, cl.apellido, c.saldo, c.fecha_creacion, c.estado
+		    FROM Cuenta c
+		    JOIN Cliente cl ON c.id_cliente = cl.id_cliente
+		    JOIN Tipo_cuenta tc ON c.id_tipo_cuenta = tc.id_tipo_cuenta
+		""";
+    
     @Override
     public List<Cuenta> listarPorCliente(int idCliente) {
         List<Cuenta> cuentas = new ArrayList<>();
@@ -125,5 +132,33 @@ public class CuentaDaoImpl implements CuentaDao {
 
 	    return cantidad;
 	}
+	
+
+	@Override
+	public List<Object[]> listarConDatos() {
+	    List<Object[]> lista = new ArrayList<>();
+	    try (Connection conn = Conexion.getConexion().getSQLConexion();
+	         PreparedStatement stmt = conn.prepareStatement(LISTAR_CUENTAS);
+	         ResultSet rs = stmt.executeQuery()) {
+
+	        while (rs.next()) {
+	            Object[] fila = new Object[8];
+	            fila[0] = rs.getInt("nro_cuenta");
+	            fila[1] = rs.getString("cbu");
+	            fila[2] = rs.getString("tipo_cuenta");
+	            fila[3] = rs.getString("nombre") + " " + rs.getString("apellido");
+	            fila[4] = rs.getBigDecimal("saldo");
+	            fila[5] = rs.getTimestamp("fecha_creacion").toLocalDateTime();
+	            fila[6] = rs.getBoolean("estado");
+	            fila[7] = rs.getInt("nro_cuenta"); // para acciones (id redundante)
+	            lista.add(fila);
+	        }
+
+	    } catch (SQLException e) {
+	        e.printStackTrace();
+	    }
+	    return lista;
+	}
+
 
 }
