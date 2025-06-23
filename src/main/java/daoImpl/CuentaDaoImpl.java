@@ -24,6 +24,8 @@ public class CuentaDaoImpl implements CuentaDao {
 		    JOIN Cliente cl ON c.id_cliente = cl.id_cliente
 		    JOIN Tipo_cuenta tc ON c.id_tipo_cuenta = tc.id_tipo_cuenta
 		""";
+    private static final String UPDATE_ESTADO_CUENTAS = "UPDATE Cuenta SET estado = ? WHERE nro_cuenta = ?";
+    
     
     @Override
     public List<Cuenta> listarPorCliente(int idCliente) {
@@ -150,7 +152,7 @@ public class CuentaDaoImpl implements CuentaDao {
 	            fila[4] = rs.getBigDecimal("saldo");
 	            fila[5] = rs.getTimestamp("fecha_creacion").toLocalDateTime();
 	            fila[6] = rs.getBoolean("estado");
-	            fila[7] = rs.getInt("nro_cuenta"); // para acciones (id redundante)
+	            fila[7] = rs.getInt("nro_cuenta");
 	            lista.add(fila);
 	        }
 
@@ -160,5 +162,26 @@ public class CuentaDaoImpl implements CuentaDao {
 	    return lista;
 	}
 
+	@Override
+	public boolean cambiarEstado(int idCuenta, boolean nuevoEstado) {
+	    String sql = UPDATE_ESTADO_CUENTAS;
+	    try (Connection conn = Conexion.getConexion().getSQLConexion();
+    	     PreparedStatement stmt = conn.prepareStatement(sql)) {
 
+    	    stmt.setBoolean(1, nuevoEstado);
+    	    stmt.setInt(2, idCuenta);
+    	    int rows = stmt.executeUpdate();
+
+    	    if (rows > 0) {
+    	        conn.commit();
+    	        return true;
+    	    } else {
+    	        conn.rollback();
+    	        return false;
+    	    }
+    	} catch (Exception e) {
+    	    e.printStackTrace();
+    	    return false;
+    	}
+	}
 }

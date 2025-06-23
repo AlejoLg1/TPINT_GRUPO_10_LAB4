@@ -8,4 +8,5 @@ public interface CuentaDao {
 	 List<Object[]> listarConDatos();
 	 boolean agregar(Cuenta cuenta, int idCliente, int idTipoCuenta);
 	 int contarCuentasActivasPorCliente(int idCliente);
+	 boolean cambiarEstado(int idCuenta, boolean nuevoEstado);
 }
