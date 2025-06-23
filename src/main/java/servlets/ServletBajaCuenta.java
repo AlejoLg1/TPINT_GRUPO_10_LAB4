@@ -29,12 +29,10 @@ public class ServletBajaCuenta extends HttpServlet {
 
 
 	protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-		System.out.println("Se llamó al ServletBajaCuenta");
 		int idCuenta = Integer.parseInt(request.getParameter("id"));
-		System.out.println("ID Recibido= "+ idCuenta);
+		
         CuentaDao cuentaDao = new CuentaDaoImpl();
-        boolean exito = cuentaDao.cambiarEstado(idCuenta, false); // false = inactiva
-        System.out.println("Cambio de estado: " + exito);
+        cuentaDao.cambiarEstado(idCuenta, false);
 
         response.sendRedirect(request.getContextPath() + "/ServletCuenta");
     }

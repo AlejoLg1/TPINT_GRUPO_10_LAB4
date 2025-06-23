@@ -28,6 +28,17 @@
 <body>
 <% request.setAttribute("activePage", "cuentas"); %>
 <%@ include file="navbarAdmin.jsp" %>
+<%
+    String errorCuenta = (String) request.getAttribute("errorCuenta");
+    if (errorCuenta != null) {
+%>
+    <div class="alert alert-danger alert-dismissible fade show m-4" role="alert">
+        <%= errorCuenta %>
+        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+    </div>
+<%
+    }
+%>
 
 <div class="container mt-5">
     <div class="card shadow-sm">

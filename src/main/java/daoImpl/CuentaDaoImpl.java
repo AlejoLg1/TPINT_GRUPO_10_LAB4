@@ -25,7 +25,8 @@ public class CuentaDaoImpl implements CuentaDao {
 		    JOIN Tipo_cuenta tc ON c.id_tipo_cuenta = tc.id_tipo_cuenta
 		""";
     private static final String UPDATE_ESTADO_CUENTAS = "UPDATE Cuenta SET estado = ? WHERE nro_cuenta = ?";
-    
+	private static final String OBTENER_ID_CLIENTE = "SELECT id_cliente FROM Cuenta WHERE nro_cuenta = ?";
+
     
     @Override
     public List<Cuenta> listarPorCliente(int idCliente) {
@@ -184,4 +185,24 @@ public class CuentaDaoImpl implements CuentaDao {
     	    return false;
     	}
 	}
+	
+
+	@Override
+	public int obtenerIdClientePorCuenta(int nroCuenta) {
+	    int idCliente = -1;
+	    try (Connection conn = Conexion.getConexion().getSQLConexion();
+	         PreparedStatement stmt = conn.prepareStatement(OBTENER_ID_CLIENTE)) {
+
+	        stmt.setInt(1, nroCuenta);
+	        try (ResultSet rs = stmt.executeQuery()) {
+	            if (rs.next()) {
+	                idCliente = rs.getInt("id_cliente");
+	            }
+	        }
+	    } catch (Exception e) {
+	        e.printStackTrace();
+	    }
+	    return idCliente;
+	}
+
 }

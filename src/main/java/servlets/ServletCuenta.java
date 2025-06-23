@@ -25,6 +25,11 @@ public class ServletCuenta extends HttpServlet {
 
         java.util.List<Object[]> listaCuentas = cuentaDao.listarConDatos();
         
+        String errorCuenta = (String) request.getSession().getAttribute("errorCuenta");
+        if (errorCuenta != null) {
+            request.setAttribute("errorCuenta", errorCuenta);
+            request.getSession().removeAttribute("errorCuenta");
+        }
 
         request.setAttribute("listaCuentas", listaCuentas);
         request.getRequestDispatcher("/jsp/admin/cuentas.jsp").forward(request, response);

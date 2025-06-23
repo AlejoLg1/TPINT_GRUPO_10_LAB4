@@ -29,12 +29,21 @@ public class ServletActivarCuenta extends HttpServlet {
 
 
 	protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-        int idCuenta = Integer.parseInt(request.getParameter("id"));
+	    int idCuenta = Integer.parseInt(request.getParameter("id"));
+	    CuentaDao cuentaDao = new CuentaDaoImpl();
 
-        CuentaDao cuentaDao = new CuentaDaoImpl();
-        cuentaDao.cambiarEstado(idCuenta, true); // true = activa
+	    int idCliente = cuentaDao.obtenerIdClientePorCuenta(idCuenta);
+	    int cuentasActivas = cuentaDao.contarCuentasActivasPorCliente(idCliente);
 
-        response.sendRedirect(request.getContextPath() + "/ServletCuenta");
-    }
+	    if (cuentasActivas >= 3) {
+	        request.getSession().setAttribute("errorCuenta", "El cliente ya tiene 3 cuentas activas. No se puede activar otra.");
+	        response.sendRedirect(request.getContextPath() + "/ServletCuenta");
+	        return;
+	    }
+
+	    cuentaDao.cambiarEstado(idCuenta, true);
+	    response.sendRedirect(request.getContextPath() + "/ServletCuenta");
+	}
+
 
 }

@@ -9,4 +9,6 @@ public interface CuentaDao {
 	 boolean agregar(Cuenta cuenta, int idCliente, int idTipoCuenta);
 	 int contarCuentasActivasPorCliente(int idCliente);
 	 boolean cambiarEstado(int idCuenta, boolean nuevoEstado);
+	 int obtenerIdClientePorCuenta(int nroCuenta);
+
 }
