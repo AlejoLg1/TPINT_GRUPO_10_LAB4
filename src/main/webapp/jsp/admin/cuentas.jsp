@@ -1,6 +1,7 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8"
     pageEncoding="UTF-8"%>
 <%@ page session="true" %>
+<%@ page import="java.util.List" %>
 <%
     Object usuario = session.getAttribute("usuario");
     if (usuario == null) {
@@ -66,25 +67,44 @@
                     </tr>
                 </thead>
                 <tbody>
-                    <!-- Ejemplo de fila -->
-                    <tr>
-                        <td>123456</td>
-                        <td>0123456789123456789012</td>
-                        <td>Caja de ahorro</td>
-                        <td>Juan Pérez</td>
-                        <td>$10,000.00</td>
-                        <td>2025-06-12</td>
-                        <td>Activa</td>
-                        <td>
-                            <a href="modificarCuenta.jsp?id=123" class="boton-modificar">Modificar</a>
-                            <a href="ServletCuenta?accion=eliminar&id=123" class="boton-eliminar" onclick="return confirm('¿Seguro que desea eliminar esta cuenta?')">Eliminar</a>
-                        </td>
-                    </tr>
-                </tbody>
+					<%
+					    List<Object[]> listaCuentas = (List<Object[]>) request.getAttribute("listaCuentas");
+					    if (listaCuentas != null) {
+					        for (Object[] fila : listaCuentas) {
+					            int nroCuenta = (int) fila[0];
+					            String cbu = (String) fila[1];
+					            String tipo = (String) fila[2];
+					            String cliente = (String) fila[3];
+					            java.math.BigDecimal saldo = (java.math.BigDecimal) fila[4];
+					            java.time.LocalDateTime fecha = (java.time.LocalDateTime) fila[5];
+					            boolean estado = (boolean) fila[6];
+					%>
+					    <tr>
+					        <td><%= nroCuenta %></td>
+					        <td><%= cbu %></td>
+					        <td><%= tipo %></td>
+					        <td><%= cliente %></td>
+					        <td>$<%= saldo %></td>
+					        <td><%= fecha.toLocalDate() %></td>
+					        <td><%= estado ? "Activa" : "Inactiva" %></td>
+					        <td>
+					            <a href="modificarCuenta.jsp?id=<%= nroCuenta %>" class="boton-modificar">Modificar</a>
+					            <% if (estado) { %>
+					                <a href="ServletCuenta?accion=desactivar&id=<%= nroCuenta %>" class="boton-eliminar" onclick="return confirm('¿Seguro que desea desactivar esta cuenta?')">Desactivar</a>
+					            <% } else { %>
+					                <a href="ServletCuenta?accion=activar&id=<%= nroCuenta %>" class="boton-activar">Activar</a>
+					            <% } %>
+					        </td>
+					    </tr>
+					<%
+					        }
+					    }
+					%>
+				</tbody>
             </table>
         </div>
     </div>
 
-    <%@ include file="../comunes/footer.jsp" %>
+<%@ include file="../comunes/footer.jsp" %>
 </body>
 </html>

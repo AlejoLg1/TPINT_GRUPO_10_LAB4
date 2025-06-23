@@ -10,6 +10,7 @@ public class Cuenta {
     private String tipoCuenta; 
     private LocalDateTime fechaCreacion;
     private BigDecimal saldo;
+    private boolean estado;
 
    
     public Cuenta() {
@@ -65,10 +66,22 @@ public class Cuenta {
     public void setSaldo(BigDecimal saldo) {
         this.saldo = saldo;
     }
+    
+    public boolean isEstado() {
+		return estado;
+	}
 
+
+	public void setEstado(boolean estado) {
+		this.estado = estado;
+	}
+	
     @Override
     public String toString() {
         return "Cuenta [nroCuenta=" + nroCuenta + ", cbu=" + cbu + ", tipoCuenta=" + tipoCuenta
                 + ", fechaCreacion=" + fechaCreacion + ", saldo=" + saldo + "]";
     }
+
+
+	
 }
