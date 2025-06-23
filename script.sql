@@ -131,3 +131,84 @@ INSERT INTO Usuario (nombre_usuario, clave, tipo, is_admin, estado)
 VALUES ('cliente', '4321', 'CLIENTE', FALSE, TRUE);
 
 
+-- Procedure Insertar Cliente
+
+DELIMITER //
+
+CREATE PROCEDURE InsertarCliente(
+    IN p_nombre_usuario VARCHAR(50),
+    IN p_clave VARCHAR(100),
+    IN p_calle VARCHAR(100),
+    IN p_numero VARCHAR(5),
+    IN p_localidad VARCHAR(50),
+    IN p_provincia VARCHAR(50),
+    IN p_dni VARCHAR(15),
+    IN p_cuil VARCHAR(20),
+    IN p_nombre VARCHAR(50),
+    IN p_apellido VARCHAR(50),
+    IN p_sexo ENUM('M', 'F', 'X'),
+    IN p_nacionalidad VARCHAR(50),
+    IN p_fecha_nacimiento DATE,
+    IN p_correo VARCHAR(100),
+    IN p_telefono VARCHAR(20)
+)
+BEGIN
+    DECLARE v_id_usuario INT DEFAULT NULL;
+    DECLARE v_id_direccion INT;
+
+    -- Verificar existencia de usuario
+    IF NOT EXISTS (
+        SELECT 1 FROM usuario WHERE nombre_usuario = p_nombre_usuario
+    ) THEN
+        INSERT INTO usuario (nombre_usuario, clave, tipo, is_admin, estado)
+        VALUES (p_nombre_usuario, p_clave, 'CLIENTE', FALSE, TRUE);
+        SET v_id_usuario = LAST_INSERT_ID();
+    ELSE
+        SELECT id_usuario INTO v_id_usuario
+        FROM usuario
+        WHERE nombre_usuario = p_nombre_usuario;
+    END IF;
+
+    -- Insertar en Direccion
+    INSERT INTO Direccion (calle, numero, localidad, provincia)
+    VALUES (p_calle, p_numero, p_localidad, p_provincia);
+    SET v_id_direccion = LAST_INSERT_ID();
+
+    -- Verificar existencia de cliente por DNI
+    IF NOT EXISTS (
+        SELECT 1 FROM cliente WHERE dni = p_dni
+    ) THEN
+        INSERT INTO cliente (
+            id_usuario, id_direccion, dni, cuil, nombre, apellido,
+            sexo, nacionalidad, fecha_nacimiento, correo, telefono, estado
+        )
+        VALUES (
+            v_id_usuario, v_id_direccion, p_dni, p_cuil, p_nombre, p_apellido,
+            p_sexo, p_nacionalidad, p_fecha_nacimiento, p_correo, p_telefono, TRUE
+        );
+    END IF;
+END;
+//
+
+DELIMITER ;
+
+-- Procedure ListarCuentasPorCliente
+
+DELIMITER //
+
+CREATE PROCEDURE ListarCuentasPorCliente (IN p_id_cliente INT)
+BEGIN
+    SELECT 
+        c.nro_cuenta,
+        c.cbu,
+        t.descripcion AS tipo_cuenta,
+        c.fecha_creacion,
+        c.saldo
+    FROM 
+        Cuenta c
+        JOIN Tipo_cuenta t ON c.id_tipo_cuenta = t.id_tipo_cuenta
+    WHERE 
+        c.id_cliente = p_id_cliente AND c.estado = TRUE;
+END //
+
+DELIMITER ;
