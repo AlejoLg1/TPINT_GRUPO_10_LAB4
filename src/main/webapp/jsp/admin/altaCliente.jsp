@@ -60,46 +60,52 @@
 
                 <div class="form-item">
                     <label for="nacionalidad">Nacionalidad:</label>
-                    <input type="text" id="nacionalidad" name="nacionalidad">
+                    <input type="text" id="nacionalidad" name="nacionalidad" required>
                 </div>
 
                 <div class="form-item">
                     <label for="fechanac">Fecha de Nacimiento:</label>
-                    <input type="date" id="fechanac" name="fechanac">
+                    <input type="date" id="fechanac" name="fechanac" required>
                 </div>
             </div>
 
             <div class="form-group">
                 <div class="form-item">
                     <label for="direccion">Dirección:</label>
-                    <input type="text" id="direccion" name="direccion">
+                    <input type="text" id="direccion" name="direccion" required>
+                </div>
+                
+                 <div class="form-group">
+                <div class="form-item">
+                    <label for="Numero">Número:</label>
+                    <input type="text" id="numero" name="numero" required>
                 </div>
 
                 <div class="form-item">
                     <label for="localidad">Localidad:</label>
-                    <input type="text" id="localidad" name="localidad">
+                    <input type="text" id="localidad" name="localidad" required>
                 </div>
 
                 <div class="form-item">
                     <label for="provincia">Provincia:</label>
-                    <input type="text" id="provincia" name="provincia">
+                    <input type="text" id="provincia" name="provincia" required>
                 </div>
             </div>
 
             <div class="form-group">
                 <div class="form-item">
                     <label for="email">Email:</label>
-                    <input type="email" id="email" name="email">
+                    <input type="email" id="email" name="email" required>
                 </div>
 
                 <div class="form-item">
                     <label for="telefono">Teléfono:</label>
-                    <input type="text" id="telefono" name="telefono">
+                    <input type="text" id="telefono" name="telefono" required>
                 </div>
 
                 <div class="form-item">
                     <label for="sexo">Sexo:</label>
-                    <select id="sexo" name="sexo">
+                    <select id="sexo" name="sexo" required>
                         <option value="Masculino">Masculino</option>
                         <option value="Femenino">Femenino</option>
                         <option value="Otro">Otro</option>
