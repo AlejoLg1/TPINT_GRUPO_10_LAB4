@@ -6,4 +6,5 @@ import dominio.Cuenta;
 public interface CuentaDao {
 	 List<Cuenta> listarPorCliente(int idCliente);
 	 boolean agregar(Cuenta cuenta, int idCliente, int idTipoCuenta);
+	 int contarCuentasActivasPorCliente(int idCliente);
 }

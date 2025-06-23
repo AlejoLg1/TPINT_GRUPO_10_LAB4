@@ -2,6 +2,7 @@ package daoImpl;
 
 import java.sql.CallableStatement;
 import java.sql.Connection;
+import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
@@ -15,6 +16,7 @@ public class CuentaDaoImpl implements CuentaDao {
 
     private static final String LISTAR_CUENTAS_POR_CLIENTE = "{CALL ListarCuentasPorCliente(?)}";
     private static final String INSERTAR_CUENTA = "{CALL InsertarCuenta(?, ?, ?, ?)}";
+    private static final String CONTAR_CUENTAS_ACTIVAS = "SELECT COUNT(*) FROM Cuenta WHERE id_cliente = ? AND estado = TRUE";
 
     @Override
     public List<Cuenta> listarPorCliente(int idCliente) {
@@ -91,5 +93,37 @@ public class CuentaDaoImpl implements CuentaDao {
         return exito;
     }
 
+    
+	@Override
+	public int contarCuentasActivasPorCliente(int idCliente) {
+	    int cantidad = 0;
+	    Connection conexion = null;
+	    PreparedStatement stmt = null;
+	    ResultSet rs = null;
+
+	    try {
+	        conexion = Conexion.getConexion().getSQLConexion();
+	        stmt = conexion.prepareStatement(CONTAR_CUENTAS_ACTIVAS);
+	        stmt.setInt(1, idCliente);
+	        rs = stmt.executeQuery();
+
+	        if (rs.next()) {
+	            cantidad = rs.getInt(1);
+	        }
+
+	    } catch (SQLException e) {
+	        e.printStackTrace();
+	    } finally {
+	        try {
+	            if (rs != null) rs.close();
+	            if (stmt != null) stmt.close();
+	            if (conexion != null) conexion.close();
+	        } catch (SQLException e) {
+	            e.printStackTrace();
+	        }
+	    }
+
+	    return cantidad;
+	}
 
 }

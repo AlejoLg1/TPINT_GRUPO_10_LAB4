@@ -44,13 +44,20 @@ public class ServletAltaCuenta extends HttpServlet {
             cuenta.setFechaCreacion(java.time.LocalDateTime.now());
 
             CuentaDao cuentaDao = new CuentaDaoImpl();
-            boolean creada = cuentaDao.agregar(cuenta, idCliente, idTipoCuenta);
 
-            if (creada) {
-                request.setAttribute("mensaje", "✅ Cuenta creada correctamente.");
+            // Validación: hasta 3 cuentas activas
+            int cuentasActivas = cuentaDao.contarCuentasActivasPorCliente(idCliente);
+            if (cuentasActivas >= 3) {
+                request.setAttribute("mensaje", "❌ El cliente ya tiene 3 cuentas activas. No se puede crear otra.");
             } else {
-                request.setAttribute("mensaje", "❌ Hubo un error al crear la cuenta.");
+                boolean creada = cuentaDao.agregar(cuenta, idCliente, idTipoCuenta);
+                if (creada) {
+                    request.setAttribute("mensaje", "✅ Cuenta creada correctamente.");
+                } else {
+                    request.setAttribute("mensaje", "❌ Hubo un error al crear la cuenta.");
+                }
             }
+
         } catch (Exception e) {
             e.printStackTrace();
             request.setAttribute("mensaje", "❌ Error inesperado al procesar los datos.");
@@ -59,6 +66,7 @@ public class ServletAltaCuenta extends HttpServlet {
         cargarDatosFormulario(request);
         request.getRequestDispatcher("/jsp/admin/altaCuentas.jsp").forward(request, response);
     }
+
 
     private void cargarDatosFormulario(HttpServletRequest request) {
         ClienteDao clienteDao = new ClienteDaoImpl();
