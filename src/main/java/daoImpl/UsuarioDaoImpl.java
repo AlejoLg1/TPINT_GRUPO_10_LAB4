@@ -3,6 +3,7 @@ package daoImpl;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
+import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -154,6 +155,33 @@ public class UsuarioDaoImpl implements UsuarioDao {
 
         } catch (Exception e) {
             e.printStackTrace();
+        }
+
+        return usuario;
+    }
+    
+    public Usuario obtenerPorCredenciales(String username, String password) {
+        Usuario usuario = null;
+
+        try (Connection cn = Conexion.getConexion().getSQLConexion();) {
+            String sql = "SELECT * FROM Usuario WHERE nombre_usuario = ? AND clave = ?";
+            PreparedStatement ps = cn.prepareStatement(sql);
+            ps.setString(1, username);
+            ps.setString(2, password);
+            ResultSet rs = ps.executeQuery();
+
+            if (rs.next()) {
+                usuario = new Usuario();
+                usuario.setIdUsuario(rs.getInt("id_usuario"));
+                usuario.setNombreUsuario(rs.getString("nombre_usuario"));
+                usuario.setClave(rs.getString("clave"));
+                usuario.setTipo(rs.getString("tipo"));
+                usuario.setIsAdmin(rs.getBoolean("is_admin"));
+                usuario.setEstado(rs.getBoolean("estado"));
+            }
+
+        } catch (SQLException e) {
+            e.printStackTrace(); // o lanzás una excepción personalizada
         }
 
         return usuario;
