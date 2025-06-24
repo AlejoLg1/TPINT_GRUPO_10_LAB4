@@ -6,7 +6,13 @@ import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import jakarta.servlet.http.HttpSession;
+
 import java.io.IOException;
+
+import dominio.Cuenta;
+import dominio.Usuario;
+import excepciones.CuentaExistenteExcenption;
 
 /**
  * Servlet implementation class ServletTransferenciasUsuario
@@ -46,22 +52,29 @@ public class ServletTransferenciasUsuario extends HttpServlet {
 			
 			try {
 			    String idCuenta = request.getParameter("cuentaOrigen") == null ? "" : request.getParameter("cuentaOrigen");
-			    String cbu = request.getParameter("cbuDestino") == null ? "" : request.getParameter("cbuDestino");
+			    String cbuDestino = request.getParameter("cbuDestino") == null ? "" : request.getParameter("cbuDestino");
 			    String monto = request.getParameter("monto") == null ? "" : request.getParameter("monto");
 
 			    // Validación de vacíos
-			    if (idCuenta.trim().isEmpty() || monto.trim().isEmpty() || cbu.trim().isEmpty()) {
+			    if (idCuenta.trim().isEmpty() || monto.trim().isEmpty() || cbuDestino.trim().isEmpty()) {
 			        throw new IllegalArgumentException();
 			    }
-
-
-
+		    	
+			    //obtener datos de la cuenta origen
+			    Cuenta cuentaOrigen = ObtenerCuenta(Integer.parseInt(idCuenta.trim()));
+			    
+			    //validar el cbu de destino
+			    //validar monto disponible
+			    
+			    //registrar transferencia
 			    
 			    status = true;
-
+			} catch (CuentaExistenteExcenption e) {
+				// enviar mensaje al jsp
+			
 			} catch (Exception e) {
 			    status = false;
-			    e.printStackTrace(); // Útil para depurar
+			    e.printStackTrace(); 
 			}
 
 			
@@ -71,6 +84,24 @@ public class ServletTransferenciasUsuario extends HttpServlet {
 		}
 		
 		doGet(request, response);	// para recargar la lista de cuentas
+	}
+	
+	private Cuenta ObtenerCuenta(int idCuenta) throws CuentaExistenteExcenption
+	{
+		dao.CuentaDao cuentaDao = new daoImpl.CuentaDaoImpl();
+		Cuenta cuenta = null;
+		
+		try {
+			cuenta = cuentaDao.obtenerCuentaPorId(idCuenta);
+			
+			if(cuenta == null)
+				throw new CuentaExistenteExcenption("No se encontro la cuenta: " + idCuenta);
+			
+		} catch (Exception e) {
+			throw new CuentaExistenteExcenption("Error al obtener datos de la cuenta origen");
+		}
+		
+		return cuenta;
 	}
 
 }

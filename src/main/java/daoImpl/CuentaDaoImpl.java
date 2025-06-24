@@ -27,6 +27,7 @@ public class CuentaDaoImpl implements CuentaDao {
     private static final String UPDATE_ESTADO_CUENTAS = "UPDATE Cuenta SET estado = ? WHERE nro_cuenta = ?";
 	private static final String OBTENER_ID_CLIENTE = "SELECT id_cliente FROM Cuenta WHERE nro_cuenta = ?";
 	private static final String OBTENER_CUENTA = "SELECT nro_cuenta, cbu, id_cliente, id_tipo_cuenta, saldo, fecha_creacion, estado FROM Cuenta WHERE nro_cuenta = ?";
+	private static final String OBTENER_CUENTA_POR_CBU = "SELECT nro_cuenta, cbu, id_cliente, id_tipo_cuenta, saldo, fecha_creacion, estado FROM Cuenta WHERE cbu = ?";
 
     
     @Override
@@ -269,6 +270,37 @@ public class CuentaDaoImpl implements CuentaDao {
 	    }
 
 	    return actualizado;
+	}
+
+
+	@Override
+	public Cuenta obtenerCuentaPorCBU(String cbu) {
+	    Cuenta cuenta = null;
+
+	    try (Connection conn = Conexion.getConexion().getSQLConexion();
+	         PreparedStatement stmt = conn.prepareStatement(OBTENER_CUENTA_POR_CBU)) {
+
+	        stmt.setString(1, cbu);
+	        ResultSet rs = stmt.executeQuery();
+
+	        if (rs.next()) {
+	            cuenta = new Cuenta();
+	            cuenta.setNroCuenta(rs.getInt("nro_cuenta"));
+	            cuenta.setCbu(rs.getString("cbu"));
+	            cuenta.setIdCliente(rs.getInt("id_cliente"));
+	            cuenta.setIdTipoCuenta(rs.getInt("id_tipo_cuenta"));
+	            cuenta.setSaldo(rs.getBigDecimal("saldo"));
+	            cuenta.setFechaCreacion(rs.getTimestamp("fecha_creacion").toLocalDateTime());
+	            cuenta.setEstado(rs.getBoolean("estado"));
+	        }
+
+	        rs.close();
+
+	    } catch (SQLException e) {
+	        e.printStackTrace();
+	    }
+
+	    return cuenta;
 	}
 
 

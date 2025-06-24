@@ -11,6 +11,7 @@ public interface CuentaDao {
 	 boolean cambiarEstado(int idCuenta, boolean nuevoEstado);
 	 int obtenerIdClientePorCuenta(int nroCuenta);
 	 Cuenta obtenerCuentaPorId(int idCuenta);
+	 Cuenta obtenerCuentaPorCBU(String cbu);
 	 public boolean actualizar(Cuenta cuenta);
 
 }
