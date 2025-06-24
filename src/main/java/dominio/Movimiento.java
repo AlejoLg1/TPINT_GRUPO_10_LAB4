@@ -1,7 +1,7 @@
 package dominio;
 
-import java.time.LocalDateTime;
 import java.math.BigDecimal;
+import java.time.LocalDateTime;
 
 public class Movimiento {
     private int idMovimiento;
@@ -10,8 +10,6 @@ public class Movimiento {
     private LocalDateTime fecha;
     private String detalle;
     private BigDecimal importe;
-
-    // getters y setters
 
     public int getIdMovimiento() { return idMovimiento; }
     public void setIdMovimiento(int idMovimiento) { this.idMovimiento = idMovimiento; }
