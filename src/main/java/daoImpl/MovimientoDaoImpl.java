@@ -4,13 +4,19 @@ import java.sql.*;
 import java.math.BigDecimal;
 import java.util.*;
 import dominio.Movimiento;
+import dominio.Transferencia;
+import excepciones.DniYaRegistradoException;
+import excepciones.NombreUsuarioExistenteException;
 import dao.MovimientosDao;
 import utils.Conexion;
 
 public class MovimientoDaoImpl implements MovimientosDao {
     private static final String LISTAR_POR_CUENTA = 
         "SELECT id_movimiento, nro_cuenta, id_tipo_movimiento, fecha, detalle, importe FROM Movimiento WHERE nro_cuenta = ? ORDER BY fecha DESC";
-
+    
+    private static final String AGREGAR_MOV = 
+    		"INSERT INTO movimiento (nro_cuenta, id_tipo_movimiento, fecha, detalle, importe) VALUES (?, ?, NOW(), ?, ?)";
+    
     @Override
     public List<Movimiento> listarPorCuenta(int nroCuenta) {
         List<Movimiento> movimientos = new ArrayList<>();
@@ -76,4 +82,48 @@ public class MovimientoDaoImpl implements MovimientosDao {
 
         return saldo;
     }
+    
+    @Override
+    public int insertarMovimiento(int nroCuenta, int idTipoMovimiento, BigDecimal importe, String detalle) {
+        Connection conexion = null;
+        PreparedStatement stmt = null;
+        ResultSet generatedKeys = null;
+        int idMovimiento = -1; 
+
+        try {
+            conexion = Conexion.getConexion().getSQLConexion();
+
+            
+            stmt = conexion.prepareStatement(AGREGAR_MOV, Statement.RETURN_GENERATED_KEYS);
+            stmt.setInt(1, nroCuenta);
+            stmt.setInt(2, idTipoMovimiento);
+            stmt.setString(3, detalle);
+            stmt.setBigDecimal(4, importe);
+
+            int filas = stmt.executeUpdate();
+
+            if (filas > 0) {
+                generatedKeys = stmt.getGeneratedKeys();
+                if (generatedKeys.next()) {
+                    idMovimiento = generatedKeys.getInt(1);
+                }
+            }
+
+        } catch (SQLException e) {
+            e.printStackTrace(); // opcional: lanzar excepción personalizada
+        } finally {
+            try {
+                if (generatedKeys != null) generatedKeys.close();
+                if (stmt != null) stmt.close();
+                if (conexion != null) conexion.close();
+            } catch (SQLException ex) {
+                ex.printStackTrace();
+            }
+        }
+
+        return idMovimiento;
+    }
+
+
+
 }

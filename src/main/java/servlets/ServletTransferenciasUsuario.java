@@ -9,10 +9,12 @@ import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.HttpSession;
 
 import java.io.IOException;
+import java.math.BigDecimal;
 
 import dominio.Cuenta;
 import dominio.Usuario;
 import excepciones.CuentaExistenteExcenption;
+import excepciones.MontoInsuficienteException;
 
 /**
  * Servlet implementation class ServletTransferenciasUsuario
@@ -51,20 +53,22 @@ public class ServletTransferenciasUsuario extends HttpServlet {
 			boolean status = false;
 			
 			try {
-			    String idCuenta = request.getParameter("cuentaOrigen") == null ? "" : request.getParameter("cuentaOrigen");
+			    String nroCuenta = request.getParameter("cuentaOrigen") == null ? "" : request.getParameter("cuentaOrigen");
 			    String cbuDestino = request.getParameter("cbuDestino") == null ? "" : request.getParameter("cbuDestino");
 			    String monto = request.getParameter("monto") == null ? "" : request.getParameter("monto");
+			    BigDecimal montoDecimal = new BigDecimal(monto.trim());
 
-			    // Validación de vacíos
-			    if (idCuenta.trim().isEmpty() || monto.trim().isEmpty() || cbuDestino.trim().isEmpty()) {
+			    
+			    if (nroCuenta.trim().isEmpty() || monto.trim().isEmpty() || cbuDestino.trim().isEmpty()) {
 			        throw new IllegalArgumentException();
 			    }
 		    	
-			    //obtener datos de la cuenta origen
-			    Cuenta cuentaOrigen = ObtenerCuenta(Integer.parseInt(idCuenta.trim()));
 			    
-			    //validar el cbu de destino
-			    //validar monto disponible
+			    Cuenta cuentaOrigen = ObtenerCuentaOrigen(Integer.parseInt(nroCuenta.trim()), montoDecimal);
+			    Cuenta cuentaDestino = ObtenerCuentaDestino(cbuDestino);
+			    
+			    int idMovSalida = RegistrarMovimiento(cuentaOrigen,montoDecimal,1);		
+			    int idMovEntrada = RegistrarMovimiento(cuentaDestino,montoDecimal,2); 	
 			    
 			    //registrar transferencia
 			    
@@ -86,7 +90,7 @@ public class ServletTransferenciasUsuario extends HttpServlet {
 		doGet(request, response);	// para recargar la lista de cuentas
 	}
 	
-	private Cuenta ObtenerCuenta(int idCuenta) throws CuentaExistenteExcenption
+	private Cuenta ObtenerCuentaOrigen(int idCuenta, BigDecimal monto) throws CuentaExistenteExcenption, MontoInsuficienteException
 	{
 		dao.CuentaDao cuentaDao = new daoImpl.CuentaDaoImpl();
 		Cuenta cuenta = null;
@@ -94,14 +98,43 @@ public class ServletTransferenciasUsuario extends HttpServlet {
 		try {
 			cuenta = cuentaDao.obtenerCuentaPorId(idCuenta);
 			
-			if(cuenta == null)
-				throw new CuentaExistenteExcenption("No se encontro la cuenta: " + idCuenta);
+			if(cuenta == null || cuenta.isEstado() == false)
+				throw new CuentaExistenteExcenption("No se encontro la cuenta con id: " + idCuenta);
 			
-		} catch (Exception e) {
-			throw new CuentaExistenteExcenption("Error al obtener datos de la cuenta origen");
-		}
+			if(cuenta.getSaldo().compareTo(monto) == -1) 
+				throw new MontoInsuficienteException("Monto insuficiente en la cuenta");
+			
+	    } catch (CuentaExistenteExcenption | MontoInsuficienteException e) {
+	        throw e; 
+	    } catch (Exception e) {
+	        throw new CuentaExistenteExcenption("Error al obtener datos de la cuenta origen");
+	    }
 		
 		return cuenta;
 	}
 
+	private Cuenta ObtenerCuentaDestino(String cbu) throws CuentaExistenteExcenption
+	{
+		dao.CuentaDao cuentaDao = new daoImpl.CuentaDaoImpl();
+		Cuenta cuenta = null;
+		
+		try {
+			cuenta = cuentaDao.obtenerCuentaPorCBU(cbu);
+			
+			if(cuenta == null || cuenta.isEstado() == false)
+				throw new CuentaExistenteExcenption("No se encontro la cuenta con CBU: " + cbu);
+			
+	    } catch (Exception e) {
+	    	throw new CuentaExistenteExcenption("Error al obtener datos de la cuenta Destino");
+	    }
+		
+		return cuenta;
+	}
+
+	private int RegistrarMovimiento(Cuenta cuenta, BigDecimal monto, int tipoMov)
+	{
+		
+		// registrar mov en la db
+		return 1;
+	}
 }
