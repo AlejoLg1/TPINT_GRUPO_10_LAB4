@@ -12,7 +12,7 @@
 	    <li><a href="${pageContext.request.contextPath}/jsp/cliente/transferencias.jsp">Transferencias</a></li>
 	    <li><a href="${pageContext.request.contextPath}/jsp/cliente/solicitarPrestamo.jsp">Préstamos</a></li>
 	    <li><a href="${pageContext.request.contextPath}/jsp/cliente/pagarCuotas.jsp">Pago de cuotas</a></li>
-	    <li><a href="${pageContext.request.contextPath}/jsp/cliente/misDatos.jsp">Mis datos</a></li>
+	    <li><a href="${pageContext.request.contextPath}/ServletMisDatosCliente">Mis datos</a></li>
     </ul>
     
 	<div class="logout">

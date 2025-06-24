@@ -1,5 +1,6 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8"
     pageEncoding="UTF-8"%>
+<%@ page import="dominio.Cliente" %>
 <%
     Object usuario = session.getAttribute("usuario");
     if (usuario == null) {
@@ -23,20 +24,9 @@
 
 
 <%
-	// obtener datos de un request a futuro
-
-	String Nombre = "Nombre Usuario";
-	String Apellido = "Apellido Usuario";
-	String Dni = "34567890";
-	String Sexo = "Masculino";
-	String Cuil = "12-34567890-1";
-	String Nacionalidad = "Argentina";
-	String FechaNac = "01/01/1999";
-	String Direccion = "Direccion usuairo 1234";
-	String Localidad = "localidad usaurio";
-	String Provincia = "Buenos Aires";
-	String Email = "Usuario@gmail.com";
-	String Telefono = "1123456789";
+	Cliente cliente = (Cliente)request.getAttribute("infoCliente");
+	if(cliente == null)
+		response.sendRedirect(request.getContextPath() + "/jsp/cliente/menuCliente.jsp");
 %>
 
 
@@ -47,68 +37,68 @@
 	        <div class="form-group">
 	            <div class="form-item">
 	                <label for="nombre">Nombre:</label>
-	                <input type="text" id="nombre" value="<%=Nombre%>" readonly>
+	                <input type="text" id="nombre" value="<%=cliente.getNombre()%>" readonly>
 	            </div>
 	
 	            <div class="form-item">
 	                <label for="apellido">Apellido:</label>
-	                <input type="text" id="apellido" value="<%=Apellido%>" readonly>
+	                <input type="text" id="apellido" value="<%=cliente.getApellido()%>" readonly>
 	            </div>
 	
 	            <div class="form-item">
 	                <label for="dni">DNI:</label>
-	                <input type="text" id="dni" value="<%=Dni%>" readonly>
+	                <input type="text" id="dni" value="<%=cliente.getDni()%>" readonly>
 	            </div>
 	        </div>
 	
 	        <div class="form-group">
 	            <div class="form-item">
 	                <label for="cuil">Cuil:</label>
-	                <input type="text" id="cuil" value="<%=Cuil%>" readonly>
+	                <input type="text" id="cuil" value="<%=cliente.getCuil()%>" readonly>
 	            </div>
 	
 	            <div class="form-item">
 	                <label for="nacionalidad">Nacionalidad:</label>
-	                <input type="text" id="nacionalidad" value="<%=Nacionalidad%>" readonly>
+	                <input type="text" id="nacionalidad" value="<%=cliente.getNacionalidad()%>" readonly>
 	            </div>
 	
 	            <div class="form-item">
 	                <label for="fechanac">Fecha de Nacimiento:</label>
-	                <input type="text" id="fechanac" value="<%=FechaNac%>" readonly>
+	                <input type="text" id="fechanac" value="<%=cliente.getFechaNacimiento()%>" readonly>
 	            </div>
 	        </div>
 	
 	        <div class="form-group">
 	            <div class="form-item">
 	                <label for="direccion">Dirección:</label>
-	                <input type="text" id="direccion" value="<%=Direccion%>" readonly>
+	                <input type="text" id="direccion" value="<%=cliente.getDireccion().getDirCompleta()%>" readonly>
 	            </div>
 	
 	            <div class="form-item">
 	                <label for="localidad">Localidad:</label>
-	                <input type="text" id="localidad" value="<%=Localidad%>" readonly>
+	                <input type="text" id="localidad" value="<%=cliente.getDireccion().getLocalidad()%>" readonly>
 	            </div>
 	
 	            <div class="form-item">
 	                <label for="provincia">Provincia:</label>
-	                <input type="text" id="provincia" value="<%=Provincia%>" readonly>
+	                <input type="text" id="provincia" value="<%=cliente.getDireccion().getProvincia()%>" readonly>
 	            </div>
 	        </div>
 	
 	        <div class="form-group">
 	            <div class="form-item">
 	                <label for="email">Email:</label>
-	                <input type="text" id="email" value="<%=Email%>" readonly>
+	                <input type="text" id="email" value="<%=cliente.getCorreo()%>" readonly>
 	            </div>
 	
 	            <div class="form-item">
 	                <label for="telefono">Teléfono:</label>
-	                <input type="text" id="telefono" value="<%=Telefono%>" readonly>
+	                <input type="text" id="telefono" value="<%=cliente.getTelefono()%>" readonly>
 	            </div>
 	            
 	            <div class="form-item">
 	                <label for="sexo">Sexo:</label>
-	                <input type="text" id="sexo" value="<%=Sexo%>" readonly>
+	                <input type="text" id="sexo" value="<%=cliente.getSexo()%>" readonly>
 	            </div>
 	        </div>
 	    </div>

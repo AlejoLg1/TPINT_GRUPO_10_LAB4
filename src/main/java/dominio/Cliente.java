@@ -4,7 +4,7 @@ public class Cliente {
 
 	    private int idCliente;
 	    private int idUsuario;
-	    private int idDireccion;
+	    private Direccion Direccion;
 	    private String dni;
 	    private String cuil;
 	    private String nombre;
@@ -18,14 +18,15 @@ public class Cliente {
 
 	    // Constructores
 	    public Cliente() {
+	    	this.Direccion = new Direccion();
 	    }
 
-	    public Cliente(int idCliente, int idUsuario, int idDireccion, String dni, String cuil,
+	    public Cliente(int idCliente, int idUsuario, Direccion direccion, String dni, String cuil,
 	                   String nombre, String apellido, String sexo, String nacionalidad,
 	                   java.time.LocalDate fechaNacimiento, String correo, String telefono, boolean estado) {
 	        this.idCliente = idCliente;
 	        this.idUsuario = idUsuario;
-	        this.idDireccion = idDireccion;
+	        this.Direccion = direccion;
 	        this.dni = dni;
 	        this.cuil = cuil;
 	        this.nombre = nombre;
@@ -56,12 +57,12 @@ public class Cliente {
 	        this.idUsuario = idUsuario;
 	    }
 
-	    public int getIdDireccion() {
-	        return idDireccion;
+	    public Direccion getDireccion() {
+	        return this.Direccion;
 	    }
 
-	    public void setIdDireccion(int idDireccion) {
-	        this.idDireccion = idDireccion;
+	    public void setDireccion(Direccion direccion) {
+	        this.Direccion = direccion;
 	    }
 
 	    public String getDni() {
@@ -97,7 +98,9 @@ public class Cliente {
 	    }
 
 	    public String getSexo() {
-	        return sexo;
+	        if(this.sexo.equalsIgnoreCase("M")) return "Masculino";
+	        else if(this.sexo.equalsIgnoreCase("F")) return "Femenino";
+	        else return "No definido";
 	    }
 
 	    public void setSexo(String sexo) {

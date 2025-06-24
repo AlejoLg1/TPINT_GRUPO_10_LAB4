@@ -9,7 +9,6 @@ public class Direccion {
 	private String provincia;
 	
 	public Direccion() {
-		
 	}
 	
 	public Direccion(int id, String calle, String numero, String localidad, String provincia) {
@@ -51,6 +50,9 @@ public class Direccion {
 	public void setProvincia(String provincia) {
 		this.provincia = provincia;
 	}
-	
+	public String getDirCompleta()
+	{
+		return this.calle + ", " +this.numero;
+	}
 	
 }

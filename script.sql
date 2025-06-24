@@ -130,6 +130,13 @@ VALUES ('admin', '1234', 'BANCARIO', TRUE, TRUE);
 INSERT INTO Usuario (nombre_usuario, clave, tipo, is_admin, estado)
 VALUES ('cliente', '4321', 'CLIENTE', FALSE, TRUE);
 
+INSERT INTO Direccion (calle,numero,localidad,provincia)
+VALUES ('calle cliente','1111','localidad cliente','provincia cliente');
+
+INSERT INTO Cliente (id_usuario,id_direccion,dni,cuil,nombre,apellido,sexo,nacionalidad,fecha_nacimiento,correo,telefono)
+VALUES ('2','1','11111111','22111111112','Pedro','Gonzalez','M','Argentina','1999-01-01','cliente@gmail.com','3333333333');
+
+
 -- Insert Tipos de Cuentas
 INSERT INTO Tipo_cuenta (descripcion) VALUES ('Caja de ahorro'), ('Cuenta corriente');
 
@@ -257,3 +264,26 @@ BEGIN
 END //
 
 DELIMITER ;
+
+CREATE VIEW DatosCliente AS
+SELECT 
+  C.id_cliente,
+  C.id_usuario,
+  C.dni,
+  C.cuil,
+  C.nombre,
+  C.apellido,
+  C.sexo,
+  C.nacionalidad,
+  C.fecha_nacimiento,
+  D.id_direccion,
+  D.calle,
+  D.numero,
+  D.localidad,
+  D.provincia,
+  C.correo,
+  C.telefono,
+  C.estado
+FROM Cliente C
+INNER JOIN Direccion D ON C.id_direccion = D.id_direccion;
+
