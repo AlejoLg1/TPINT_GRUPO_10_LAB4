@@ -1,5 +1,6 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
 <%@ page session="true" %>
+<%@ page import="java.util.List" %>
 <%
     Object usuario = session.getAttribute("usuario");
     if (usuario == null) {
@@ -21,6 +22,10 @@
 <% request.setAttribute("activePage", "transferencias"); %>
 <%@ include file="navbarClientes.jsp" %>
 
+<%
+	List<Object[]> lista = (List<Object[]>)request.getAttribute("listaCuentas");
+%>
+
 
 <div class="main-container">
     <div class="welcome-card">
@@ -41,10 +46,23 @@
         <%-- FORMULARIO DE TRANSFERENCIA DE EJEMPLO --%>
         <form action="${pageContext.request.contextPath}/ServletTransferenciasUsuario" method="post">
             <label for="cuentaOrigen">Cuenta de origen:</label><br>
-            <select name="cuentaOrigen" id="cuentaOrigen" required>
-                <option value="12345678">12345678 - Caja de Ahorro</option>
-                <option value="87654321">87654321 - Cuenta Corriente</option>     <%-- Valores ficticios por ahora, más adelante se cargarán dinámicamente desde la base de datos --%>
-            </select><br><br>
+			<select name="cuentaOrigen" id="cuentaOrigen" required>
+			    <%
+			        if (lista != null && !lista.isEmpty()) 
+			        {
+			            for (Object[] cuenta : lista) {
+			                String nroCuenta = String.valueOf(cuenta[0]);	// nro cuenta
+			                String cbu = String.valueOf(cuenta[1]);			//cbu
+			                String tipo = String.valueOf(cuenta[2]);		//tipo de cuenta
+    			%>
+		        			<option value="<%= nroCuenta %>"><%=cbu%> - <%=tipo%></option>
+    			<%
+			            }
+			        } 
+			        else{ %> <option disabled selected>No tiene cuentas disponibles</option> <% } %>
+			</select>
+			<br><br>
+
 
             <label for="cbuDestino">CBU destino:</label><br>
             <input type="text" name="cbuDestino" id="cbuDestino" required><br><br>

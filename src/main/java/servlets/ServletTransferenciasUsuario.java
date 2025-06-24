@@ -27,31 +27,35 @@ public class ServletTransferenciasUsuario extends HttpServlet {
 	 * @see HttpServlet#doGet(HttpServletRequest request, HttpServletResponse response)
 	 */
 	protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-		// Cargar cuentas del usuario desde la db
-		
-		response.sendRedirect(request.getContextPath() + "/jsp/cliente/transferencias.jsp");
+        dao.CuentaDao cuentaDao = new daoImpl.CuentaDaoImpl();
+
+        java.util.List<Object[]> listaCuentas = cuentaDao.listarConDatos();
+
+        request.setAttribute("listaCuentas", listaCuentas);
+        request.getRequestDispatcher("/jsp/cliente/transferencias.jsp").forward(request, response);
 	}
 
 	/**
 	 * @see HttpServlet#doPost(HttpServletRequest request, HttpServletResponse response)
 	 */
 	protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-		if(request.getParameter("btnTransferir") != null)
+		
+		if(request.getParameter("btnTransferir") != null)	// obtener datos de transferencia
 		{
 			boolean status = false;
 			
 			try {
-			    String idCuenta = request.getParameter("cuentaOrigen");
-			    String cbu = request.getParameter("cbuDestino");
-			    String monto = request.getParameter("monto");
+			    String idCuenta = request.getParameter("cuentaOrigen") == null ? "" : request.getParameter("cuentaOrigen");
+			    String cbu = request.getParameter("cbuDestino") == null ? "" : request.getParameter("cbuDestino");
+			    String monto = request.getParameter("monto") == null ? "" : request.getParameter("monto");
 
-			    // Validación de nulos o vacíos
-			    if (idCuenta == null || monto == null || cbu == null ||
-			        idCuenta.trim().isEmpty() || monto.trim().isEmpty() || cbu.trim().isEmpty()) {
+			    // Validación de vacíos
+			    if (idCuenta.trim().isEmpty() || monto.trim().isEmpty() || cbu.trim().isEmpty()) {
 			        throw new IllegalArgumentException();
 			    }
 
-			    // Registrar solicitud en la db
+
+
 			    
 			    status = true;
 
@@ -66,7 +70,7 @@ public class ServletTransferenciasUsuario extends HttpServlet {
 			rd.forward(request, response);
 		}
 		
-		doGet(request, response);
+		doGet(request, response);	// para recargar la lista de cuentas
 	}
 
 }

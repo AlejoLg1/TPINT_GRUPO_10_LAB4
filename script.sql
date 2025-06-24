@@ -136,7 +136,6 @@ VALUES ('calle cliente','1111','localidad cliente','provincia cliente');
 INSERT INTO Cliente (id_usuario,id_direccion,dni,cuil,nombre,apellido,sexo,nacionalidad,fecha_nacimiento,correo,telefono)
 VALUES ('2','1','11111111','22111111112','Pedro','Gonzalez','M','Argentina','1999-01-01','cliente@gmail.com','3333333333');
 
-
 -- Insert Tipos de Cuentas
 INSERT INTO Tipo_cuenta (descripcion) VALUES ('Caja de ahorro'), ('Cuenta corriente');
 
