@@ -79,7 +79,8 @@
 								  })">
 								  Desactivar
 								</button>
-                                <a href="${pageContext.request.contextPath}/ServletModificarCliente?id=<%= c.getIdCliente() %>" class="btn btn-warning btn-sm">Modificar</a>
+                              <a href="<%= request.getContextPath() %>/ServletModificarCliente?id=<%= c.getIdCliente() %>" class="btn btn-warning btn-sm">Modificar</a>
+
                             <% } else { %>
                                 <button 
 								  type="button"

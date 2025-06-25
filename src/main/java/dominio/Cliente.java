@@ -3,6 +3,7 @@ package dominio;
 public class Cliente {
 
 	    private int idCliente;
+	    private Usuario usuario;
 	    private int idUsuario;
 	    private Direccion Direccion;
 	    private String dni;
@@ -21,10 +22,11 @@ public class Cliente {
 	    	this.Direccion = new Direccion();
 	    }
 
-	    public Cliente(int idCliente, int idUsuario, Direccion direccion, String dni, String cuil,
+	    public Cliente(int idCliente, Usuario usuario, int idUsuario, Direccion direccion, String dni, String cuil,
 	                   String nombre, String apellido, String sexo, String nacionalidad,
 	                   java.time.LocalDate fechaNacimiento, String correo, String telefono, boolean estado) {
 	        this.idCliente = idCliente;
+	        this.usuario = usuario;
 	        this.idUsuario = idUsuario;
 	        this.Direccion = direccion;
 	        this.dni = dni;
@@ -41,7 +43,15 @@ public class Cliente {
 
 	    // Getters y Setters
 
-	    public int getIdCliente() {
+	    public Usuario getUsuario() {
+			return usuario;
+		}
+
+		public void setUsuario(Usuario usuario) {
+			this.usuario = usuario;
+		}
+
+		public int getIdCliente() {
 	        return idCliente;
 	    }
 

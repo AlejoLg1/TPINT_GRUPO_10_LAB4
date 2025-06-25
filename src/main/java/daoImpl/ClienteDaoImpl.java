@@ -57,13 +57,10 @@ public class ClienteDaoImpl implements ClienteDao {
 
 
 	        // Ejecutar procedure
-	        filas = stmt.executeUpdate();
-	        
-	        if (filas > 0) {
-	        	agregado = true;
-	        	conexion.commit();
-	        	System.out.println("Cliente agregado correctamente.");
-	        }
+	        stmt.execute();
+	        conexion.commit();
+	        agregado = true;
+	        System.out.println("Cliente agregado correctamente.");
 
 
 	    } catch (SQLException e) {
@@ -85,13 +82,88 @@ public class ClienteDaoImpl implements ClienteDao {
 	    
 	    return agregado;
 	}
-
-
+	
 	@Override
-	public boolean Modificar(Cliente cliente) {
-		// TODO Auto-generated method stub
-		return false;
+	public boolean Modificar(Cliente cliente, Usuario usuario, Direccion direccion) {
+	    Connection cn = null;
+	    boolean modificado = false;
+	    
+	    String queryCliente = "UPDATE cliente SET dni=?, cuil=?, nombre=?, apellido=?, sexo=?, "
+	            + "nacionalidad=?, fecha_nacimiento=?, correo=?, telefono=? WHERE id_cliente=?";
+	    String queryDireccion = "UPDATE direccion SET calle=?, numero=?, localidad=?, provincia=? WHERE id_direccion=?";
+	    String queryUsuario = "UPDATE usuario SET nombre_usuario=?, clave=? WHERE id_usuario=?";
+
+	    try {
+	        cn = Conexion.getConexion().getSQLConexion();
+	        cn.setAutoCommit(false); 
+
+	        // 1. Actualizar cliente
+	        try (PreparedStatement pstCliente = cn.prepareStatement(queryCliente)) {
+	            pstCliente.setString(1, cliente.getDni());
+	            pstCliente.setString(2, cliente.getCuil());
+	            pstCliente.setString(3, cliente.getNombre());
+	            pstCliente.setString(4, cliente.getApellido());
+	            pstCliente.setString(5, cliente.getSexo());
+	            pstCliente.setString(6, cliente.getNacionalidad());
+	            pstCliente.setDate(7, java.sql.Date.valueOf(cliente.getFechaNacimiento()));
+	            pstCliente.setString(8, cliente.getCorreo());
+	            pstCliente.setString(9, cliente.getTelefono());
+	            pstCliente.setInt(10, cliente.getIdCliente());
+	            
+	            int filasCliente = pstCliente.executeUpdate();
+	            if (filasCliente == 0) {
+	                throw new SQLException("No se actualizó el cliente");
+	            }
+	        }
+
+	        // 2. Actualizar dirección
+	        try (PreparedStatement pstDireccion = cn.prepareStatement(queryDireccion)) {
+	            pstDireccion.setString(1, direccion.getCalle());
+	            pstDireccion.setString(2, direccion.getNumero());
+	            pstDireccion.setString(3, direccion.getLocalidad());
+	            pstDireccion.setString(4, direccion.getProvincia());
+	            pstDireccion.setInt(5, direccion.getId());  // Usar el ID de direccion directamente
+	            
+	            int filasDireccion = pstDireccion.executeUpdate();
+	            if (filasDireccion == 0) {
+	                throw new SQLException("No se actualizó la dirección");
+	            }
+	        }
+
+	        // 3. Actualizar usuario
+	        try (PreparedStatement pstUsuario = cn.prepareStatement(queryUsuario)) {
+	            pstUsuario.setString(1, usuario.getNombreUsuario());
+	            pstUsuario.setString(2, usuario.getClave());
+	            pstUsuario.setInt(3, usuario.getIdUsuario());
+	            
+	            int filasUsuario = pstUsuario.executeUpdate();
+	            if (filasUsuario == 0) {
+	                throw new SQLException("No se actualizo el usuario");
+	            }
+	        }
+
+	        cn.commit();
+	        modificado = true;
+	        
+	    } catch (Exception e) {
+	        try {
+	            if (cn != null) cn.rollback();
+	        } catch (SQLException ex) {
+	            ex.printStackTrace();
+	        }
+	        e.printStackTrace();
+	    } finally {
+	        try {
+	            if (cn != null) cn.close();
+	        } catch (SQLException e) {
+	            e.printStackTrace();
+	        }
+	    }
+
+	    return modificado;
 	}
+	
+
 
 	@Override
 	public boolean Eliminar(Cliente cliente) {
@@ -226,5 +298,71 @@ public class ClienteDaoImpl implements ClienteDao {
 
 	        return lista;
 	}
+
+
+	@Override
+	public Cliente obtenerPorIdCliente(int idCliente) {
+		    Cliente cliente = null;
+		    Direccion direccion = null;
+		    Usuario usuario = null;
+		    Connection conexion = null;
+		    PreparedStatement stmt = null;
+		    ResultSet rs = null;
+
+		    try {
+		        conexion = Conexion.getConexion().getSQLConexion();
+		        String query = "select c.id_cliente, c.id_usuario, c.dni, c.cuil, c.nombre, c.apellido, \r\n"
+		        		+ "    c.sexo, c.nacionalidad, c.fecha_nacimiento, c.correo, c.telefono, c.estado,\r\n"
+		        		+ "    d.id_direccion, d.calle, d.numero, d.localidad, d.provincia, u.nombre_usuario, u.clave\r\n"
+		        		+ "FROM cliente c\r\n"
+		        		+ "inner JOIN direccion d ON c.id_direccion = d.id_direccion\r\n"
+		        		+ "inner join usuario u on c.id_usuario = u.id_usuario\r\n"
+		        		+ "WHERE c.id_cliente = ?";
+		        stmt = conexion.prepareStatement(query);
+		        stmt.setInt(1, idCliente);
+		        rs = stmt.executeQuery();
+
+		        if (rs.next()) {
+		            cliente = new Cliente();
+		            direccion = new Direccion();
+		            usuario = new Usuario(); 
+		            
+		            cliente.setIdCliente(rs.getInt("id_cliente"));
+		            cliente.setDni(rs.getString("dni"));
+		            cliente.setCuil(rs.getString("cuil"));
+		            cliente.setNombre(rs.getString("nombre"));
+		            cliente.setApellido(rs.getString("apellido"));
+		            cliente.setSexo(rs.getString("sexo"));
+		            cliente.setNacionalidad(rs.getString("nacionalidad"));
+		            cliente.setFechaNacimiento(rs.getDate("fecha_nacimiento").toLocalDate());
+		            direccion.setId(rs.getInt("id_direccion"));
+		            direccion.setCalle(rs.getString("calle"));
+		            direccion.setNumero(rs.getString("numero"));
+		            direccion.setLocalidad(rs.getString("localidad"));
+		            direccion.setProvincia(rs.getString("provincia"));
+		            cliente.setCorreo(rs.getString("correo"));
+		            cliente.setTelefono(rs.getString("telefono"));
+		            cliente.setEstado(rs.getBoolean("estado"));
+		            cliente.setDireccion(direccion);
+		            usuario.setClave(rs.getString("clave"));
+		            usuario.setNombreUsuario(rs.getString("nombre_usuario"));
+		            usuario.setIdUsuario(rs.getInt("id_usuario"));
+		            cliente.setUsuario(usuario);
+		        }
+
+		    } catch (SQLException e) {
+		        e.printStackTrace();
+		    } finally {
+		        try {
+		            if (rs != null) rs.close();
+		            if (stmt != null) stmt.close();
+		            if (conexion != null) conexion.close();
+		        } catch (SQLException e) {
+		            e.printStackTrace();
+		        }
+		    }
+
+		    return cliente;
+		}
 
 }
