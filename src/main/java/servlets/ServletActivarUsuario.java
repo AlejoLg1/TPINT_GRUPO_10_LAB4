@@ -5,6 +5,9 @@ import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import jakarta.servlet.http.HttpSession;
+import negocioImpl.AutenticacionNegocioImpl;
+
 import java.io.IOException;
 
 import dao.UsuarioDao;
@@ -29,6 +32,16 @@ public class ServletActivarUsuario extends HttpServlet {
 
 
 	protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+		HttpSession session = request.getSession(false);
+		Usuario usuario = (Usuario) session.getAttribute("usuario");
+
+		AutenticacionNegocioImpl auth = new AutenticacionNegocioImpl();
+
+		if (usuario == null || !auth.validarRolAdmin(usuario)) {
+		    response.sendRedirect(request.getContextPath() + "/ServletMenuAdmin");
+		    return;
+		}
+		
         try {
             int id = Integer.parseInt(request.getParameter("id"));
 
