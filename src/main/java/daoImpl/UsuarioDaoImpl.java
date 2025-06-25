@@ -199,7 +199,7 @@ public class UsuarioDaoImpl implements UsuarioDao {
         Connection cn = Conexion.getConexion().getSQLConexion();
         List<Usuario> lista = new ArrayList<>();
 
-        String query = "SELECT id_usuario, nombre_usuario, clave, tipo, is_admin, estado FROM Usuario";
+        String query = "SELECT id_usuario, nombre_usuario, clave, tipo, is_admin, estado FROM Usuario WHERE TIPO != 'CLIENTE'";
 
         try {
             PreparedStatement pst = cn.prepareStatement(query);
