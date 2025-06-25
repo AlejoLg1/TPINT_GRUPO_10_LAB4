@@ -26,7 +26,9 @@ public class CuentaDaoImpl implements CuentaDao {
 		""";
     private static final String UPDATE_ESTADO_CUENTAS = "UPDATE Cuenta SET estado = ? WHERE nro_cuenta = ?";
 	private static final String OBTENER_ID_CLIENTE = "SELECT id_cliente FROM Cuenta WHERE nro_cuenta = ?";
-	private static final String OBTENER_CUENTA = "SELECT nro_cuenta, cbu, id_cliente, id_tipo_cuenta, saldo, fecha_creacion, estado FROM Cuenta WHERE nro_cuenta = ?";
+	private static final String OBTENER_CUENTA = "SELECT nro_cuenta, cbu, id_cliente, c.id_tipo_cuenta, saldo, fecha_creacion, estado, tc.descripcion  FROM Cuenta AS c\r\n"
+			+ "JOIN Tipo_cuenta as tc on c.id_tipo_cuenta = tc.id_tipo_cuenta \r\n"
+			+ "WHERE nro_cuenta = ?";
 	private static final String OBTENER_CUENTA_POR_CBU = "SELECT nro_cuenta, cbu, id_cliente, id_tipo_cuenta, saldo, fecha_creacion, estado FROM Cuenta WHERE cbu = ?";
 
     
@@ -222,7 +224,8 @@ public class CuentaDaoImpl implements CuentaDao {
 	            cuenta.setNroCuenta(rs.getInt("nro_cuenta"));
 	            cuenta.setCbu(rs.getString("cbu"));
 	            cuenta.setIdCliente(rs.getInt("id_cliente"));
-	            cuenta.setIdTipoCuenta(rs.getInt("id_tipo_cuenta"));
+	            cuenta.setIdTipoCuenta(rs.getInt("c.id_tipo_cuenta"));
+	            cuenta.setTipoCuenta(rs.getString("tc.descripcion"));
 	            cuenta.setSaldo(rs.getBigDecimal("saldo"));
 	            cuenta.setFechaCreacion(rs.getTimestamp("fecha_creacion").toLocalDateTime());
 	            cuenta.setEstado(rs.getBoolean("estado"));

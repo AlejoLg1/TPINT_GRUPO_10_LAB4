@@ -81,10 +81,15 @@ public class ServletSolicitarPrestamo extends HttpServlet {
             Usuario usuario = (Usuario) session.getAttribute("usuario");
             ClienteDaoImpl clienteDao = new ClienteDaoImpl();
             Cliente cliente = clienteDao.obtenerPorIdUsuario(usuario.getIdUsuario());
-
+            
+            //obtener cuenta seleccionada
+            CuentaDaoImpl cuentaDao = new CuentaDaoImpl();
+            Cuenta cuenta = cuentaDao.obtenerCuentaPorId(nroCuenta);
+            
+            
             Prestamo prestamo = new Prestamo();
-            prestamo.setId_cliente(cliente.getIdCliente());
-            prestamo.setNro_cuenta(nroCuenta);
+            prestamo.set_cliente(cliente);
+            prestamo.set_cuenta(cuenta);
             prestamo.setImporte_solicitado(importeSolicitado);
             prestamo.setCantidad_cuotas(cantidadCuotas);
             prestamo.setMonto_cuota(montoCuota);

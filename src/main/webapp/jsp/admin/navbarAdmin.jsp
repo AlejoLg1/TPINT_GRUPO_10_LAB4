@@ -8,7 +8,7 @@
         <li><a href="<%= request.getContextPath() %>/ServletListarCliente" class="<%= "clientes".equals(request.getAttribute("activePage")) ? "active" : "" %>">Clientes</a></li>
         <li><a href="<%= request.getContextPath() %>/ServletListarUsuario" class="<%= "usuarios".equals(request.getAttribute("activePage")) ? "active" : "" %>">Usuarios</a></li>
         <li><a href="<%= request.getContextPath() %>/ServletCuenta" class="<%= "cuentas".equals(request.getAttribute("activePage")) ? "active" : "" %>">Cuentas</a></li>
-        <li><a href="<%= request.getContextPath() %>/jsp/admin/prestamos.jsp" class="<%= "prestamos".equals(request.getAttribute("activePage")) ? "active" : "" %>">Préstamos</a></li>
+        <li><a href="<%= request.getContextPath() %>/ServletListarPrestamos" class="<%= "prestamos".equals(request.getAttribute("activePage")) ? "active" : "" %>">Préstamos</a></li>
         <li><a href="<%= request.getContextPath() %>/jsp/admin/reportes.jsp" class="<%= "reportes".equals(request.getAttribute("activePage")) ? "active" : "" %>">Reportes</a></li>
     </ul>
     

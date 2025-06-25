@@ -195,6 +195,57 @@ public class ClienteDaoImpl implements ClienteDao {
 
 	    return cliente;
 	}
+	
+	public Cliente obtenerPorIdCliente(int idcliente) {
+	    Cliente cliente = null;
+	    Connection conexion = null;
+	    PreparedStatement stmt = null;
+	    ResultSet rs = null;
+
+	    try {
+	        conexion = Conexion.getConexion().getSQLConexion();
+	        String query = "SELECT * FROM DatosCliente WHERE id_cliente = ?;";
+	        stmt = conexion.prepareStatement(query);
+	        stmt.setInt(1, idcliente);
+	        rs = stmt.executeQuery();
+
+	        if (rs.next()) {
+	            cliente = new Cliente();
+	            
+	            cliente.setIdCliente(rs.getInt("id_cliente"));
+	            cliente.setIdUsuario(rs.getInt("id_usuario"));
+	            cliente.setDni(rs.getString("dni"));
+	            cliente.setCuil(rs.getString("cuil"));
+	            cliente.setNombre(rs.getString("nombre"));
+	            cliente.setApellido(rs.getString("apellido"));
+	            cliente.setSexo(rs.getString("sexo"));
+	            cliente.setNacionalidad(rs.getString("nacionalidad"));
+	            cliente.setFechaNacimiento(rs.getDate("fecha_nacimiento").toLocalDate());
+	            int id = rs.getInt("id_direccion");
+	            String calle = rs.getString("calle");
+	            String numero = rs.getString("numero");
+	            String localidad = rs.getString("localidad");
+	            String provincia = rs.getString("provincia");
+	            cliente.setCorreo(rs.getString("correo"));
+	            cliente.setTelefono(rs.getString("telefono"));
+	            cliente.setEstado(rs.getBoolean("estado"));
+	            cliente.setDireccion(new Direccion(id,calle,numero,localidad,provincia));
+	        }
+
+	    } catch (SQLException e) {
+	        e.printStackTrace();
+	    } finally {
+	        try {
+	            if (rs != null) rs.close();
+	            if (stmt != null) stmt.close();
+	            if (conexion != null) conexion.close();
+	        } catch (SQLException e) {
+	            e.printStackTrace();
+	        }
+	    }
+
+	    return cliente;
+	}
 
 
 	@Override
