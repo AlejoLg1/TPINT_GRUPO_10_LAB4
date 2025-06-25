@@ -10,7 +10,11 @@ import jakarta.servlet.http.HttpSession;
 
 import java.io.IOException;
 import java.math.BigDecimal;
+import java.util.List;
 
+import daoImpl.ClienteDaoImpl;
+import daoImpl.CuentaDaoImpl;
+import dominio.Cliente;
 import dominio.Cuenta;
 import dominio.Usuario;
 import excepciones.CuentaExistenteExcenption;
@@ -35,11 +39,30 @@ public class ServletTransferenciasUsuario extends HttpServlet {
 	 * @see HttpServlet#doGet(HttpServletRequest request, HttpServletResponse response)
 	 */
 	protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-        dao.CuentaDao cuentaDao = new daoImpl.CuentaDaoImpl();
+		HttpSession session = request.getSession();
+        Usuario usuario = (Usuario) session.getAttribute("usuario");
 
-        java.util.List<Object[]> listaCuentas = cuentaDao.listarConDatos();
+        if (usuario == null) {
+            response.sendRedirect(request.getContextPath() + "/ServletLogin");
+            return;
+        }
 
-        request.setAttribute("listaCuentas", listaCuentas);
+        
+        ClienteDaoImpl clienteDao = new ClienteDaoImpl();
+        Cliente cliente = clienteDao.obtenerPorIdUsuario(usuario.getIdUsuario());
+
+        if (cliente == null) {
+            
+            response.sendRedirect(request.getContextPath() + "/ServletLogin");
+            return;
+        }
+
+        int idCliente = cliente.getIdCliente();
+
+        CuentaDaoImpl cuentaDao = new CuentaDaoImpl();
+        List<Cuenta> cuentas = cuentaDao.listarPorCliente(idCliente);
+
+        request.setAttribute("listaCuentas", cuentas);
         request.getRequestDispatcher("/jsp/cliente/transferencias.jsp").forward(request, response);
 	}
 
@@ -48,46 +71,40 @@ public class ServletTransferenciasUsuario extends HttpServlet {
 	 */
 	protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 		
-		if(request.getParameter("btnTransferir") != null)	// obtener datos de transferencia
-		{
-			boolean status = false;
-			
-			try {
-			    String nroCuenta = request.getParameter("cuentaOrigen") == null ? "" : request.getParameter("cuentaOrigen");
-			    String cbuDestino = request.getParameter("cbuDestino") == null ? "" : request.getParameter("cbuDestino");
-			    String monto = request.getParameter("monto") == null ? "" : request.getParameter("monto");
-			    BigDecimal montoDecimal = new BigDecimal(monto.trim());
+		if (request.getParameter("btnTransferir") != null) {
+		    boolean status = false;
 
-			    
-			    if (nroCuenta.trim().isEmpty() || monto.trim().isEmpty() || cbuDestino.trim().isEmpty()) {
-			        throw new IllegalArgumentException();
-			    }
-		    	
-			    
-			    Cuenta cuentaOrigen = ObtenerCuentaOrigen(Integer.parseInt(nroCuenta.trim()), montoDecimal);
-			    Cuenta cuentaDestino = ObtenerCuentaDestino(cbuDestino);
-			    
-			    int idMovSalida = RegistrarMovimiento(cuentaOrigen,montoDecimal,1);		
-			    int idMovEntrada = RegistrarMovimiento(cuentaDestino,montoDecimal,2); 	
-			    
-			    //registrar transferencia
-			    
-			    status = true;
-			} catch (CuentaExistenteExcenption e) {
-				// enviar mensaje al jsp
-			
-			} catch (Exception e) {
-			    status = false;
-			    e.printStackTrace(); 
-			}
+		    try {
+		        String nroCuenta = request.getParameter("cuentaOrigen") == null ? "" : request.getParameter("cuentaOrigen");
+		        String cbuDestino = request.getParameter("cbuDestino") == null ? "" : request.getParameter("cbuDestino");
+		        String monto = request.getParameter("monto") == null ? "" : request.getParameter("monto");
+		        BigDecimal montoDecimal = new BigDecimal(monto.trim());
 
-			
-			request.setAttribute("estado", status);
-			RequestDispatcher rd = request.getRequestDispatcher("/jsp/cliente/transferencias.jsp");
-			rd.forward(request, response);
+		        if (nroCuenta.trim().isEmpty() || monto.trim().isEmpty() || cbuDestino.trim().isEmpty()) {
+		            throw new IllegalArgumentException();
+		        }
+
+		        Cuenta cuentaOrigen = ObtenerCuentaOrigen(Integer.parseInt(nroCuenta.trim()), montoDecimal);
+		        Cuenta cuentaDestino = ObtenerCuentaDestino(cbuDestino);
+
+		        int idMovSalida = RegistrarMovimiento(cuentaOrigen, montoDecimal, 1);
+		        int idMovEntrada = RegistrarMovimiento(cuentaDestino, montoDecimal, 2);
+
+		        status = true;
+		    } catch (CuentaExistenteExcenption e) {
+		        // enviar mensaje al jsp
+		    } catch (Exception e) {
+		        status = false;
+		        e.printStackTrace();
+		    }
+
+		    request.setAttribute("estado", status);
+		    RequestDispatcher rd = request.getRequestDispatcher("/jsp/cliente/transferencias.jsp");
+		    rd.forward(request, response);
+		    return; // ⬅️ Asegura que no siga al doGet
 		}
-		
-		doGet(request, response);	// para recargar la lista de cuentas
+
+		doGet(request, response);
 	}
 	
 	private Cuenta ObtenerCuentaOrigen(int idCuenta, BigDecimal monto) throws CuentaExistenteExcenption, MontoInsuficienteException
