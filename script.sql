@@ -144,7 +144,7 @@ INSERT INTO Tipo_cuenta (descripcion) VALUES ('Caja de ahorro'), ('Cuenta corrie
 
 DELIMITER //
 
-CREATE PROCEDURE `insertarCliente`(
+CREATE DEFINER=`root`@`localhost` PROCEDURE `insertarCliente`(
     IN p_nombre_usuario VARCHAR(50),
     IN p_clave VARCHAR(100),
     IN p_calle VARCHAR(100),
@@ -196,12 +196,10 @@ BEGIN
 
     -- Insertar en Cliente
     INSERT INTO cliente (
-        id_usuario, id_direccion, dni, cuil, nombre, apellido,
-        sexo, nacionalidad, fecha_nacimiento, correo, telefono, estado
+        dni, cuil, nombre, apellido, sexo, nacionalidad, fecha_nacimiento, correo, telefono, id_usuario, id_direccion, estado
     )
     VALUES (
-        v_id_usuario, v_id_direccion, p_dni, p_cuil, p_nombre, p_apellido,
-        p_sexo, p_nacionalidad, p_fecha_nacimiento, p_correo, p_telefono, TRUE
+        p_dni, p_cuil, p_nombre, p_apellido, p_sexo, p_nacionalidad, p_fecha_nacimiento, p_correo, p_telefono, v_id_usuario, v_id_direccion, TRUE
     );
 END
 //
