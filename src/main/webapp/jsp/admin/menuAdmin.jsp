@@ -36,7 +36,7 @@
 			    <% } %>
 			
 			    <a href="${pageContext.request.contextPath}/ServletCuenta" class="action-button">Ver cuentas</a>
-			    <a href="${pageContext.request.contextPath}/jsp/admin/prestamos.jsp" class="action-button">Gestionar prestamos</a>
+			    <a href="${pageContext.request.contextPath}/ServletListarPrestamos" class="action-button">Gestionar prestamos</a>
 			    <a href="${pageContext.request.contextPath}/jsp/admin/reportes.jsp" class="action-button">Reportes</a>
 			</div>
 
