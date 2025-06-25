@@ -4,23 +4,24 @@ import java.sql.Timestamp;
 
 public class Prestamo {
     private int id_prestamo;
-    private int id_cliente;
-    private int nro_cuenta;
+    private Cliente cliente;
+    private Cuenta cuenta;
     private Timestamp fecha;
     private double importe_solicitado;
     private int cantidad_cuotas;
     private double monto_cuota;
     private boolean autorizacion;
+    private String estado;
 
     // Getters y setters
     public int getId_prestamo() { return id_prestamo; }
     public void setId_prestamo(int id_prestamo) { this.id_prestamo = id_prestamo; }
 
-    public int getId_cliente() { return id_cliente; }
-    public void setId_cliente(int id_cliente) { this.id_cliente = id_cliente; }
+    public Cliente get_cliente() { return cliente; }
+    public void set_cliente(Cliente cliente) { this.cliente = cliente; }
 
-    public int getNro_cuenta() { return nro_cuenta; }
-    public void setNro_cuenta(int nro_cuenta) { this.nro_cuenta = nro_cuenta; }
+    public Cuenta get_cuenta() { return cuenta; }
+    public void set_cuenta(Cuenta cuenta) { this.cuenta = cuenta; }
 
     public Timestamp getFecha() { return fecha; }
     public void setFecha(Timestamp fecha) { this.fecha = fecha; }
@@ -36,4 +37,7 @@ public class Prestamo {
 
     public boolean isAutorizacion() { return autorizacion; }
     public void setAutorizacion(boolean autorizacion) { this.autorizacion = autorizacion; }
+    
+    public String getEstado() {return estado;}
+    public void setEstado(String estado) {this.estado = estado;}
 }

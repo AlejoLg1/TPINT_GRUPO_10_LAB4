@@ -90,7 +90,12 @@ public class Cliente {
 	    public void setCuil(String cuil) {
 	        this.cuil = cuil;
 	    }
-
+	    
+	    public String getNombreCompleto() {
+	        String nombreCompleto = nombre + " " + apellido;
+	    	return nombreCompleto;
+	    }
+	    
 	    public String getNombre() {
 	        return nombre;
 	    }
