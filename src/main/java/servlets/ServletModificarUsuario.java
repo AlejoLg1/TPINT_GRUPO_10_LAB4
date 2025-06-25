@@ -6,6 +6,9 @@ import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import jakarta.servlet.http.HttpSession;
+import negocioImpl.AutenticacionNegocioImpl;
+
 import java.io.IOException;
 
 import dao.UsuarioDao;
@@ -25,6 +28,16 @@ public class ServletModificarUsuario extends HttpServlet {
 
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+    	HttpSession session = request.getSession(false);
+		Usuario usuarioSession = (Usuario) session.getAttribute("usuario");
+
+		AutenticacionNegocioImpl auth = new AutenticacionNegocioImpl();
+
+		if (usuarioSession == null || !auth.validarRolAdmin(usuarioSession)) {
+		    response.sendRedirect(request.getContextPath() + "/ServletMenuAdmin");
+		    return;
+		}
+		
         int id = Integer.parseInt(request.getParameter("id"));
 
         UsuarioDao dao = new UsuarioDaoImpl();
@@ -43,7 +56,17 @@ public class ServletModificarUsuario extends HttpServlet {
     @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         boolean status = false;
+        
+        HttpSession session = request.getSession(false);
+		Usuario usuarioSession = (Usuario) session.getAttribute("usuario");
 
+		AutenticacionNegocioImpl auth = new AutenticacionNegocioImpl();
+
+		if (usuarioSession == null || !auth.validarRolAdmin(usuarioSession)) {
+		    response.sendRedirect(request.getContextPath() + "/ServletMenuAdmin");
+		    return;
+		}
+		
         try {
             String idParam = request.getParameter("id");
             String tipoUser = request.getParameter("tipoUser");

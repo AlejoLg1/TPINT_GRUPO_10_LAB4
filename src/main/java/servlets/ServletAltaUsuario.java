@@ -3,7 +3,7 @@ package servlets;
 import jakarta.servlet.*;
 import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.*;
-
+import negocioImpl.AutenticacionNegocioImpl;
 import dao.UsuarioDao;
 import daoImpl.UsuarioDaoImpl;
 import dominio.Usuario;
@@ -22,10 +22,30 @@ public class ServletAltaUsuario extends HttpServlet {
     }
 
     protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+    	HttpSession session = request.getSession(false);
+		Usuario usuario = (Usuario) session.getAttribute("usuario");
+
+		AutenticacionNegocioImpl auth = new AutenticacionNegocioImpl();
+
+		if (usuario == null || !auth.validarRolAdmin(usuario)) {
+		    response.sendRedirect(request.getContextPath() + "/ServletMenuAdmin");
+		    return;
+		}
+		
         response.sendRedirect(request.getContextPath() + "/jsp/admin/altaUsuario.jsp");
     }
 
     protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+    	HttpSession session = request.getSession(false);
+		Usuario usuario = (Usuario) session.getAttribute("usuario");
+
+		AutenticacionNegocioImpl auth = new AutenticacionNegocioImpl();
+
+		if (usuario == null || !auth.validarRolAdmin(usuario)) {
+		    response.sendRedirect(request.getContextPath() + "/ServletMenuAdmin");
+		    return;
+		}
+		
         if (request.getParameter("btnUsuario") != null) {
             boolean status = false;
             String mensajeError = null;

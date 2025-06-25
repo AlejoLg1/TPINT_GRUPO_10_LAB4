@@ -25,4 +25,9 @@ public class AutenticacionNegocioImpl implements AutenticacionNegocio {
 
         return usuario;
     }
+    
+    public boolean validarRolAdmin(Usuario usuario) {
+        return usuario != null && usuario.isAdmin();
+    }
+
 }
