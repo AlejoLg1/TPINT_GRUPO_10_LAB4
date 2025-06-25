@@ -101,4 +101,67 @@ public class PrestamoDaoImpl implements PrestamoDao {
 
 	    return prestamos;
 	}
+
+	@Override
+	public boolean aprobarPrestamo(int idPrestamo) {
+		boolean actualizado = false;
+	    Connection conexion = null;
+	    PreparedStatement stmt = null;
+
+	    try {
+	        conexion = Conexion.getConexion().getSQLConexion();
+	        String query = "UPDATE prestamo SET autorizacion = 1, estado = 'Aprobado' WHERE id_prestamo = ?";
+	        stmt = conexion.prepareStatement(query);
+	        stmt.setInt(1, idPrestamo);
+	        int filas = stmt.executeUpdate();
+	        if (filas > 0) {
+	            conexion.commit();  
+	            actualizado = true;
+	        }
+
+	    } catch (SQLException e) {
+	        e.printStackTrace();
+	    } finally {
+	        try {
+	            if (stmt != null) stmt.close();
+	            if (conexion != null) conexion.close();
+	        } catch (SQLException e) {
+	            e.printStackTrace();
+	        }
+	    }
+
+	    return actualizado;
+		
+	}
+
+	@Override
+	public boolean rechazarPrestamo(int idPrestamo) {
+		boolean actualizado = false;
+	    Connection conexion = null;
+	    PreparedStatement stmt = null;
+
+	    try {
+	        conexion = Conexion.getConexion().getSQLConexion();
+	        String query = "UPDATE prestamo SET estado = 'Rechazado' WHERE id_prestamo = ?";
+	        stmt = conexion.prepareStatement(query);
+	        stmt.setInt(1, idPrestamo);
+	        int filas = stmt.executeUpdate();
+	        if (filas > 0) {
+	            conexion.commit();  
+	            actualizado = true;
+	        }
+
+	    } catch (SQLException e) {
+	        e.printStackTrace();
+	    } finally {
+	        try {
+	            if (stmt != null) stmt.close();
+	            if (conexion != null) conexion.close();
+	        } catch (SQLException e) {
+	            e.printStackTrace();
+	        }
+	    }
+
+	    return actualizado;
+	}
 }
