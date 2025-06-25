@@ -61,7 +61,6 @@
             </form>
 
             <!-- Tabla de prestamos -->
-            <form action="ServletAprobacionPrestamos" method="get"> 
 	            <table class="tabla-prestamos">
 	                <thead>
 	                    <tr>
@@ -91,8 +90,32 @@
 	                        <td><%= p.getEstado() %></td>
 	                        <td>
 	                            <div class="acciones-botones">
-	    							<button type="submit" class="boton-aprobar" onclick="return confirm('¿Seguro que desea aprobar este prestamo?')">Aprobar</button>
-	    							<button type="submit" class="boton-rechazar" onclick="return confirm('¿Seguro que desea rechazar este prestamo?')">Rechazar</button>
+                                    <button 
+                                        type="button" 
+                                        class="boton-aprobar" 
+                                        onclick="abrirConfirmacion({
+                                            action: '${pageContext.request.contextPath}/ServletAprobacionPrestamos',
+                                            mensaje: '¿Seguro que desea aprobar este préstamo?',
+                                            botonTexto: 'Aprobar',
+                                            botonClase: 'boton-aprobar',
+                                            inputs: [
+                                                { name: 'idPrestamo', value: '<%= p.getId_prestamo() %>' },
+                                                { name: 'accion', value: 'aprobar' }
+                                            ]
+                                        })">Aprobar</button>
+                                    <button 
+                                        type="button" 
+                                        class="boton-rechazar" 
+                                        onclick="abrirConfirmacion({
+                                            action: '${pageContext.request.contextPath}/ServletAprobacionPrestamos',
+                                            mensaje: '¿Seguro que desea rechazar este préstamo?',
+                                            botonTexto: 'Rechazar',
+                                            botonClase: 'boton-rechazar',
+                                            inputs: [
+                                                { name: 'idPrestamo', value: '<%= p.getId_prestamo() %>' },
+                                                { name: 'accion', value: 'rechazar' }
+                                            ]
+                                        })">Rechazar</button>
 	 							</div>
 	                        </td>
 	                    </tr>
@@ -102,7 +125,22 @@
                     	%>
 	                </tbody>
 	            </table>
-            </form>
+        </div>
+    </div>
+    
+ <!-- HTML del Modal de Mensajes de Estado (Éxito/Error) -->
+    <div class="modal fade" id="statusModal" tabindex="-1" aria-labelledby="statusModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="statusModalLabel"></h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Cerrar"></button>
+                </div>
+                <div class="modal-body" id="statusModalBody"></div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-primary" data-bs-dismiss="modal">Aceptar</button>
+                </div>
+            </div>
         </div>
     </div>
 
@@ -119,6 +157,29 @@
 <!-- Bootstrap Bundle JS (incluye Popper) -->
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
 
+<style>
+        /* Estilos para el modal de estado*/
+        .modal-body.success {
+            color: #155724;
+            background-color: #d4edda;
+            border-color: #c3e6cb;
+            padding: 1rem;
+            border-radius: .25rem;
+        }
+        .modal-body.error {
+            color: #721c24;
+            background-color: #f8d7da;
+            border-color: #f5c6cb;
+            padding: 1rem;
+            border-radius: .25rem;
+        }
+        .modal-title.success-title {
+            color: #28a745;
+        }
+        .modal-title.error-title {
+            color: #dc3545;
+        }
+</style>
   <script>
       $(document).ready(function () {
           $('.tabla-prestamos').DataTable({
@@ -127,9 +188,51 @@
               lengthMenu: [5, 10, 25, 50],
               responsive: true
           });
+          
+          function mostrarStatusModal(title, message, type) {
+              const statusModal = new bootstrap.Modal(document.getElementById('statusModal'));
+              const statusModalLabel = document.getElementById('statusModalLabel');
+              const statusModalBody = document.getElementById('statusModalBody');
+
+              statusModalLabel.textContent = title;
+              statusModalBody.textContent = message;
+
+              // Limpiar clases de estado anteriores en el body y título del modal
+              statusModalLabel.classList.remove('success-title', 'error-title');
+              statusModalBody.classList.remove('success', 'error');
+
+              // Añadir clases según el tipo de mensaje
+              if (type === 'success') {
+                  statusModalLabel.classList.add('success-title');
+                  statusModalBody.classList.add('success');
+              } else if (type === 'error') {
+                  statusModalLabel.classList.add('error-title');
+                  statusModalBody.classList.add('error');
+              }
+
+              statusModal.show();
+          }
+
+          // Detectar parámetros de URL al cargar la página para mostrar el modal de estado
+          const urlParams = new URLSearchParams(window.location.search);
+          const status = urlParams.get('status');
+          const message = urlParams.get('message');
+
+          if (status && message) {
+              let title = '';
+              if (status === 'success') {
+                  title = 'Operación Exitosa';
+              } else if (status === 'error') {
+                  title = 'Error en la Operación';
+              }
+              mostrarStatusModal(title, decodeURIComponent(message), status);
+
+              //Limpiar los parámetros de la URL para que el modal no aparezca de nuevo al refrescar
+              history.replaceState(null, '', window.location.pathname);
+          }
       });
   </script>
-
+	<%@ include file="../comunes/modalConfirmacion.jsp" %>
 	<%@ include file="../comunes/footer.jsp" %>
 </body>
 </html>
