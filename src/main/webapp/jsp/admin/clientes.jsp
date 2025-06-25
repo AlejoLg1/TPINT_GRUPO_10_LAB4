@@ -1,5 +1,6 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
-<%@ page session="true" %>
+<%@ page import="java.util.List" %>
+<%@ page import="dominio.Cliente" %>
 <%
     Object usuario = session.getAttribute("usuario");
     if (usuario == null) {
@@ -13,72 +14,123 @@
 <head>
     <meta charset="UTF-8">
     <title>Clientes - Banco UTN</title>
+
+    <!-- Bootstrap 5 CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+
+    <!-- DataTables Bootstrap 5 CSS -->
+    <link rel="stylesheet" href="https://cdn.datatables.net/1.13.6/css/dataTables.bootstrap5.min.css">
+
+    <!-- TU CSS personalizado -->
     <link rel="stylesheet" href="${pageContext.request.contextPath}/css/clientesEstilos.css">
 </head>
+
 <body>
 
 <% request.setAttribute("activePage", "clientes"); %>
 <%@ include file="navbarAdmin.jsp" %>
 
-<div class="main-container">
-    <div class="welcome-card">
-        <h1>Listado de Clientes</h1>
+<div class="container mt-5">
+    <div class="card shadow-sm">
+        <div class="card-body">
+            <div class="d-flex justify-content-between align-items-center mb-4">
+                <h2 class="mb-0">Listado de Clientes</h2>
+                <a href="${pageContext.request.contextPath}/jsp/admin/altaCliente.jsp" class="btn btn-primary">+ Crear Cliente</a>
+            </div>
 
-        <div class="acciones-superiores">
-            <a href="altaCliente.jsp" class="crear-cliente-button">+ Crear Cliente</a>
+            <table class="table table-striped table-hover tabla-cliente" style="width:100%;">
+                <thead class="table-light">
+                    <tr>
+                        <th>Nombre</th>
+                        <th>Apellido</th>
+                        <th>Dni</th>
+                        <th>Cuil</th>
+                        <th>Estado</th>
+                        <th>Acciones</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <%
+                        List<Cliente> listaClientes = (List<Cliente>) request.getAttribute("clientes"); 
+                        if (listaClientes != null) {
+                            for (Cliente c : listaClientes) {
+                    %>
+                    <tr>
+                        <td><%= c.getNombre() %></td>
+                        <td><%= c.getApellido() %></td>
+                        <td><%= c.getDni() %></td>
+                        <td><%= c.getCuil() %></td>
+                        <td>
+                            <span class="fw-bold <%= c.isEstado() ? "text-success" : "text-secondary" %>">
+                                <%= c.isEstado() ? "Activo" : "Inactivo" %>
+                            </span>
+                        </td>
+                        <td>
+                            <% if (c.isEstado()) { %>
+                                <button 
+								  type="button"
+								  class="btn btn-danger btn-sm me-1"
+								  onclick="abrirConfirmacion({
+								    action: '${pageContext.request.contextPath}/ServletBajaCliente',
+								    mensaje: '¿Estás seguro que deseas desactivar al cliente <%= c.getNombre() %>?',
+								    botonTexto: 'Desactivar',
+								    botonClase: 'btn-danger',
+								    inputs: [{ name: 'id', value: '<%= c.getIdCliente() %>' }]
+								  })">
+								  Desactivar
+								</button>
+                                <a href="${pageContext.request.contextPath}/ServletModificarCliente?id=<%= c.getIdCliente() %>" class="btn btn-warning btn-sm">Modificar</a>
+                            <% } else { %>
+                                <button 
+								  type="button"
+								  class="btn btn-success btn-sm"
+								  onclick="abrirConfirmacion({
+								    action: '${pageContext.request.contextPath}/ServletActivarCliente',
+								    mensaje: '¿Deseas activar nuevamente al usuario <%= c.getNombre() %>?',
+								    botonTexto: 'Activar',
+								    botonClase: 'btn-success',
+								    inputs: [{ name: 'id', value: '<%= c.getIdCliente() %>' }]
+								  })">
+								  Activar
+								</button>
+                            <% } %>
+                        </td>
+                    </tr>
+                    <%
+                            }
+                        }
+                    %>
+                </tbody>
+            </table>
         </div>
-
-        <table class="tabla-clientes">
-            <thead>
-                <tr>
-                    <th>Nombre</th>
-                    <th>Apellido</th>
-                    <th>DNI</th>
-                    <th>CUIL</th>
-                    <th>Estado</th>
-                    <th>Acciones</th>
-                </tr>
-            </thead>
-            <tbody>
-                <tr>
-                    <td>Juan</td>
-                    <td>Pérez</td>
-                    <td>30555222</td>
-                    <td>20-30555222-5</td>
-                    <td>Activo</td>
-                    <td>
-                        <a href="modificarCliente.jsp?id=1" class="boton-modificar">Modificar</a>
-                        <a href="bajaCliente.jsp?id=1" class="boton-eliminar">Eliminar</a>
-                    </td>
-                </tr>
-                <tr>
-                    <td>María</td>
-                    <td>Gómez</td>
-                    <td>28333444</td>
-                    <td>27-28333444-2</td>
-                    <td>Inactivo</td>
-                    <td>
-                        <a href="modificarCliente.jsp?id=2" class="boton-modificar">Modificar</a>
-                        <a href="bajaCliente.jsp?id=2" class="boton-eliminar">Eliminar</a>
-                    </td>
-                </tr>
-                <tr>
-                    <td>Luis</td>
-                    <td>Martínez</td>
-                    <td>31222444</td>
-                    <td>20-31222444-3</td>
-                    <td>Activo</td>
-                    <td>
-                        <a href="modificarCliente.jsp?id=3" class="boton-modificar">Modificar</a>
-                        <a href="bajaCliente.jsp?id=3" class="boton-eliminar">Eliminar</a>
-                    </td>
-                </tr>
-            </tbody>
-        </table>
     </div>
 </div>
 
-<%@ include file="../comunes/footer.jsp" %>
+<!-- jQuery -->
+  <script src="https://code.jquery.com/jquery-3.7.0.min.js"></script>
 
+  <!-- DataTables JS -->
+  <script src="https://cdn.datatables.net/1.13.6/js/jquery.dataTables.min.js"></script>
+  <script src="https://cdn.datatables.net/1.13.6/js/dataTables.bootstrap5.min.js"></script>
+
+  <!-- Configuración de idioma ES para DataTables -->
+  <script src="${pageContext.request.contextPath}/js/datatables-es.js"></script>
+  
+<!-- Bootstrap Bundle JS (incluye Popper) -->
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+
+  <script>
+      $(document).ready(function () {
+          $('.tabla-cliente').DataTable({
+              language: spanishLanguageSettings,
+              pageLength: 5,
+              lengthMenu: [5, 10, 25, 50],
+              responsive: true
+          });
+      });
+  </script>
+   
+<%@ include file="../comunes/modalConfirmacion.jsp" %>
+<%@ include file="../comunes/footer.jsp" %>
 </body>
 </html>

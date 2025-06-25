@@ -98,9 +98,9 @@ public class Cliente {
 	    }
 
 	    public String getSexo() {
-	        if(this.sexo.equalsIgnoreCase("M")) return "Masculino";
-	        else if(this.sexo.equalsIgnoreCase("F")) return "Femenino";
-	        else return "No definido";
+	        if(this.sexo.equalsIgnoreCase("M")) return "M";
+	        else if(this.sexo.equalsIgnoreCase("F")) return "F";
+	        else return "X";
 	    }
 
 	    public void setSexo(String sexo) {

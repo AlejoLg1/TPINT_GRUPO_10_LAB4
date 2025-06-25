@@ -54,6 +54,8 @@ public class ClienteDaoImpl implements ClienteDao {
 	        stmt.setString(14, cliente.getCorreo());
 	        stmt.setString(15, cliente.getTelefono());
 
+
+
 	        // Ejecutar procedure
 	        filas = stmt.executeUpdate();
 	        
@@ -192,6 +194,37 @@ public class ClienteDaoImpl implements ClienteDao {
 	    }
 
 	    return cliente;
+	}
+
+
+	@Override
+	public List<Cliente> Listar2() {
+		  Connection cn = Conexion.getConexion().getSQLConexion();
+	        List<Cliente> lista = new ArrayList<>();
+
+	        String query = "SELECT id_cliente, nombre, apellido, dni, cuil, estado FROM cliente";
+
+	        try {
+	            PreparedStatement pst = cn.prepareStatement(query);
+	            ResultSet rs = pst.executeQuery();
+
+	            while (rs.next()) {
+	                Cliente c = new Cliente();
+	                c.setIdCliente(rs.getInt("id_cliente"));
+	                c.setNombre(rs.getString("nombre"));
+	                c.setApellido(rs.getString("apellido"));
+	                c.setDni(rs.getString("dni"));
+	                c.setCuil(rs.getString("cuil"));
+	                c.setEstado(rs.getBoolean("estado"));
+
+	                lista.add(c);
+	            }
+
+	        } catch (Exception e) {
+	            e.printStackTrace();
+	        }
+
+	        return lista;
 	}
 
 }

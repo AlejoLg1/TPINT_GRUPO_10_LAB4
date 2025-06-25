@@ -108,7 +108,7 @@ public class ServletAltaCliente extends HttpServlet {
 			        return;
 			    }
 
-			    // 4. Convertir sexo a M/F/X según lo que venga del select
+			    // Convertir sexo
 			    String sexo;
 			    switch (sexoCompleto) {
 			        case "Masculino": sexo = "M"; break;
