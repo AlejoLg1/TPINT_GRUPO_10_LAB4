@@ -6,45 +6,58 @@ import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import jakarta.servlet.http.HttpSession;
+import negocioImpl.AutenticacionNegocioImpl;
+
 import java.io.IOException;
 import java.time.LocalDate;
 
 import dao.ClienteDao;
 import daoImpl.ClienteDaoImpl;
-import daoImpl.UsuarioDaoImpl;
 import dominio.Cliente;
 import dominio.Direccion;
 import dominio.Usuario;
 import excepciones.DniYaRegistradoException;
 import excepciones.NombreUsuarioExistenteException;
 
-/**
- * Servlet implementation class ServletAltaCliente
- */
+
 @WebServlet("/ServletAltaCliente")
 public class ServletAltaCliente extends HttpServlet {
 	private static final long serialVersionUID = 1L;
        
-    /**
-     * @see HttpServlet#HttpServlet()
-     */
+
     public ServletAltaCliente() {
         super();
         // TODO Auto-generated constructor stub
     }
 
-	/**
-	 * @see HttpServlet#doGet(HttpServletRequest request, HttpServletResponse response)
-	 */
+
 	protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-		// TODO Auto-generated method stub
+		HttpSession session = request.getSession(false);
+		Usuario usuario = (Usuario) session.getAttribute("usuario");
+
+		AutenticacionNegocioImpl auth = new AutenticacionNegocioImpl();
+
+		if (usuario == null || !auth.validarRolAdmin(usuario)) {
+		    response.sendRedirect(request.getContextPath() + "/ServletMenuAdmin");
+		    return;
+		}
+		
 		response.sendRedirect(request.getContextPath() + "/jsp/admin/altaCliente.jsp");
 	}
 
-	/**
-	 * @see HttpServlet#doPost(HttpServletRequest request, HttpServletResponse response)
-	 */
+
 	protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+		HttpSession session = request.getSession(false);
+		Usuario usuario = (Usuario) session.getAttribute("usuario");
+
+		AutenticacionNegocioImpl auth = new AutenticacionNegocioImpl();
+
+		if (usuario == null || !auth.validarRolAdmin(usuario)) {
+		    response.sendRedirect(request.getContextPath() + "/ServletMenuAdmin");
+		    return;
+		}
+		
 		if(request.getParameter("btnAltaUsuario") != null)
 		{
 			boolean status = false;

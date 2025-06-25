@@ -9,20 +9,16 @@ import jakarta.servlet.http.HttpSession;
 import negocioImpl.AutenticacionNegocioImpl;
 
 import java.io.IOException;
-import java.util.List;
 
-import dao.ClienteDao;
-import daoImpl.ClienteDaoImpl;
-import dominio.Cliente;
 import dominio.Usuario;
 
 
-@WebServlet("/ServletListarCliente")
-public class ServletListarCliente extends HttpServlet {
+@WebServlet("/ServletBajaCliente")
+public class ServletBajaCliente extends HttpServlet {
 	private static final long serialVersionUID = 1L;
        
 
-    public ServletListarCliente() {
+    public ServletBajaCliente() {
         super();
         // TODO Auto-generated constructor stub
     }
@@ -39,11 +35,7 @@ public class ServletListarCliente extends HttpServlet {
 		    return;
 		}
 		
-		ClienteDao dao = new ClienteDaoImpl();
-		List<Cliente> listaCliente = dao.Listar2();
-
-		request.setAttribute("clientes", listaCliente);
-		request.getRequestDispatcher("/jsp/admin/clientes.jsp").forward(request, response);
+		response.getWriter().append("Served at: ").append(request.getContextPath());
 	}
 
 
