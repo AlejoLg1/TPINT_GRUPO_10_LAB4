@@ -226,7 +226,8 @@ public class ClienteDaoImpl implements ClienteDao {
 
 	    try {
 	        conexion = Conexion.getConexion().getSQLConexion();
-	        String query = "SELECT * FROM DatosCliente WHERE id_cliente = ?;";
+	        String query = "SELECT * FROM DatosCliente WHERE id_usuario = ?;";
+
 	        stmt = conexion.prepareStatement(query);
 	        stmt.setInt(1, idUsuario);
 	        rs = stmt.executeQuery();
