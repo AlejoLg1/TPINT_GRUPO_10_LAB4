@@ -287,7 +287,7 @@ INNER JOIN Direccion D ON C.id_direccion = D.id_direccion;
 DELIMITER ;
 
 ALTER TABLE Prestamo
-ADD COLUMN estado VARCHAR(50) NOT NULL;
+ADD COLUMN estado VARCHAR(50) NOT NULL,
 ADD COLUMN cuotas_pagadas INT NOT NULL DEFAULT 0;
 
 
