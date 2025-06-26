@@ -12,6 +12,7 @@ import dominio.Cliente;
 import dominio.Prestamo;
 import dominio.Cuenta;
 import utils.Conexion;
+import dominio.TipoCuenta;
 
 public class PrestamoDaoImpl implements PrestamoDao {
 
@@ -22,13 +23,14 @@ public class PrestamoDaoImpl implements PrestamoDao {
         PreparedStatement stmt = null;
 
         try {
-            String sql = "INSERT INTO Prestamo (id_cliente, nro_cuenta, importe_solicitado, cantidad_cuotas, monto_cuota) VALUES (?, ?, ?, ?, ?)";
+            String sql = "INSERT INTO Prestamo (id_cliente, nro_cuenta, importe_solicitado, cantidad_cuotas, monto_cuota, estado) VALUES (?, ?, ?, ?, ?,?)";
             stmt = con.prepareStatement(sql);
             stmt.setInt(1, prestamo.get_cliente().getIdCliente());
             stmt.setInt(2, prestamo.get_cuenta().getNroCuenta());
             stmt.setDouble(3, prestamo.getImporte_solicitado());
             stmt.setInt(4, prestamo.getCantidad_cuotas());
             stmt.setDouble(5, prestamo.getMonto_cuota());
+            stmt.setString(6, "Pendiente");
 
             int rows = stmt.executeUpdate();
             estado = rows > 0;
@@ -163,5 +165,117 @@ public class PrestamoDaoImpl implements PrestamoDao {
 	    }
 
 	    return actualizado;
+	}
+
+	@Override
+	public List<Prestamo> obtenerPrestamosFiltrados(String busqueda, Double montoMin, Double montoMax, String estado, String fechaSolicitud) {
+		
+		List<Prestamo> listaPrestamos = new ArrayList<>();
+        Connection cn = null;
+        PreparedStatement ps = null;
+        ResultSet rs = null;
+
+        // Construcción dinámica de la consulta SQL
+        StringBuilder sql = new StringBuilder();
+        sql.append("SELECT ");
+        sql.append("p.id_prestamo, p.id_cliente, p.nro_cuenta, p.fecha, p.importe_solicitado, p.cantidad_cuotas, p.monto_cuota, p.autorizacion, p.estado, ");        
+        sql.append("cl.id_cliente, cl.nombre AS cliente_nombre, cl.apellido AS cliente_apellido, cl.dni AS cliente_dni, "); 
+        sql.append("cu.nro_cuenta, cu.cbu AS cuenta_cbu, cu.saldo AS cuenta_saldo, "); 
+        sql.append("tc.id_tipo_cuenta, tc.descripcion AS tipo_cuenta_descripcion "); 
+        sql.append("FROM Prestamo p ");
+        sql.append("JOIN Cliente cl ON p.id_cliente = cl.id_cliente "); 
+        sql.append("JOIN Cuenta cu ON p.nro_cuenta = cu.nro_cuenta "); 
+        sql.append("JOIN Tipo_cuenta tc ON cu.id_tipo_cuenta = tc.id_tipo_cuenta ");
+        sql.append("WHERE 1=1 "); // Condición base que siempre es verdadera para facilitar la adición de AND
+
+        // Lista para almacenar los parámetros de PreparedStatement dinámicamente
+        List<Object> parametros = new ArrayList<>();
+
+        // Aplica filtro por búsqueda (nombre de cliente, apellido de cliente o CBU de cuenta)
+        if (busqueda != null && !busqueda.trim().isEmpty()) {
+            sql.append("AND (cl.nombre LIKE ? OR cl.apellido LIKE ? OR cu.cbu LIKE ?) ");
+            parametros.add("%" + busqueda + "%");
+            parametros.add("%" + busqueda + "%");
+            parametros.add("%" + busqueda + "%");
+        }
+        // Aplica filtro por monto mínimo
+        if (montoMin != null) {
+            sql.append("AND p.importe_solicitado >= ? ");
+            parametros.add(montoMin);
+        }
+        // Aplica filtro por monto máximo
+        if (montoMax != null) {
+            sql.append("AND p.importe_solicitado <= ? ");
+            parametros.add(montoMax);
+        }
+        // Aplica filtro por estado del préstamo
+        // El valor "-- Todos --" o vacío indica que no se aplica este filtro
+        if (estado != null && !estado.trim().isEmpty() && !estado.equalsIgnoreCase("-- Todos --")) {
+            sql.append("AND p.estado = ? ");
+            parametros.add(estado);
+        }
+        // Aplica filtro por fecha de solicitud
+        if (fechaSolicitud != null && !fechaSolicitud.trim().isEmpty()) {
+            sql.append("AND DATE(p.fecha) = ? ");
+            parametros.add(fechaSolicitud);
+        }
+
+        try {
+        	cn = Conexion.getConexion().getSQLConexion();; // Obtiene tu conexión a la base de datos
+            ps = cn.prepareStatement(sql.toString());
+
+            // Asignar los parámetros al PreparedStatement en el orden correcto
+            for (int i = 0; i < parametros.size(); i++) {             
+                ps.setObject(i + 1, parametros.get(i)); 
+            }
+
+            rs = ps.executeQuery();
+
+            while (rs.next()) {
+                Prestamo p = new Prestamo();
+                p.setId_prestamo(rs.getInt("id_prestamo"));
+                p.setFecha(rs.getTimestamp("fecha"));
+                p.setImporte_solicitado(rs.getDouble("importe_solicitado"));
+                p.setCantidad_cuotas(rs.getInt("cantidad_cuotas"));
+                p.setMonto_cuota(rs.getDouble("monto_cuota"));
+                p.setAutorizacion(rs.getBoolean("autorizacion"));
+                p.setEstado(rs.getString("estado"));
+
+                // Mapear el objeto Cliente anidado
+                Cliente cliente = new Cliente();
+                cliente.setIdUsuario(rs.getInt("id_cliente")); 
+                cliente.setNombre(rs.getString("cliente_nombre"));
+                cliente.setApellido(rs.getString("cliente_apellido"));
+                p.set_cliente(cliente); 
+
+                // Mapear el objeto Cuenta anidado
+                Cuenta cuenta = new Cuenta();
+                cuenta.setNroCuenta(rs.getInt("nro_cuenta"));
+                cuenta.setCbu(rs.getString("cuenta_cbu"));
+                cuenta.setSaldo(rs.getBigDecimal("cuenta_saldo"));
+                
+                // Mapear el objeto Tipo_cuenta anidado dentro de Cuenta
+                TipoCuenta tipoCuenta = new TipoCuenta();
+                tipoCuenta.setIdTipoCuenta(rs.getInt("id_tipo_cuenta"));
+                tipoCuenta.setDescripcion(rs.getString("tipo_cuenta_descripcion"));
+                cuenta.setTipoCuenta(tipoCuenta.getDescripcion());
+
+                p.set_cuenta(cuenta); 
+
+                listaPrestamos.add(p);
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+            
+        } finally {
+            try {
+                if (rs != null) rs.close();
+                if (ps != null) ps.close();
+                if (cn != null) cn.close();
+            } catch (SQLException e) {
+                e.printStackTrace(); 
+            }
+        }
+        return listaPrestamos;
 	}
 }

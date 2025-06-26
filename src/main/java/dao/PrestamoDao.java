@@ -10,4 +10,5 @@ public interface PrestamoDao {
 	public List<Prestamo> Listar();
 	boolean aprobarPrestamo(int nroPrestamo);
 	boolean rechazarPrestamo(int nroPrestamo);
+    public List<Prestamo> obtenerPrestamosFiltrados(String busqueda, Double montoMin, Double montoMax, String estado, String fechaSolicitud);
 }

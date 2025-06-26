@@ -31,6 +31,48 @@ public class ServletAprobacionPrestamos extends HttpServlet {
 	 * @see HttpServlet#doGet(HttpServletRequest request, HttpServletResponse response)
 	 */
     protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+            PrestamoDao dao = new PrestamoDaoImpl(); 
+
+            String busqueda = request.getParameter("busqueda"); 
+            String montoMinStr = request.getParameter("montoMin");
+            String montoMaxStr = request.getParameter("MontoMax"); // 
+            String estadoPrestamo = request.getParameter("estadoPrestamo"); 
+            String fechaSolicitud = request.getParameter("fechaSolicitud"); 
+
+            List<Prestamo> listaPrestamos = null;
+
+            try {
+                Double montoMin = null;
+                if (montoMinStr != null && !montoMinStr.isEmpty()) {
+                    montoMin = Double.parseDouble(montoMinStr);
+                }
+                
+                Double montoMax = null;
+                if (montoMaxStr != null && !montoMaxStr.isEmpty()) {
+                    montoMax = Double.parseDouble(montoMaxStr);
+                }
+
+                
+                listaPrestamos = dao.obtenerPrestamosFiltrados(busqueda, montoMin, montoMax, estadoPrestamo, fechaSolicitud);
+
+                request.setAttribute("prestamos", listaPrestamos);
+
+                request.setAttribute("busqueda", busqueda);
+                request.setAttribute("montoMin", montoMinStr);
+                request.setAttribute("montoMax", montoMaxStr);
+                request.setAttribute("estadoPrestamo", estadoPrestamo);
+                request.setAttribute("fechaSolicitud", fechaSolicitud);
+                request.getRequestDispatcher("/jsp/admin/prestamos.jsp").forward(request, response);
+
+            } catch (NumberFormatException e) {
+                System.err.println("Error de formato de número en montos: " + e.getMessage());
+                request.setAttribute("errorMessage", "Error en el formato de los montos ingresados.");
+                request.getRequestDispatcher("/jsp/admin/prestamos.jsp").forward(request, response);
+            } catch (Exception e) {
+                e.printStackTrace();
+                request.setAttribute("errorMessage", "Error al cargar los préstamos: " + e.getMessage());
+                request.getRequestDispatcher("/jsp/admin/prestamos.jsp").forward(request, response);
+            }
         
     }
 
