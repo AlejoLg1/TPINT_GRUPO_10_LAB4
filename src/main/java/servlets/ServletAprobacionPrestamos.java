@@ -5,12 +5,16 @@ import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import jakarta.servlet.http.HttpSession;
+import negocioImpl.AutenticacionNegocioImpl;
+
 import java.io.IOException;
 import java.util.List;
 
 import daoImpl.PrestamoDaoImpl;
 import dao.PrestamoDao;
 import dominio.Prestamo;
+import dominio.Usuario;
 
 /**
  * Servlet implementation class ServletAprobacionPrestamos
@@ -31,49 +35,61 @@ public class ServletAprobacionPrestamos extends HttpServlet {
 	 * @see HttpServlet#doGet(HttpServletRequest request, HttpServletResponse response)
 	 */
     protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-            PrestamoDao dao = new PrestamoDaoImpl(); 
+    	
+    	HttpSession session = request.getSession(false);
+		Usuario usuario = (Usuario) session.getAttribute("usuario");
 
-            String busqueda = request.getParameter("busqueda"); 
-            String montoMinStr = request.getParameter("montoMin");
-            String montoMaxStr = request.getParameter("MontoMax"); // 
-            String estadoPrestamo = request.getParameter("estadoPrestamo"); 
-            String fechaSolicitud = request.getParameter("fechaSolicitud"); 
+		AutenticacionNegocioImpl auth = new AutenticacionNegocioImpl();
 
-            List<Prestamo> listaPrestamos = null;
+		if (usuario == null || !auth.validarRolAdmin(usuario)) {
+		    response.sendRedirect(request.getContextPath() + "/ServletMenuAdmin");
+		    return;
+		}
+    	
+    	
+        PrestamoDao dao = new PrestamoDaoImpl(); 
 
-            try {
-                Double montoMin = null;
-                if (montoMinStr != null && !montoMinStr.isEmpty()) {
-                    montoMin = Double.parseDouble(montoMinStr);
-                }
-                
-                Double montoMax = null;
-                if (montoMaxStr != null && !montoMaxStr.isEmpty()) {
-                    montoMax = Double.parseDouble(montoMaxStr);
-                }
+        String busqueda = request.getParameter("busqueda"); 
+        String montoMinStr = request.getParameter("montoMin");
+        String montoMaxStr = request.getParameter("MontoMax"); // 
+        String estadoPrestamo = request.getParameter("estadoPrestamo"); 
+        String fechaSolicitud = request.getParameter("fechaSolicitud"); 
 
-                
-                listaPrestamos = dao.obtenerPrestamosFiltrados(busqueda, montoMin, montoMax, estadoPrestamo, fechaSolicitud);
+        List<Prestamo> listaPrestamos = null;
 
-                request.setAttribute("prestamos", listaPrestamos);
-
-                request.setAttribute("busqueda", busqueda);
-                request.setAttribute("montoMin", montoMinStr);
-                request.setAttribute("montoMax", montoMaxStr);
-                request.setAttribute("estadoPrestamo", estadoPrestamo);
-                request.setAttribute("fechaSolicitud", fechaSolicitud);
-                request.getRequestDispatcher("/jsp/admin/prestamos.jsp").forward(request, response);
-
-            } catch (NumberFormatException e) {
-                System.err.println("Error de formato de número en montos: " + e.getMessage());
-                request.setAttribute("errorMessage", "Error en el formato de los montos ingresados.");
-                request.getRequestDispatcher("/jsp/admin/prestamos.jsp").forward(request, response);
-            } catch (Exception e) {
-                e.printStackTrace();
-                request.setAttribute("errorMessage", "Error al cargar los préstamos: " + e.getMessage());
-                request.getRequestDispatcher("/jsp/admin/prestamos.jsp").forward(request, response);
+        try {
+            Double montoMin = null;
+            if (montoMinStr != null && !montoMinStr.isEmpty()) {
+                montoMin = Double.parseDouble(montoMinStr);
             }
-        
+            
+            Double montoMax = null;
+            if (montoMaxStr != null && !montoMaxStr.isEmpty()) {
+                montoMax = Double.parseDouble(montoMaxStr);
+            }
+
+            
+            listaPrestamos = dao.obtenerPrestamosFiltrados(busqueda, montoMin, montoMax, estadoPrestamo, fechaSolicitud);
+
+            request.setAttribute("prestamos", listaPrestamos);
+
+            request.setAttribute("busqueda", busqueda);
+            request.setAttribute("montoMin", montoMinStr);
+            request.setAttribute("montoMax", montoMaxStr);
+            request.setAttribute("estadoPrestamo", estadoPrestamo);
+            request.setAttribute("fechaSolicitud", fechaSolicitud);
+            request.getRequestDispatcher("/jsp/admin/prestamos.jsp").forward(request, response);
+
+        } catch (NumberFormatException e) {
+            System.err.println("Error de formato de número en montos: " + e.getMessage());
+            request.setAttribute("errorMessage", "Error en el formato de los montos ingresados.");
+            request.getRequestDispatcher("/jsp/admin/prestamos.jsp").forward(request, response);
+        } catch (Exception e) {
+            e.printStackTrace();
+            request.setAttribute("errorMessage", "Error al cargar los préstamos: " + e.getMessage());
+            request.getRequestDispatcher("/jsp/admin/prestamos.jsp").forward(request, response);
+        }
+    
     }
 
 	/**

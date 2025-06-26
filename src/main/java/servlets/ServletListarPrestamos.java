@@ -5,12 +5,16 @@ import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import jakarta.servlet.http.HttpSession;
+import negocioImpl.AutenticacionNegocioImpl;
+
 import java.io.IOException;
 import java.util.List;
 
 import dao.PrestamoDao;
 import daoImpl.PrestamoDaoImpl;
 import dominio.Prestamo;
+import dominio.Usuario;
 
 /**
  * Servlet implementation class ServletListarPrestamos
@@ -31,6 +35,16 @@ public class ServletListarPrestamos extends HttpServlet {
 	 * @see HttpServlet#doGet(HttpServletRequest request, HttpServletResponse response)
 	 */
 	protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+		
+		HttpSession session = request.getSession(false);
+		Usuario usuario = (Usuario) session.getAttribute("usuario");
+
+		AutenticacionNegocioImpl auth = new AutenticacionNegocioImpl();
+
+		if (usuario == null || !auth.validarRolAdmin(usuario)) {
+		    response.sendRedirect(request.getContextPath() + "/ServletMenuAdmin");
+		    return;
+		}
 		
 		PrestamoDao dao = new PrestamoDaoImpl();
 		List<Prestamo> listaPrestamos = dao.Listar();
