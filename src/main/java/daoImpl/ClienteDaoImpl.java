@@ -84,7 +84,7 @@ public class ClienteDaoImpl implements ClienteDao {
 	}
 	
 	@Override
-	public boolean Modificar(Cliente cliente, Usuario usuario, Direccion direccion) {
+	public boolean Modificar(Cliente cliente, Usuario usuario, Direccion direccion) throws NombreUsuarioExistenteException, DniYaRegistradoException {
 	    Connection cn = null;
 	    boolean modificado = false;
 	    

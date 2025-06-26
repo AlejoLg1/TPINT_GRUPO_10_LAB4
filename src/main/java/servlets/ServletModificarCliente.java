@@ -17,6 +17,8 @@ import daoImpl.ClienteDaoImpl;
 import dominio.Cliente;
 import dominio.Direccion;
 import dominio.Usuario;
+import excepciones.DniYaRegistradoException;
+import excepciones.NombreUsuarioExistenteException;
 
 
 @WebServlet("/ServletModificarCliente")
@@ -58,6 +60,11 @@ public class ServletModificarCliente extends HttpServlet {
 	protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 		HttpSession session = request.getSession(false);
 		Usuario usuario = (Usuario) session.getAttribute("usuario");
+		
+		int id = Integer.parseInt(request.getParameter("idCliente"));
+		
+		 ClienteDao dao = new ClienteDaoImpl();
+	     Cliente cliente= dao.obtenerPorIdCliente(id);
 
 		AutenticacionNegocioImpl auth = new AutenticacionNegocioImpl();
 
@@ -67,6 +74,24 @@ public class ServletModificarCliente extends HttpServlet {
 		}
 		
 		boolean status = false;
+		String nombre = "";
+		String apellido = "";
+		String dni = "";
+		String cuil = "";
+		String nacionalidad = "";
+		java.time.LocalDate fechaNac = null;
+		String Calle = "";
+		String numero = "";
+		String localidad = "";
+		String provincia = "";
+		String correo = "";
+		String telefono = "";
+		String sexoCompleto = "";
+		String username = "";
+		String pass = "";
+		String passRepetida = "";
+		 
+		 
 
 	    try {
 	        int idCliente = Integer.parseInt(request.getParameter("idCliente"));
@@ -74,29 +99,29 @@ public class ServletModificarCliente extends HttpServlet {
 	        int idUsuario = Integer.parseInt(request.getParameter("idUsuario"));
 
 	        // Datos del cliente
-	        String nombre = request.getParameter("nombre");
-	        String apellido = request.getParameter("apellido");
-	        String dni = request.getParameter("dni");
-	        String cuil = request.getParameter("cuil");
-	        String nacionalidad = request.getParameter("nacionalidad");
-	        String fechanacStr = request.getParameter("fechanac");
-	        String correo = request.getParameter("email");
-	        String telefono = request.getParameter("telefono");
-	        String sexoCompleto = request.getParameter("sexo");
+	        nombre = request.getParameter("nombre");
+	        apellido = request.getParameter("apellido");
+	        dni = request.getParameter("dni");
+	        cuil = request.getParameter("cuil");
+	        nacionalidad = request.getParameter("nacionalidad");
+	        fechaNac = LocalDate.parse(request.getParameter("fechanac"));
+	        correo = request.getParameter("email");
+	        telefono = request.getParameter("telefono");
+	        sexoCompleto = request.getParameter("sexo");
 	        
 	        //Datos de Usuario
-	        String username = request.getParameter("username");
-		    String pass = request.getParameter("pass");
-		    String passRepetida = request.getParameter("passRepetida");
+	        username = request.getParameter("username");
+		    pass = request.getParameter("pass");
+		    passRepetida = request.getParameter("passRepetida");
 
 	        // Datos de dirección
-	        String calle = request.getParameter("direccion");
-	        String numero = request.getParameter("numero");
-	        String localidad = request.getParameter("localidad");
-	        String provincia = request.getParameter("provincia");
+	        Calle = request.getParameter("direccion");
+	        numero = request.getParameter("numero");
+	        localidad = request.getParameter("localidad");
+	        provincia = request.getParameter("provincia");
 
 	       
-	        LocalDate fechaNac = LocalDate.parse(fechanacStr);
+	       
 
 		    if (!pass.equals(passRepetida)) {
 		    	
@@ -106,7 +131,7 @@ public class ServletModificarCliente extends HttpServlet {
 		    	request.setAttribute("cuil", cuil);
 		    	request.setAttribute("nacionalidad", nacionalidad);
 		    	request.setAttribute("fechanac", request.getParameter("fechanac"));
-		    	request.setAttribute("direccion", calle);
+		    	request.setAttribute("direccion", Calle);
 		    	request.setAttribute("numero", numero);
 		    	request.setAttribute("localidad", localidad);
 		    	request.setAttribute("provincia", provincia);
@@ -114,7 +139,9 @@ public class ServletModificarCliente extends HttpServlet {
 		    	request.setAttribute("telefono", telefono);
 		    	request.setAttribute("sexo", sexoCompleto);
 		    	request.setAttribute("username", username);
-
+		    	
+		    	
+		    	request.setAttribute("clienteMod", cliente);
 		        request.setAttribute("mensajeError", "Las contraseñas no coinciden.");
 		        request.getRequestDispatcher("/jsp/admin/altaCliente.jsp").forward(request, response);
 		        return;
@@ -158,17 +185,62 @@ public class ServletModificarCliente extends HttpServlet {
 		    
 		  //Datos Direccion
 		    Direccion direccion = new Direccion();
-		    direccion.setCalle(calle);
+		    direccion.setCalle(Calle);
 		    direccion.setLocalidad(localidad);
 		    direccion.setNumero(numero);
 		    direccion.setProvincia(provincia);
 		    direccion.setId(idDireccion);
 		    
 	        // Guardar
-	        ClienteDao dao = new ClienteDaoImpl();
 	        status = dao.Modificar(Cliente, Usuario, direccion);
 
-	    } catch (Exception e) {
+	    }catch(NombreUsuarioExistenteException ex1) {
+	    	request.setAttribute("nombre", nombre);
+	    	request.setAttribute("apellido", apellido);
+	    	request.setAttribute("dni", dni);
+	    	request.setAttribute("cuil", cuil);
+	    	request.setAttribute("nacionalidad", nacionalidad);
+	    	request.setAttribute("fechanac", request.getParameter("fechanac"));
+	    	request.setAttribute("direccion", Calle);
+	    	request.setAttribute("numero", numero);
+	    	request.setAttribute("localidad", localidad);
+	    	request.setAttribute("provincia", provincia);
+	    	request.setAttribute("email", correo);
+	    	request.setAttribute("telefono", telefono);
+	    	request.setAttribute("sexo", sexoCompleto);
+	    	request.setAttribute("username", username);
+	    	request.setAttribute("pass", pass);
+	    	request.setAttribute("passRepetida", passRepetida);
+
+	    	request.setAttribute("clienteMod", cliente);
+		    request.setAttribute("mensajeError", ex1.getMessage());
+			request.getRequestDispatcher("/jsp/admin/altaCliente.jsp").forward(request, response);
+	    	
+	    }catch(DniYaRegistradoException ex2) {
+	    	request.setAttribute("nombre", nombre);
+	    	request.setAttribute("apellido", apellido);
+	    	request.setAttribute("dni", dni);
+	    	request.setAttribute("cuil", cuil);
+	    	request.setAttribute("nacionalidad", nacionalidad);
+	    	request.setAttribute("fechanac", request.getParameter("fechanac"));
+	    	request.setAttribute("direccion", Calle);
+	    	request.setAttribute("numero", numero);
+	    	request.setAttribute("localidad", localidad);
+	    	request.setAttribute("provincia", provincia);
+	    	request.setAttribute("email", correo);
+	    	request.setAttribute("telefono", telefono);
+	    	request.setAttribute("sexo", sexoCompleto);
+	    	request.setAttribute("username", username);
+	    	request.setAttribute("pass", pass);
+	    	request.setAttribute("passRepetida", passRepetida);
+
+	    	request.setAttribute("clienteMod", cliente);
+		    request.setAttribute("mensajeError", ex2.getMessage());
+			request.getRequestDispatcher("/jsp/admin/altaCliente.jsp").forward(request, response);
+	    	
+	    
+	    
+	    }catch (Exception e) {
 	        status = false;
 	        e.printStackTrace();
 	    }
