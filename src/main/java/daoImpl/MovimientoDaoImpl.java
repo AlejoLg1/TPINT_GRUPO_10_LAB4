@@ -15,8 +15,8 @@ public class MovimientoDaoImpl implements MovimientosDao {
         "SELECT id_movimiento, nro_cuenta, id_tipo_movimiento, fecha, detalle, importe FROM Movimiento WHERE nro_cuenta = ? ORDER BY fecha DESC";
     
     private static final String AGREGAR_MOV = 
-    		"INSERT INTO movimiento (nro_cuenta, id_tipo_movimiento, fecha, detalle, importe) VALUES (?, ?, NOW(), ?, ?)";
-    
+    		"CALL sp_ejecutar_movimiento( ?, ?, ?, ?, ?, ?);";
+
     @Override
     public List<Movimiento> listarPorCuenta(int nroCuenta) {
         List<Movimiento> movimientos = new ArrayList<>();
@@ -45,22 +45,33 @@ public class MovimientoDaoImpl implements MovimientosDao {
     
     @Override
     public int insertarMovimientoDesdeNegocio(Connection conn, Movimiento movimiento) throws Exception {
-        String query = "INSERT INTO Movimiento (nroCuenta, idTipoMovimiento, fecha, detalle, importe) VALUES (?, ?, ?, ?, ?)";
-        PreparedStatement ps = conn.prepareStatement(query, Statement.RETURN_GENERATED_KEYS);
-        ps.setInt(1, movimiento.getNroCuenta());
-        ps.setInt(2, movimiento.getIdTipoMovimiento());
-        ps.setTimestamp(3, Timestamp.valueOf(movimiento.getFecha())); // LocalDateTime → Timestamp
-        ps.setString(4, movimiento.getDetalle());
-        ps.setBigDecimal(5, movimiento.getImporte());
 
-        int rows = ps.executeUpdate();
-        if (rows == 0) return -1;
+        CallableStatement cs = null;
+        int idGenerado = -1;
 
-        ResultSet rs = ps.getGeneratedKeys();
-        if (rs.next()) return rs.getInt(1);
+        try {
+            cs = conn.prepareCall(AGREGAR_MOV);
+            cs.setInt(1, movimiento.getNroCuenta());
+            cs.setInt(2, movimiento.getIdTipoMovimiento());
+            cs.setTimestamp(3, Timestamp.valueOf(movimiento.getFecha()));
+            cs.setString(4, movimiento.getDetalle());
+            cs.setBigDecimal(5, movimiento.getImporte());
+            cs.registerOutParameter(6, java.sql.Types.INTEGER);
 
-        return -1;
+            cs.execute();
+
+            idGenerado = cs.getInt(6);
+
+        } catch (Exception e) {
+            e.printStackTrace();
+            throw e;
+        } finally {
+            if (cs != null) cs.close();
+        }
+
+        return idGenerado;
     }
+
     
     @Override
     public BigDecimal obtenerSaldoPorCuenta(int nroCuenta) throws Exception {

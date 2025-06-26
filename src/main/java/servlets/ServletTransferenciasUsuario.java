@@ -17,8 +17,13 @@ import daoImpl.CuentaDaoImpl;
 import dominio.Cliente;
 import dominio.Cuenta;
 import dominio.Usuario;
+import dominio.Transferencia;
+import negocio.TransferenciaNegocio;
+import negocioImpl.TransferenciaNegocioImpl;
 import excepciones.CuentaExistenteExcenption;
 import excepciones.MontoInsuficienteException;
+import excepciones.MovimientoException;
+import excepciones.TransferenciaException;
 
 /**
  * Servlet implementation class ServletTransferenciasUsuario
@@ -47,12 +52,10 @@ public class ServletTransferenciasUsuario extends HttpServlet {
             return;
         }
 
-        
         ClienteDaoImpl clienteDao = new ClienteDaoImpl();
         Cliente cliente = clienteDao.obtenerPorIdUsuario(usuario.getIdUsuario());
 
-        if (cliente == null) {
-            
+        if (cliente == null) {    
             response.sendRedirect(request.getContextPath() + "/ServletLogin");
             return;
         }
@@ -62,75 +65,82 @@ public class ServletTransferenciasUsuario extends HttpServlet {
         CuentaDaoImpl cuentaDao = new CuentaDaoImpl();
         List<Cuenta> cuentas = cuentaDao.listarPorCliente(idCliente);
 
+        // Recuperar mensajes desde sesiÃ³n (si existen)
+        String mensaje = (String) session.getAttribute("mensaje");
+        Boolean estado = (Boolean) session.getAttribute("estado");
+
+        if (mensaje != null) {
+            request.setAttribute("mensaje", mensaje);
+            request.setAttribute("estado", estado);
+
+            // Eliminar los atributos de sesiÃ³n para que no se repitan
+            session.removeAttribute("mensaje");
+            session.removeAttribute("estado");
+        }
+        
+        
         request.setAttribute("listaCuentas", cuentas);
         request.getRequestDispatcher("/jsp/cliente/transferencias.jsp").forward(request, response);
+        
 	}
 
 	/**
 	 * @see HttpServlet#doPost(HttpServletRequest request, HttpServletResponse response)
 	 */
-	protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-		
-		if (request.getParameter("btnTransferir") != null) {
-		    boolean status = false;
-
-		    try {
-		        String nroCuenta = request.getParameter("cuentaOrigen") == null ? "" : request.getParameter("cuentaOrigen");
-		        String cbuDestino = request.getParameter("cbuDestino") == null ? "" : request.getParameter("cbuDestino");
-		        String monto = request.getParameter("monto") == null ? "" : request.getParameter("monto");
-		        BigDecimal montoDecimal = new BigDecimal(monto.trim());
-
-		        if (nroCuenta.trim().isEmpty() || monto.trim().isEmpty() || cbuDestino.trim().isEmpty()) {
-		            throw new IllegalArgumentException();
-		        }
-
-		        Cuenta cuentaOrigen = ObtenerCuentaOrigen(Integer.parseInt(nroCuenta.trim()), montoDecimal);
-		        Cuenta cuentaDestino = ObtenerCuentaDestino(cbuDestino);
-
-		        int idMovSalida = RegistrarMovimiento(cuentaOrigen, montoDecimal, 1);
-		        int idMovEntrada = RegistrarMovimiento(cuentaDestino, montoDecimal, 2);
-
-		        status = true;
-		    } catch (CuentaExistenteExcenption e) {
-		        // enviar mensaje al jsp
-		    } catch (Exception e) {
-		        status = false;
-		        e.printStackTrace();
-		    }
-
-		    request.setAttribute("estado", status);
-		    RequestDispatcher rd = request.getRequestDispatcher("/jsp/cliente/transferencias.jsp");
-		    rd.forward(request, response);
-		    return; // ⬅️ Asegura que no siga al doGet
-		}
-
-		doGet(request, response);
-	}
 	
-	private Cuenta ObtenerCuentaOrigen(int idCuenta, BigDecimal monto) throws CuentaExistenteExcenption, MontoInsuficienteException
-	{
-		dao.CuentaDao cuentaDao = new daoImpl.CuentaDaoImpl();
-		Cuenta cuenta = null;
-		
-		try {
-			cuenta = cuentaDao.obtenerCuentaPorId(idCuenta);
-			
-			if(cuenta == null || cuenta.isEstado() == false)
-				throw new CuentaExistenteExcenption("No se encontro la cuenta con id: " + idCuenta);
-			
-			if(cuenta.getSaldo().compareTo(monto) == -1) 
-				throw new MontoInsuficienteException("Monto insuficiente en la cuenta");
-			
-	    } catch (CuentaExistenteExcenption | MontoInsuficienteException e) {
-	        throw e; 
-	    } catch (Exception e) {
-	        throw new CuentaExistenteExcenption("Error al obtener datos de la cuenta origen");
-	    }
-		
-		return cuenta;
-	}
+	protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+        HttpSession session = request.getSession();
+        String msg = "Operacion realizada con exito";
+        boolean status = false;
 
-	private Cuenta ObtenerCuentaDestino(String cbu) throws CuentaExistenteExcenption
+        if (request.getParameter("btnTransferir") != null) {
+            TransferenciaNegocio transfNegImp = new TransferenciaNegocioImpl();
+            Transferencia transf = new Transferencia();
+
+            try {
+                String nroCuentaOrigen = request.getParameter("cuentaOrigen") == null ? "" : request.getParameter("cuentaOrigen");
+                String cbuDestino = request.getParameter("cbuDestino") == null ? "" : request.getParameter("cbuDestino");
+                String monto = request.getParameter("monto") == null ? "" : request.getParameter("monto");
+
+                if (nroCuentaOrigen.trim().isEmpty() || monto.trim().isEmpty() || cbuDestino.trim().isEmpty()) {
+                    throw new IllegalArgumentException();
+                }
+
+                double importe = Double.parseDouble(monto);
+                int nroCuentaDestino = ObtenerNroCuentaDestino(cbuDestino);
+
+                transf.setNroCuentaOrigen(Integer.parseInt(nroCuentaOrigen));
+                transf.setNroCuentaDestino(nroCuentaDestino);
+                transf.setImporte(importe);
+
+                transfNegImp.registrarTransferencia(transf);
+                status = true;
+
+            } catch(TransferenciaException e) {
+            	status = false;
+            	msg = e.getMessage();
+            } catch(MovimientoException e) {
+            	status = false;
+            	msg = e.getMessage();
+            } catch (CuentaExistenteExcenption e) {
+                msg = e.getMessage();
+            } catch (Exception e) {
+                status = false;
+                e.printStackTrace();
+                msg = "Ocurrio un error al realizar la transferencia.";
+            }
+        }
+
+        // Guardar mensaje y estado en sesiÃ³n
+        session.setAttribute("mensaje", msg);
+        session.setAttribute("estado", status);
+
+        // Redirigir a doGet (POST â†’ REDIRECT â†’ GET)
+        response.sendRedirect(request.getContextPath() + "/ServletTransferenciasUsuario");
+    }
+	
+
+	private int ObtenerNroCuentaDestino(String cbu) throws CuentaExistenteExcenption
 	{
 		dao.CuentaDao cuentaDao = new daoImpl.CuentaDaoImpl();
 		Cuenta cuenta = null;
@@ -145,13 +155,7 @@ public class ServletTransferenciasUsuario extends HttpServlet {
 	    	throw new CuentaExistenteExcenption("Error al obtener datos de la cuenta Destino");
 	    }
 		
-		return cuenta;
+		return cuenta.getNroCuenta();
 	}
 
-	private int RegistrarMovimiento(Cuenta cuenta, BigDecimal monto, int tipoMov)
-	{
-		
-		// registrar mov en la db
-		return 1;
-	}
 }
