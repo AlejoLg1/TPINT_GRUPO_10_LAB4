@@ -70,7 +70,7 @@
 
                 <div class="form-item">
                     <label for="dni">DNI:</label>
-                    <input type="text" id="dni" name="dni"  value="<%=request.getAttribute("dni") != null ? request.getAttribute("dni") : (esModificacion ? clienteMod.getDni() : "") %>" required pattern="[0-9]+"
+                    <input type="text" id="dni" name="dni"  value="<%=request.getAttribute("dni") != null ? request.getAttribute("dni") : (esModificacion ? clienteMod.getDni() : "") %>" <%= esModificacion ? "readonly=\"readonly\"" : "" %> required pattern="[0-9]+"
                     title="Solo se permiten números.">
                 </div>
             </div>
@@ -78,7 +78,7 @@
             <div class="form-group">
                 <div class="form-item">
                     <label for="cuil">CUIL:</label>
-                    <input type="text" id="cuil" name="cuil"  value="<%= request.getAttribute("cuil") != null ? request.getAttribute("cuil") : (esModificacion ? clienteMod.getCuil() : "") %>" required pattern="[0-9]+"
+                    <input type="text" id="cuil" name="cuil"  value="<%= request.getAttribute("cuil") != null ? request.getAttribute("cuil") : (esModificacion ? clienteMod.getCuil() : "") %>" <%= esModificacion ? "readonly=\"readonly\"" : "" %> required pattern="[0-9]+"
                     title="Solo se permiten números.">
                 </div>
 
@@ -147,7 +147,7 @@
             <div class="form-group">
                 <div class="form-item">
                     <label for="username">Usuario:</label>
-                    <input type="text" id="username" name="username" value="<%=request.getAttribute("username") != null ? request.getAttribute("username") : (esModificacion ? clienteMod.getUsuario().getNombreUsuario() : "") %>" required>
+                    <input type="text" id="username" name="username" value="<%=request.getAttribute("username") != null ? request.getAttribute("username") : (esModificacion ? clienteMod.getUsuario().getNombreUsuario() : "") %>" required <%= esModificacion ? "readonly=\"readonly\"" : "" %>>
                 </div>
 
                 <div class="form-item">
