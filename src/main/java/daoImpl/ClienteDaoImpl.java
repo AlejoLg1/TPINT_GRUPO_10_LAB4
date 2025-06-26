@@ -122,7 +122,7 @@ public class ClienteDaoImpl implements ClienteDao {
 	            pstDireccion.setString(2, direccion.getNumero());
 	            pstDireccion.setString(3, direccion.getLocalidad());
 	            pstDireccion.setString(4, direccion.getProvincia());
-	            pstDireccion.setInt(5, direccion.getId());  // Usar el ID de direccion directamente
+	            pstDireccion.setInt(5, direccion.getId());  
 	            
 	            int filasDireccion = pstDireccion.executeUpdate();
 	            if (filasDireccion == 0) {
@@ -166,9 +166,30 @@ public class ClienteDaoImpl implements ClienteDao {
 
 
 	@Override
-	public boolean Eliminar(Cliente cliente) {
-		// TODO Auto-generated method stub
-		return false;
+	public boolean Eliminar(Cliente cliente, Usuario usuario) {
+		   Connection cn = Conexion.getConexion().getSQLConexion();
+	        boolean eliminado = false;
+
+	        String queryCliente = "UPDATE cliente SET estado = false WHERE id_cliente = ?";
+	        String queryUsuario = "UPDATE usuario SET estado = false WHERE id_usuario = ?";
+
+	        try {
+	            PreparedStatement pstCliente = cn.prepareStatement(queryCliente);
+	            PreparedStatement pstUsuario = cn.prepareStatement(queryUsuario);
+	            pstCliente.setInt(1, cliente.getIdCliente());
+	            pstUsuario.setInt(1, usuario.getIdUsuario());
+
+	            int filasCliente = pstCliente.executeUpdate();
+	            int filasUsuario = pstUsuario.executeUpdate();
+	            if (filasCliente > 0 && filasUsuario > 0) {
+	                cn.commit();
+	                eliminado = true;
+	            }
+	        } catch (Exception e) {
+	            e.printStackTrace();
+	        }
+
+	        return eliminado;
 	}
 
 
@@ -400,4 +421,32 @@ public class ClienteDaoImpl implements ClienteDao {
 	    return idCliente;
 	}
 
+	@Override
+	public boolean Activar(Cliente cliente, Usuario usuario) {
+		  Connection cn = Conexion.getConexion().getSQLConexion();
+	        boolean activado = false;
+
+	        String queryCliente = "UPDATE cliente SET estado = true WHERE id_cliente = ?";
+	        String queryUsuario = "UPDATE usuario SET estado = true WHERE id_usuario = ?";
+
+	        try {
+	            PreparedStatement pstCliente = cn.prepareStatement(queryCliente);
+	            PreparedStatement pstUsuario = cn.prepareStatement(queryUsuario);
+	            pstCliente.setInt(1, cliente.getIdCliente());
+	            pstUsuario.setInt(1, usuario.getIdUsuario());
+
+	            int filasCliente = pstCliente.executeUpdate();
+	            int filasUsuario = pstUsuario.executeUpdate();
+	            if (filasCliente > 0 && filasUsuario > 0) {
+	                cn.commit();
+	                activado = true;
+	            }
+	        } catch (Exception e) {
+	            e.printStackTrace();
+	        }
+
+	        return activado;
+	}
+
 }
+

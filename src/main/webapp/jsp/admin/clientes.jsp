@@ -75,7 +75,11 @@
 								    mensaje: '¿Estás seguro que deseas desactivar al cliente <%= c.getNombre() %>?',
 								    botonTexto: 'Desactivar',
 								    botonClase: 'btn-danger',
-								    inputs: [{ name: 'id', value: '<%= c.getIdCliente() %>' }]
+								   inputs: [
+    								{ name: 'id', value: '<%= c.getIdCliente() %>' },
+    								{ name: 'idUsuario', value: '<%= c.getIdUsuario() %>' }
+									]
+								    
 								  })">
 								  Desactivar
 								</button>
@@ -87,10 +91,13 @@
 								  class="btn btn-success btn-sm"
 								  onclick="abrirConfirmacion({
 								    action: '${pageContext.request.contextPath}/ServletActivarCliente',
-								    mensaje: '¿Deseas activar nuevamente al usuario <%= c.getNombre() %>?',
+								    mensaje: '¿Deseas activar nuevamente al cliente <%= c.getNombre() %>?',
 								    botonTexto: 'Activar',
 								    botonClase: 'btn-success',
-								    inputs: [{ name: 'id', value: '<%= c.getIdCliente() %>' }]
+								   inputs: [
+    								{ name: 'id', value: '<%= c.getIdCliente() %>' },
+    								{ name: 'idUsuario', value: '<%= c.getIdUsuario() %>' }
+									]
 								  })">
 								  Activar
 								</button>

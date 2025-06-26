@@ -13,9 +13,7 @@ import java.io.IOException;
 import java.time.LocalDate;
 
 import dao.ClienteDao;
-import dao.UsuarioDao;
 import daoImpl.ClienteDaoImpl;
-import daoImpl.UsuarioDaoImpl;
 import dominio.Cliente;
 import dominio.Direccion;
 import dominio.Usuario;
@@ -97,10 +95,9 @@ public class ServletModificarCliente extends HttpServlet {
 	        String localidad = request.getParameter("localidad");
 	        String provincia = request.getParameter("provincia");
 
-	        // Convertir fecha
+	       
 	        LocalDate fechaNac = LocalDate.parse(fechanacStr);
 
-	        // 2. Validar que las contraseñas coincidan
 		    if (!pass.equals(passRepetida)) {
 		    	
 		    	request.setAttribute("nombre", nombre);
@@ -123,7 +120,7 @@ public class ServletModificarCliente extends HttpServlet {
 		        return;
 		    }
 		    
-	        // Convertir sexo
+	        
 	        String sexo;
 	        switch (sexoCompleto) {
 	            case "Masculino": sexo = "M"; break;
@@ -132,7 +129,7 @@ public class ServletModificarCliente extends HttpServlet {
 	            default: sexo = "X"; break;
 	        }
 
-	     // Insertar en la base de datos
+	  
 		    
 		    //Datos cliente
 		    Cliente Cliente = new Cliente();
