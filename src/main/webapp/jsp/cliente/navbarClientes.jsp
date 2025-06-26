@@ -11,7 +11,7 @@
 	    <li><a href="${pageContext.request.contextPath}/ServletVerCuentas">Mis cuentas</a></li>
 	    <li><a href="${pageContext.request.contextPath}/ServletTransferenciasUsuario">Transferencias</a></li>
 	    <li><a href="${pageContext.request.contextPath}/ServletSolicitarPrestamo">Préstamos</a></li>
-	    <li><a href="${pageContext.request.contextPath}/jsp/cliente/pagarCuotas.jsp">Pago de cuotas</a></li>
+	    <li><a href="${pageContext.request.contextPath}/ServletPagoCuotas">Pago de cuotas</a></li>
 	    <li><a href="${pageContext.request.contextPath}/ServletMisDatosCliente">Mis datos</a></li>
     </ul>
     

@@ -1,12 +1,10 @@
 package daoImpl;
 
 import java.sql.*;
+
 import java.math.BigDecimal;
 import java.util.*;
 import dominio.Movimiento;
-import dominio.Transferencia;
-import excepciones.DniYaRegistradoException;
-import excepciones.NombreUsuarioExistenteException;
 import dao.MovimientosDao;
 import utils.Conexion;
 
@@ -134,6 +132,27 @@ public class MovimientoDaoImpl implements MovimientosDao {
 
         return idMovimiento;
     }
+    
+    public int insertarMovimiento(Movimiento movimiento, Connection conn) throws Exception {
+        String query = "INSERT INTO Movimiento (nro_cuenta, id_tipo_movimiento, fecha, detalle, importe) VALUES (?, ?, ?, ?, ?)";
+        PreparedStatement ps = conn.prepareStatement(query, Statement.RETURN_GENERATED_KEYS);
+
+        ps.setInt(1, movimiento.getNroCuenta());
+        ps.setInt(2, movimiento.getIdTipoMovimiento());
+        ps.setTimestamp(3, Timestamp.valueOf(movimiento.getFecha())); // Convierte LocalDateTime a Timestamp
+        ps.setString(4, movimiento.getDetalle());
+        ps.setBigDecimal(5, movimiento.getImporte());
+
+        int rows = ps.executeUpdate();
+        if (rows == 0) return -1;
+
+        ResultSet rs = ps.getGeneratedKeys();
+        if (rs.next()) return rs.getInt(1);
+
+        return -1;
+    }
+    
+    
 
 
 

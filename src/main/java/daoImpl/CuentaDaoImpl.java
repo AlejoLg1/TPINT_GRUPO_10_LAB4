@@ -1,6 +1,7 @@
 package daoImpl;
 
 import java.sql.CallableStatement;
+
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
@@ -11,6 +12,8 @@ import java.util.List;
 import dao.CuentaDao;
 import dominio.Cuenta;
 import utils.Conexion;
+import dominio.Cuota;
+import java.math.BigDecimal;
 
 public class CuentaDaoImpl implements CuentaDao {
 
@@ -305,6 +308,30 @@ public class CuentaDaoImpl implements CuentaDao {
 
 	    return cuenta;
 	}
+	
+	public boolean actualizarSaldo(int nroCuenta, BigDecimal nuevoSaldo) {
+	    String query = "UPDATE Cuenta SET saldo = ? WHERE nro_cuenta = ?";
+	    try (Connection conn = Conexion.getConexion().getSQLConexion();
+	         PreparedStatement stmt = conn.prepareStatement(query)) {
+	         
+	        stmt.setBigDecimal(1, nuevoSaldo);
+	        stmt.setInt(2, nroCuenta);
+
+	        int filas = stmt.executeUpdate();
+	        if (filas > 0) {
+	            conn.commit();
+	            return true;
+	        } else {
+	            conn.rollback();
+	            return false;
+	        }
+
+	    } catch (Exception e) {
+	        e.printStackTrace();
+	        return false;
+	    }
+	}
+	
 
 
 }

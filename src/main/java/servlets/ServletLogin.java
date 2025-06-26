@@ -1,6 +1,7 @@
 package servlets;
 
 import jakarta.servlet.ServletException;
+
 import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
@@ -11,6 +12,8 @@ import dominio.Usuario;
 import excepciones.AutenticacionException;
 import negocioImpl.AutenticacionNegocioImpl;
 import java.io.IOException;
+import daoImpl.ClienteDaoImpl;
+import dominio.Cliente;
 
 @WebServlet("/ServletLogin")
 public class ServletLogin extends HttpServlet {
@@ -42,9 +45,18 @@ public class ServletLogin extends HttpServlet {
                     session.setAttribute("rol", "bancario");
                 }
             } else {
-                // ACÁ HAY QUE VALIDAR QUE EL USUARIO ESTÉ LINKEADO A UNA INSTANCIA DE CLIENTES
-                session.setAttribute("rol", "cliente");
-                response.sendRedirect(request.getContextPath() + "/ServletMenuCliente");
+                // Validar que el usuario esté vinculado a un cliente
+                ClienteDaoImpl clienteDao = new ClienteDaoImpl();
+                Cliente cliente = clienteDao.obtenerPorIdUsuario(usuario.getIdUsuario());
+
+                if (cliente != null) {
+                    session.setAttribute("idCliente", cliente.getIdCliente());
+                    session.setAttribute("rol", "cliente");
+                    response.sendRedirect(request.getContextPath() + "/ServletMenuCliente");
+                } else {
+                    request.setAttribute("errorLogin", "Este usuario no está vinculado a un cliente.");
+                    request.getRequestDispatcher("/jsp/comunes/login.jsp").forward(request, response);
+                }
             }
 
         } catch (AutenticacionException e) {

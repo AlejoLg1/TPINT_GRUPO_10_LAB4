@@ -366,5 +366,38 @@ public class ClienteDaoImpl implements ClienteDao {
 
 		    return cliente;
 		}
+	
+	@Override
+	public int obtenerIdClientePorIdUsuario(int idUsuario) {
+	    int idCliente = -1;
+	    Connection conexion = null;
+	    PreparedStatement stmt = null;
+	    ResultSet rs = null;
+
+	    try {
+	        conexion = Conexion.getConexion().getSQLConexion();
+	        String query = "SELECT id_cliente FROM Cliente WHERE id_usuario = ?";
+	        stmt = conexion.prepareStatement(query);
+	        stmt.setInt(1, idUsuario);
+	        rs = stmt.executeQuery();
+
+	        if (rs.next()) {
+	            idCliente = rs.getInt("id_cliente");
+	        }
+
+	    } catch (SQLException e) {
+	        e.printStackTrace();
+	    } finally {
+	        try {
+	            if (rs != null) rs.close();
+	            if (stmt != null) stmt.close();
+	            if (conexion != null) conexion.close();
+	        } catch (SQLException e) {
+	            e.printStackTrace();
+	        }
+	    }
+
+	    return idCliente;
+	}
 
 }

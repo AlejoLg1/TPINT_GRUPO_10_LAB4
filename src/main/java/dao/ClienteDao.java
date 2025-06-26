@@ -17,4 +17,5 @@ public interface ClienteDao {
 	public List<Cliente> Listar2();
 	public Cliente obtenerPorIdUsuario(int idUsuario);
 	public Cliente obtenerPorIdCliente(int idCliente);
+	public int obtenerIdClientePorIdUsuario(int idUsuario);
 }
