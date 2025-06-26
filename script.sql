@@ -291,3 +291,36 @@ ADD COLUMN estado VARCHAR(50) NOT NULL,
 ADD COLUMN cuotas_pagadas INT NOT NULL DEFAULT 0;
 
 
+DELIMITER $$
+
+CREATE PROCEDURE sp_ejecutar_movimiento(
+    IN p_nro_cuenta INT,
+    IN p_id_tipo_movimiento INT,
+    IN p_fecha DATETIME,
+    IN p_detalle VARCHAR(100),
+    IN p_importe DECIMAL(12,2),
+    OUT p_id_movimiento INT
+)
+BEGIN
+    DECLARE v_saldo_actual DECIMAL(12,2);
+
+    -- Verificar saldo actual de la cuenta
+    SELECT saldo INTO v_saldo_actual FROM Cuenta WHERE nro_cuenta = p_nro_cuenta;
+
+    -- Validar saldo insuficiente si el movimiento es negativo
+    IF p_importe < 0 AND ABS(p_importe) > v_saldo_actual THEN
+        SIGNAL SQLSTATE '45000'
+        SET MESSAGE_TEXT = 'Saldo insuficiente.';
+    END IF;
+
+    -- Insertar movimiento
+    INSERT INTO Movimiento (nro_cuenta, id_tipo_movimiento, fecha, detalle, importe)
+    VALUES (p_nro_cuenta, p_id_tipo_movimiento, p_fecha, p_detalle, p_importe);
+
+    -- Obtener el ID generado
+    SET p_id_movimiento = LAST_INSERT_ID();
+
+    -- Actualizar el saldo de la cuenta
+    UPDATE Cuenta SET saldo = saldo + p_importe WHERE nro_cuenta = p_nro_cuenta;
+END$$
+DELIMITER ;
