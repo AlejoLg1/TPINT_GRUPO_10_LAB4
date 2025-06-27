@@ -32,6 +32,8 @@ CREATE TABLE Cliente (
     sexo ENUM('M', 'F', 'X') NOT NULL,
     nacionalidad VARCHAR(50),
     fecha_nacimiento DATE NOT NULL,
+    fecha_alta DATE NOT NULL DEFAULT (CURDATE()),
+    fecha_baja DATE DEFAULT NULL,
     correo VARCHAR(100),
     telefono VARCHAR(20),
     estado BOOLEAN DEFAULT TRUE,
@@ -316,4 +318,20 @@ BEGIN
     -- Actualizar el saldo de la cuenta
     UPDATE Cuenta SET saldo = saldo + p_importe WHERE nro_cuenta = p_nro_cuenta;
 END$$
+DELIMITER ;
+
+
+DELIMITER //
+
+CREATE TRIGGER actualizar_fecha_baja_cliente
+BEFORE UPDATE ON Cliente
+FOR EACH ROW
+BEGIN
+    -- Si se cambia de activo a inactivo y no tiene fecha_baja
+    IF NEW.estado = FALSE AND OLD.estado = TRUE AND NEW.fecha_baja IS NULL THEN
+        SET NEW.fecha_baja = CURDATE();
+    END IF;
+END;
+//
+
 DELIMITER ;
