@@ -55,24 +55,20 @@ public class ServletBajaUsuario extends HttpServlet {
 	    int id = Integer.parseInt(request.getParameter("id"));
 	    UsuarioDao dao = new UsuarioDaoImpl();
 
-	    // Obtenemos el usuario que se desea desactivar
 	    Usuario usuarioADesactivar = dao.obtenerPorId(id);
 
-	    // Verificamos si es administrador y si es el último activo
 	    if (usuarioADesactivar.isAdmin() && dao.contarAdminsActivos() == 1) {
 	        request.setAttribute("errorUsuario", "No se puede desactivar al último administrador activo.");
 	        request.getRequestDispatcher("/ServletListarUsuario").forward(request, response);
 	        return;
 	    }
 	    
-	 // Validación: No desactivarse a sí mismo
 	    if (usuario.getIdUsuario() == usuarioADesactivar.getIdUsuario()) {
 	        request.setAttribute("errorUsuario", "No podés desactivarte a vos mismo. Contactá a un otro administrador para realizar la desactivación.");
 	        request.getRequestDispatcher("/ServletListarUsuario").forward(request, response);
 	        return;
 	    }
 	    
-	    // Desactivación permitida
 	    usuarioADesactivar.setEstado(false);
 	    dao.Eliminar(usuarioADesactivar);
 
