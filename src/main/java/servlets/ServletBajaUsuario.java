@@ -64,7 +64,14 @@ public class ServletBajaUsuario extends HttpServlet {
 	        request.getRequestDispatcher("/ServletListarUsuario").forward(request, response);
 	        return;
 	    }
-
+	    
+	 // Validación: No desactivarse a sí mismo
+	    if (usuario.getIdUsuario() == usuarioADesactivar.getIdUsuario()) {
+	        request.setAttribute("errorUsuario", "No podés desactivarte a vos mismo. Contactá a un otro administrador para realizar la desactivación.");
+	        request.getRequestDispatcher("/ServletListarUsuario").forward(request, response);
+	        return;
+	    }
+	    
 	    // Desactivación permitida
 	    usuarioADesactivar.setEstado(false);
 	    dao.Eliminar(usuarioADesactivar);
