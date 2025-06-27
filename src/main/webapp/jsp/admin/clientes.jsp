@@ -77,7 +77,6 @@
 								    botonClase: 'btn-danger',
 								   inputs: [
     								{ name: 'id', value: '<%= c.getIdCliente() %>' },
-    								{ name: 'idUsuario', value: '<%= c.getIdUsuario() %>' }
 									]
 								    
 								  })">
@@ -96,7 +95,6 @@
 								    botonClase: 'btn-success',
 								   inputs: [
     								{ name: 'id', value: '<%= c.getIdCliente() %>' },
-    								{ name: 'idUsuario', value: '<%= c.getIdUsuario() %>' }
 									]
 								  })">
 								  Activar

@@ -57,20 +57,18 @@ public class ServletBajaCliente extends HttpServlet {
 		}
 		
 		int idCliente = Integer.parseInt(request.getParameter("id"));
-		int idUsuario = Integer.parseInt(request.getParameter("idUsuario"));
 		
 		ClienteDao dao = new ClienteDaoImpl();
+		UsuarioDao daoUsuario = new UsuarioDaoImpl();
 		
 		Cliente c = new Cliente();
-		Usuario u = new Usuario();
+		Usuario u = daoUsuario.obtenerPorIdCliente(idCliente);
 		
 		c.setIdCliente(idCliente);
 		c.setEstado(false);
-		
-		u.setIdUsuario(idCliente);
-		u.setEstado(false);
-		
-		dao.Eliminar(c, u);
+		System.out.println("ID USUARIO: " + u.getIdUsuario());
+
+		dao.Eliminar(c, u.getIdUsuario());
 		
 		
 		

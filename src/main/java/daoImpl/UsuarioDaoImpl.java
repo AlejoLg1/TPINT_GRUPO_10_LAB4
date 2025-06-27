@@ -160,6 +160,38 @@ public class UsuarioDaoImpl implements UsuarioDao {
         return usuario;
     }
     
+    @Override
+    public Usuario obtenerPorIdCliente(int idCliente) {
+        Connection cn = Conexion.getConexion().getSQLConexion();
+        Usuario usuario = null;
+
+        String query = "SELECT u.* \r\n"
+        		+ "FROM cliente c\r\n"
+        		+ "INNER JOIN usuario u ON c.id_usuario = u.id_usuario\r\n"
+        		+ "WHERE c.id_cliente = ?\r\n";
+
+        try {
+            PreparedStatement pst = cn.prepareStatement(query);
+            pst.setInt(1, idCliente);
+            ResultSet rs = pst.executeQuery();
+
+            if (rs.next()) {
+                usuario = new Usuario();
+                usuario.setIdUsuario(rs.getInt("id_usuario"));
+                usuario.setNombreUsuario(rs.getString("nombre_usuario"));
+                usuario.setClave(rs.getString("clave"));
+                usuario.setTipo(rs.getString("tipo"));
+                usuario.setIsAdmin(rs.getBoolean("is_admin"));
+                usuario.setEstado(rs.getBoolean("estado"));
+            }
+
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+        return usuario;
+    }
+    
     public Usuario obtenerPorCredenciales(String username, String password) {
         Usuario usuario = null;
 

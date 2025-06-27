@@ -166,7 +166,7 @@ public class ClienteDaoImpl implements ClienteDao {
 
 
 	@Override
-	public boolean Eliminar(Cliente cliente, Usuario usuario) {
+	public boolean Eliminar(Cliente cliente, int idUsuario) {
 		   Connection cn = Conexion.getConexion().getSQLConexion();
 	        boolean eliminado = false;
 
@@ -177,8 +177,7 @@ public class ClienteDaoImpl implements ClienteDao {
 	            PreparedStatement pstCliente = cn.prepareStatement(queryCliente);
 	            PreparedStatement pstUsuario = cn.prepareStatement(queryUsuario);
 	            pstCliente.setInt(1, cliente.getIdCliente());
-	            pstUsuario.setInt(1, usuario.getIdUsuario());
-
+	            pstUsuario.setInt(1, idUsuario);
 	            int filasCliente = pstCliente.executeUpdate();
 	            int filasUsuario = pstUsuario.executeUpdate();
 	            if (filasCliente > 0 && filasUsuario > 0) {
@@ -422,7 +421,7 @@ public class ClienteDaoImpl implements ClienteDao {
 	}
 
 	@Override
-	public boolean Activar(Cliente cliente, Usuario usuario) {
+	public boolean Activar(Cliente cliente, int idUsuario) {
 		  Connection cn = Conexion.getConexion().getSQLConexion();
 	        boolean activado = false;
 
@@ -433,7 +432,7 @@ public class ClienteDaoImpl implements ClienteDao {
 	            PreparedStatement pstCliente = cn.prepareStatement(queryCliente);
 	            PreparedStatement pstUsuario = cn.prepareStatement(queryUsuario);
 	            pstCliente.setInt(1, cliente.getIdCliente());
-	            pstUsuario.setInt(1, usuario.getIdUsuario());
+	            pstUsuario.setInt(1, idUsuario);
 
 	            int filasCliente = pstCliente.executeUpdate();
 	            int filasUsuario = pstUsuario.executeUpdate();

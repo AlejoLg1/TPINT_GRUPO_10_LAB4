@@ -13,6 +13,7 @@ public interface UsuarioDao {
 	public boolean ValidarUsuario(Usuario usuario);
 	public Usuario obtenerPorId(int id);
 	public Usuario obtenerPorCredenciales(String username, String password);
+	public Usuario obtenerPorIdCliente(int idCliente);
 	public int ObtenerNuevoId();
 	public List<Usuario> Listar();
 	
