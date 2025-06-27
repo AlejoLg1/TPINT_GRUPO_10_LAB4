@@ -277,6 +277,22 @@ public class UsuarioDaoImpl implements UsuarioDao {
         return existe;
     }
 
+    @Override
+    public int contarAdminsActivos() {
+        int cantidad = 0;
+        Connection cn = Conexion.getConexion().getSQLConexion();
+        String query = "SELECT COUNT(*) FROM Usuario WHERE is_admin = 1 AND estado = 1";
+
+        try (PreparedStatement pst = cn.prepareStatement(query)) {
+            ResultSet rs = pst.executeQuery();
+            if (rs.next()) {
+                cantidad = rs.getInt(1);
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return cantidad;
+    }
 
 
 }

@@ -40,27 +40,37 @@ public class ServletBajaUsuario extends HttpServlet {
 	}
 
 
+	@Override
 	protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-		HttpSession session = request.getSession(false);
-		Usuario usuario = (Usuario) session.getAttribute("usuario");
+	    HttpSession session = request.getSession(false);
+	    Usuario usuario = (Usuario) session.getAttribute("usuario");
 
-		AutenticacionNegocioImpl auth = new AutenticacionNegocioImpl();
+	    AutenticacionNegocioImpl auth = new AutenticacionNegocioImpl();
 
-		if (usuario == null || !auth.validarRolAdmin(usuario)) {
-		    response.sendRedirect(request.getContextPath() + "/ServletMenuAdmin");
-		    return;
-		}
-		
-		int id = Integer.parseInt(request.getParameter("id"));
+	    if (usuario == null || !auth.validarRolAdmin(usuario)) {
+	        response.sendRedirect(request.getContextPath() + "/ServletMenuAdmin");
+	        return;
+	    }
 
-		UsuarioDao dao = new UsuarioDaoImpl();
-		Usuario u = new Usuario();
-		u.setIdUsuario(id);
-		u.setEstado(false);
+	    int id = Integer.parseInt(request.getParameter("id"));
+	    UsuarioDao dao = new UsuarioDaoImpl();
 
-		dao.Eliminar(u);
+	    // Obtenemos el usuario que se desea desactivar
+	    Usuario usuarioADesactivar = dao.obtenerPorId(id);
 
-		response.sendRedirect(request.getContextPath() + "/ServletListarUsuario");
+	    // Verificamos si es administrador y si es el último activo
+	    if (usuarioADesactivar.isAdmin() && dao.contarAdminsActivos() == 1) {
+	        request.setAttribute("errorUsuario", "No se puede desactivar al último administrador activo.");
+	        request.getRequestDispatcher("/ServletListarUsuario").forward(request, response);
+	        return;
+	    }
+
+	    // Desactivación permitida
+	    usuarioADesactivar.setEstado(false);
+	    dao.Eliminar(usuarioADesactivar);
+
+	    response.sendRedirect(request.getContextPath() + "/ServletListarUsuario");
 	}
+
 
 }
