@@ -1,5 +1,6 @@
 package dao;
 
+import java.sql.SQLException;
 import java.util.List;
 
 import dominio.Direccion;
@@ -9,7 +10,7 @@ import excepciones.NombreUsuarioExistenteException;
 import dominio.Cliente;
 
 public interface ClienteDao {
-	public boolean Agregar(Cliente cliente, Usuario usuario,  Direccion direccion)throws NombreUsuarioExistenteException, DniYaRegistradoException;
+	public boolean Agregar(Cliente cliente, Usuario usuario,  Direccion direccion)throws NombreUsuarioExistenteException, DniYaRegistradoException, SQLException;
 	public boolean Modificar(Cliente cliente,Usuario usuario, Direccion direccion)throws NombreUsuarioExistenteException, DniYaRegistradoException;
 	public boolean Eliminar(Cliente cliente, int idUsuario);
 	public boolean Activar(Cliente cliente, int idUsuario);

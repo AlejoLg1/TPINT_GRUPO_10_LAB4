@@ -98,7 +98,7 @@
 	            
 	            <div class="form-item">
 	                <label for="sexo">Sexo:</label>
-	                <input type="text" id="sexo" value="<%=cliente.getSexo()%>" readonly>
+	                <input type="text" id="sexo" value="<%=cliente.getSexoCompleto()%>" readonly>
 	            </div>
 	        </div>
 	    </div>

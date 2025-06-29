@@ -27,15 +27,21 @@
     <div class="welcome-card">
         <h1><%= esModificacion ? "Modificar Cliente" : "Alta de Cliente" %></h1>
 
-        <% boolean estado = (request.getAttribute("estado") != null ? (boolean) request.getAttribute("estado") : false); %>
-        <% if (estado) { %>
-            <div class="panelSuccess">¡Operación realizada con éxito!</div>
-        <% } %>
-
-        <% String mensajeError = (String) request.getAttribute("mensajeError"); %>
-        <% if (mensajeError != null) { %>
-            <div class="panelError"><%= mensajeError %></div>
-        <% } %>
+		<%  // Mensaje de confirmacion de exito de solicitud
+			boolean estado = (request.getAttribute("estado") != null ? (boolean)request.getAttribute("estado") : false);
+			String msg = (String)request.getAttribute("mensaje");
+		
+			if(request.getAttribute("estado") != null)
+			{
+				if(estado == true)
+				{%>
+					  <p style="color: green; font-weight: bold; margin-bottom: 15px;"><%= msg %></p>
+				<%}
+				else{
+					%> <p style="color: red; font-weight: bold; margin-bottom: 15px;"><%= msg %></p><%
+				}
+			}
+		%>
 
         <form action="${pageContext.request.contextPath}/<%= esModificacion ? "ServletModificarCliente" : "ServletAltaCliente" %>" method="post">
             <% if (esModificacion) { %>

@@ -163,6 +163,7 @@ BEGIN
     DECLARE v_id_direccion INT;
     DECLARE existe_usuario INT DEFAULT 0;
     DECLARE existe_dni INT DEFAULT 0;
+    DECLARE exite_cuil INT DEFAULT 0;
 
     -- Validar existencia
     SELECT COUNT(*) INTO existe_usuario
@@ -173,12 +174,20 @@ BEGIN
     FROM cliente
     WHERE dni = p_dni;
 
+    SELECT COUNT(*) INTO exite_cuil
+    FROM cliente
+    WHERE cuil = p_cuil;
+
     IF existe_usuario > 0 THEN
        SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT = 'El nombre de usuario ya existe.';
     END IF;
 
     IF existe_dni > 0 THEN
         SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT = 'El DNI de usuario ya esta registrado.';
+    END IF;
+    
+	IF exite_cuil > 0 THEN
+        SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT = 'El CUIL de usuario ya esta registrado.';
     END IF;
 
     -- Insertar en Usuario

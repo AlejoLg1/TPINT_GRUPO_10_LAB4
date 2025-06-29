@@ -113,9 +113,7 @@ public class Cliente {
 	    }
 
 	    public String getSexo() {
-	        if(this.sexo.equalsIgnoreCase("M")) return "Masculino";
-	        else if(this.sexo.equalsIgnoreCase("F")) return "Femenino";
-	        else return "Indefinido";
+	        return sexo;
 	    }
 
 	    public void setSexo(String sexo) {
@@ -162,4 +160,9 @@ public class Cliente {
 	        this.estado = estado;
 	    }
 	
+	    public String getSexoCompleto() {
+	        if(this.sexo.equals("M")) return "Masculino";
+	        else if(this.sexo.equals("F")) return "Femenino";
+	        else return "Indefinido";
+	    }
 }

@@ -22,7 +22,7 @@ public class ClienteDaoImpl implements ClienteDao {
 			  "{CALL InsertarCliente(?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)}";
 
 	@Override
-	public boolean Agregar(Cliente cliente, Usuario usuario , Direccion direccion) throws NombreUsuarioExistenteException, DniYaRegistradoException {
+	public boolean Agregar(Cliente cliente, Usuario usuario , Direccion direccion) throws NombreUsuarioExistenteException, DniYaRegistradoException, SQLException {
 	    Connection conexion = null;
 	    CallableStatement stmt = null;
 	    
@@ -77,7 +77,11 @@ public class ClienteDaoImpl implements ClienteDao {
 	        	throw new DniYaRegistradoException("El Dni ya se encuentra registrado");
 	        }
 	        
+	        if (e.getMessage().contains("El CUIL de usuario ya esta registrado.")) {
+	        	throw new DniYaRegistradoException("El cuil ingresado ya esta registrado");
+	        }
 	        
+	        throw e;
 	    }
 	    
 	    return agregado;
