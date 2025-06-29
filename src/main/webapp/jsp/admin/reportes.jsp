@@ -17,6 +17,11 @@
 <head>
     <meta charset="UTF-8">
     <title>Reportes - Banco UTN</title>
+      <!-- Bootstrap 5 CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
+
+    <!-- DataTables Bootstrap 5 CSS -->
+    <link rel="stylesheet" href="https://cdn.datatables.net/1.13.6/css/dataTables.bootstrap5.min.css">
     <link rel="stylesheet" href="${pageContext.request.contextPath}/css/reportesEstilos.css">
 </head>
 <body>
@@ -68,26 +73,29 @@
             <h3><%= titulo != null ? titulo : "Resultados del Reporte" %></h3>
  
             <% if (!reportes.isEmpty()) { %>
-                <table class="tabla-reportes">
-                    <thead>
-                        <tr>
-                            <th>Nombre del Reporte</th>
-                            <th>Total</th>
-                            <th>Monto</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        <% for (Reporte r : reportes) { %>
-                            <tr>
-                                <td><%= r.getNombreReporte() %></td>
-                                <td><%= r.getTotal() %></td>
-                                <td>
-                                    <%= r.getMonto() != null ? "$" + r.getMonto().setScale(2, java.math.RoundingMode.HALF_UP) : "-" %>
-                                </td>
-                            </tr>
-                        <% } %>
-                    </tbody>
-                </table>
+					                <table class="table table-striped table-hover tabla-cuentas" style="width:100%;">
+					    <thead class="table-light">
+					        <tr>
+					            <th>Nombre del Reporte</th>
+					            <th>Total</th>
+					            <th>Monto</th>
+					        </tr>
+					    </thead>
+					    <tbody>
+					        <% for (Reporte r : reportes) { 
+					            boolean esMoroso = r.getNombreReporte() != null && r.getNombreReporte().startsWith("Moroso:");
+					        %>
+					            <tr style="<%= esMoroso ? "background-color: #ffe0e0;" : "" %>">
+					                <td><%= r.getNombreReporte() %></td>
+					                <td><%= r.getTotal() %></td>
+					                <td>
+					                    <%= r.getMonto() != null ? "$" + r.getMonto().setScale(2, java.math.RoundingMode.HALF_UP) : "-" %>
+					                </td>
+					            </tr>
+					        <% } %>
+					    </tbody>
+					</table>
+                
             <% } else { %>
                 <p class="texto-placeholder">No se encontraron resultados para el reporte seleccionado.</p>
             <% } %>

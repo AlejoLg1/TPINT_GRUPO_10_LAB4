@@ -38,6 +38,15 @@ public class ReporteDaoImpl implements dao.ReporteDao {
         + "AND (? IS NULL OR fecha_pago >= ?) "
         + "AND (? IS NULL OR fecha_pago <= ?) "
         + "GROUP BY estado";
+    
+    private static final String SQL_CLIENTES_MOROSOS = 
+    	    "SELECT DISTINCT c.nombre, c.apellido, cu.estado, cu.monto, cu.fecha_pago " +
+    	    "FROM Cuota cu " +
+    	    "JOIN Prestamo p ON cu.id_prestamo = p.id_prestamo " +
+    	    "JOIN Cliente c ON p.id_cliente = c.id_cliente " +
+    	    "WHERE cu.estado IN ('PENDIENTE', 'ATRASADO') " +
+    	    "AND (? IS NULL OR cu.fecha_pago >= ?) " +
+    	    "AND (? IS NULL OR cu.fecha_pago <= ?)";
  
     @Override
     public List<Reporte> generarReporte(String tipoReporte, java.util.Date inicio, java.util.Date fin) throws Exception {
@@ -96,6 +105,23 @@ public class ReporteDaoImpl implements dao.ReporteDao {
                         int total = rs.getInt("total");
                         java.math.BigDecimal monto = rs.getBigDecimal("monto_total");
                         lista.add(new Reporte("Cuotas " + estado, total, monto));
+                    }
+                    rs.close();
+                    ps.close();
+
+                    // Nuevos datos: clientes morosos
+                    ps = conn.prepareStatement(SQL_CLIENTES_MOROSOS);
+                    setFechas(ps, sqlInicio, sqlFin);
+                    rs = ps.executeQuery();
+                    while (rs.next()) {
+                        String nombre = rs.getString("nombre");
+                        String apellido = rs.getString("apellido");
+                        String estadoCuota = rs.getString("estado");
+                        java.math.BigDecimal monto = rs.getBigDecimal("monto");
+                        Date fechaPago = rs.getDate("fecha_pago");
+
+                        String descripcion = "Moroso: " + nombre + " " + apellido + " - Estado: " + estadoCuota + " - Monto: $" + monto + " - Fecha de pago: " + fechaPago;
+                        lista.add(new Reporte(descripcion, 1, monto));
                     }
                     break;
  
