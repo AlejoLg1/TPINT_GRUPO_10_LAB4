@@ -133,7 +133,9 @@ VALUES ('calle cliente','1111','localidad cliente','provincia cliente');
 
 -- Insert Tipos de Cuentas
 INSERT INTO Tipo_cuenta (descripcion) VALUES ('Caja de ahorro'), ('Cuenta corriente');
+-- Insert Tipos de Movimiento
 
+INSERT Tipo_movimiento (descripcion) VALUES ('ALTA CUENTA'), ('ALTA PRESTAMO'), ('PAGO PRESTAMO'), ('TRANSFERENCIA')
 
 -- Procedure Insertar Cliente
 

@@ -74,7 +74,7 @@ public class MovimientoDaoImpl implements MovimientosDao {
     @Override
     public BigDecimal obtenerSaldoPorCuenta(int nroCuenta) throws Exception {
         BigDecimal saldo = BigDecimal.ZERO;
-        String query = "SELECT SUM(importe) AS saldo FROM Movimiento WHERE nro_cuenta = ?";
+        String query = "SELECT saldo FROM Cuenta WHERE nro_cuenta = ?";
 
         try (
             Connection con = Conexion.getConexion().getSQLConexion();
