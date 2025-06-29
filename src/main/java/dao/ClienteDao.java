@@ -11,7 +11,7 @@ import dominio.Cliente;
 
 public interface ClienteDao {
 	public boolean Agregar(Cliente cliente, Usuario usuario,  Direccion direccion)throws NombreUsuarioExistenteException, DniYaRegistradoException, SQLException;
-	public boolean Modificar(Cliente cliente,Usuario usuario, Direccion direccion)throws NombreUsuarioExistenteException, DniYaRegistradoException;
+	public boolean Modificar(Cliente cliente,Usuario usuario, Direccion direccion)throws NombreUsuarioExistenteException, DniYaRegistradoException, Exception;
 	public boolean Eliminar(Cliente cliente, int idUsuario);
 	public boolean Activar(Cliente cliente, int idUsuario);
 	public int ObtenerNuevoId();

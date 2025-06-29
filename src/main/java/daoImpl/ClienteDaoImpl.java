@@ -88,7 +88,7 @@ public class ClienteDaoImpl implements ClienteDao {
 	}
 	
 	@Override
-	public boolean Modificar(Cliente cliente, Usuario usuario, Direccion direccion) throws NombreUsuarioExistenteException, DniYaRegistradoException {
+	public boolean Modificar(Cliente cliente, Usuario usuario, Direccion direccion) throws Exception {
 	    Connection cn = null;
 	    boolean modificado = false;
 	    
@@ -154,13 +154,17 @@ public class ClienteDaoImpl implements ClienteDao {
 	            if (cn != null) cn.rollback();
 	        } catch (SQLException ex) {
 	            ex.printStackTrace();
+	            throw e;
 	        }
+	        
 	        e.printStackTrace();
+	        throw e;
 	    } finally {
 	        try {
 	            if (cn != null) cn.close();
 	        } catch (SQLException e) {
 	            e.printStackTrace();
+	            throw e;
 	        }
 	    }
 

@@ -253,6 +253,10 @@ BEGIN
 
     -- Obtener el número de cuenta generado (auto_increment)
     SET nuevo_nro_cuenta = LAST_INSERT_ID();
+    
+    -- Registrar Movimiento
+	INSERT INTO Movimiento (nro_cuenta, id_tipo_movimiento, fecha, detalle, importe)
+    VALUES (nuevo_nro_cuenta, 1, NOW(), 'Alta de cuenta', p_saldo);
 
     -- Generar CBU ficticio de 22 dígitos
     SET nuevo_cbu = LPAD(CONCAT('310000', p_id_cliente, nuevo_nro_cuenta), 22, '0');
