@@ -10,6 +10,8 @@ import dominio.Cliente;
 import dominio.Cuenta;
 import dominio.Prestamo;
 import dominio.Usuario;
+import excepciones.CuentaExistenteExcenption;
+import excepciones.PrestamoException;
 import jakarta.servlet.RequestDispatcher;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.annotation.WebServlet;
@@ -49,6 +51,18 @@ public class ServletSolicitarPrestamo extends HttpServlet {
         CuentaDaoImpl cuentaDao = new CuentaDaoImpl();
         List<Cuenta> cuentasCliente = cuentaDao.listarPorCliente(cliente.getIdCliente());
 
+        String mensaje = (String) session.getAttribute("mensaje");
+        Boolean estado = (Boolean) session.getAttribute("estado");
+        
+        if (mensaje != null) {
+            request.setAttribute("mensaje", mensaje);
+            request.setAttribute("estado", estado);
+
+            // Eliminar los atributos de sesiÃ³n para que no se repitan
+            session.removeAttribute("mensaje");
+            session.removeAttribute("estado");
+        }
+        
         // Poner cuentas en el request
         request.setAttribute("cuentasCliente", cuentasCliente);
 
@@ -60,6 +74,7 @@ public class ServletSolicitarPrestamo extends HttpServlet {
     protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 
         boolean status = false;
+        String msg = "Solicitud realizado con exito";
 
         try {
             String idCuenta = request.getParameter("cuentasCliente");
@@ -67,9 +82,11 @@ public class ServletSolicitarPrestamo extends HttpServlet {
             String cuotas = request.getParameter("cuotas");
 
             if (idCuenta == null || monto == null || cuotas == null ||
-                    idCuenta.trim().isEmpty() || monto.trim().isEmpty() || cuotas.trim().isEmpty()) {
+                    idCuenta.trim().isEmpty() || monto.trim().isEmpty() || cuotas.trim().isEmpty()) 
                 throw new IllegalArgumentException();
-            }
+            
+            if(idCuenta.compareTo("invalid") == 0)
+            	throw new PrestamoException("Seleccione una cuenta destino valida");
 
             int nroCuenta = Integer.parseInt(idCuenta);
             double importeSolicitado = Double.parseDouble(monto);
@@ -86,6 +103,8 @@ public class ServletSolicitarPrestamo extends HttpServlet {
             CuentaDaoImpl cuentaDao = new CuentaDaoImpl();
             Cuenta cuenta = cuentaDao.obtenerCuentaPorId(nroCuenta);
             
+            if(cuenta == null)
+            	throw new CuentaExistenteExcenption("No se pudieron obtner datos de la cuenta seleccionada");
             
             Prestamo prestamo = new Prestamo();
             prestamo.set_cliente(cliente);
@@ -96,12 +115,22 @@ public class ServletSolicitarPrestamo extends HttpServlet {
 
             PrestamoDaoImpl prestamoDao = new PrestamoDaoImpl();
             status = prestamoDao.registrarPrestamo(prestamo);
-
+            
+            if(!status)
+            	throw new PrestamoException("Ocurrio un error al registrar la solicitud");
+            
+        } catch (PrestamoException e) {
+            status = false;
+            msg = e.getMessage();
+        } catch (CuentaExistenteExcenption e) {
+            status = false;
+            msg = e.getMessage();
         } catch (Exception e) {
             status = false;
             e.printStackTrace();
         }
-
+        
+        request.setAttribute("mensaje", msg);
         request.setAttribute("estado", status);
 
         // Recargar cuentas y volver a JSP

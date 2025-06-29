@@ -37,7 +37,7 @@
             <tbody>
                 <%
                     java.util.List cuentas = (java.util.List) request.getAttribute("cuentas");
-                    if (cuentas != null) {
+                    if (cuentas != null && !cuentas.isEmpty()) {
                         for (Object obj : cuentas) {
                             dominio.Cuenta cuenta = (dominio.Cuenta) obj;
                 %>
@@ -56,6 +56,10 @@
                 </tr>
                 <%
                         }
+                    }else{
+                        %>
+                        <tr> <td colspan="6">No hay cuentas asociadas para mostrar.</td> </tr>
+                    	<%
                     }
                 %>
             </tbody>

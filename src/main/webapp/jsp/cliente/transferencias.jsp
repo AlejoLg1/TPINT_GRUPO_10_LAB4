@@ -56,16 +56,18 @@
 			    <%
 			        if (lista != null && !lista.isEmpty()) 
 			        {
+			        	int count = 0;	// cont para las cuentas asocidas
+			        	
 			            for (Cuenta cuenta : lista) {
 			                String nroCuenta = String.valueOf(cuenta.getNroCuenta());	// nro cuenta
 			                String cbu = String.valueOf(cuenta.getCbu());			//cbu
-			                String tipo = String.valueOf(cuenta.getIdTipoCuenta());		//tipo de cuenta
-    			%>
-		        			<option value="<%= nroCuenta %>"><%=cbu%> - <%=tipo%></option>
+			                count++;
+    			%>			
+		        			<option value="<%= nroCuenta %>"><%=count%> - <%=cbu%></option>
     			<%
 			            }
 			        } 
-			        else{ %> <option disabled selected>No tiene cuentas disponibles</option> <% } %>
+			        else{ %> <option value="invalid">No tiene cuentas disponibles</option> <% } %>
 			</select>
 			<br><br>
 

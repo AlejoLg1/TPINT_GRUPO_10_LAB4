@@ -65,7 +65,7 @@ public class ServletTransferenciasUsuario extends HttpServlet {
         CuentaDaoImpl cuentaDao = new CuentaDaoImpl();
         List<Cuenta> cuentas = cuentaDao.listarPorCliente(idCliente);
 
-        // Recuperar mensajes desde sesiÃ³n (si existen)
+        // Recuperar mensajes desde sesion (si existen)
         String mensaje = (String) session.getAttribute("mensaje");
         Boolean estado = (Boolean) session.getAttribute("estado");
 
@@ -102,9 +102,11 @@ public class ServletTransferenciasUsuario extends HttpServlet {
                 String cbuDestino = request.getParameter("cbuDestino") == null ? "" : request.getParameter("cbuDestino");
                 String monto = request.getParameter("monto") == null ? "" : request.getParameter("monto");
 
-                if (nroCuentaOrigen.trim().isEmpty() || monto.trim().isEmpty() || cbuDestino.trim().isEmpty()) {
+                if (nroCuentaOrigen.trim().isEmpty() || monto.trim().isEmpty() || cbuDestino.trim().isEmpty())
                     throw new IllegalArgumentException();
-                }
+                
+                if(nroCuentaOrigen.compareTo("invalid") == 0)
+                	throw new TransferenciaException("Seleccione una cuenta de origen valida");
 
                 double importe = Double.parseDouble(monto);
                 int nroCuentaDestino = ObtenerNroCuentaDestino(cbuDestino);

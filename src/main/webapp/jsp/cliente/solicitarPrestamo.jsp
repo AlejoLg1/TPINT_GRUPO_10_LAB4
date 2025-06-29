@@ -27,14 +27,21 @@
     <div class="welcome-card">
         <h1>Solicitar préstamo</h1>
 
-        <% 
-            boolean estado = (request.getAttribute("estado") != null ? (boolean) request.getAttribute("estado") : false);
-            if (estado) {
-        %>
-            <div class="panelSuccess">
-                ¡Operación realizada con éxito!
-            </div>
-        <% } %>
+		<%  // Mensaje de confirmacion de exito de solicitud
+			boolean estado = (request.getAttribute("estado") != null ? (boolean)request.getAttribute("estado") : false);
+			String msg = (String)request.getAttribute("mensaje");	
+		
+			if(request.getAttribute("estado") != null)
+			{
+				if(estado == true)
+				{%>
+					  <p style="color: green; font-weight: bold; margin-bottom: 15px;"><%= msg %></p>
+				<%}
+				else{
+					%> <p style="color: red; font-weight: bold; margin-bottom: 15px;"><%= msg %></p><%
+				}
+			}
+		%>
 
         <form action="${pageContext.request.contextPath}/ServletSolicitarPrestamo" method="post">
             <label for="cuentasCliente">Seleccione una cuenta:</label><br>
@@ -51,7 +58,7 @@
                         }
                     } else {
                 %>
-                    <option value="">No tiene cuentas disponibles</option>
+                    <option value="invalid" selected>No tiene cuentas disponibles</option>
                 <% } %>
             </select><br><br>
 
