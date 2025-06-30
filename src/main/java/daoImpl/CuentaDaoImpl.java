@@ -309,28 +309,23 @@ public class CuentaDaoImpl implements CuentaDao {
 	    return cuenta;
 	}
 	
-	public boolean actualizarSaldo(int nroCuenta, BigDecimal nuevoSaldo) {
-	    String query = "UPDATE Cuenta SET saldo = ? WHERE nro_cuenta = ?";
-	    try (Connection conn = Conexion.getConexion().getSQLConexion();
-	         PreparedStatement stmt = conn.prepareStatement(query)) {
-	         
-	        stmt.setBigDecimal(1, nuevoSaldo);
+	@Override
+	public boolean actualizarSaldo(int nroCuenta, BigDecimal monto, boolean esSuma, Connection conn) {
+	    String query = "UPDATE Cuenta SET saldo = saldo " + (esSuma ? "+" : "-") + " ? WHERE nro_cuenta = ?";
+	    try (PreparedStatement stmt = conn.prepareStatement(query)) {
+
+	        stmt.setBigDecimal(1, monto);
 	        stmt.setInt(2, nroCuenta);
 
 	        int filas = stmt.executeUpdate();
-	        if (filas > 0) {
-	            conn.commit();
-	            return true;
-	        } else {
-	            conn.rollback();
-	            return false;
-	        }
+	        return filas > 0;
 
 	    } catch (Exception e) {
 	        e.printStackTrace();
 	        return false;
 	    }
 	}
+
 	
 	@Override
 	public List<Object[]> filtrarCuentas(String busqueda, String tipoCuenta, BigDecimal saldoMin, BigDecimal saldoMax) {
@@ -395,6 +390,5 @@ public class CuentaDaoImpl implements CuentaDao {
 
 	    return lista;
 	}
-
 
 }
