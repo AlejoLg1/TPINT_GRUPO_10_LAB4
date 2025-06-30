@@ -64,88 +64,73 @@
             <!-- Tabla de prestamos -->
 	            <table class="tabla-prestamos">
 	                <thead>
-	                    <tr>
-	                        <th>Cliente</th>
-	                        <th>Cuenta Destino</th>
-	                        <th>Tipo de cuenta</th>
-	                        <th>Fecha de solicitud</th>
-	                        <th>Monto</th>                    
-	                        <th>Cantidad de cuotas</th>
-	                        <th>Estado</th>
-	                        <th>Acciones</th>
-	                    </tr>
-	                </thead>
-	                <tbody>
-	                    <%
-	                        List<Prestamo> listaPrestamos = (List<Prestamo>) request.getAttribute("prestamos"); 
-	                        if (listaPrestamos != null) {
-	                            for (Prestamo p : listaPrestamos) {
-                    	%>
-	                    <tr>
-	                        <td><%= p.get_cliente().getNombreCompleto() %></td>
-	                        <td><%= p.get_cuenta().getNroCuenta()%></td>
-	                        <td><%= p.get_cuenta().getTipoCuenta()%></td>
-	                        <td><%= p.getFecha()%></td>
-	                        <td><%= p.getImporte_solicitado()%></td>
-	                        <td><%= p.getCantidad_cuotas()%></td>
-	                        <td><%= p.getEstado() %></td>
-	                        <td>
-	                           <div class="acciones-botones">                                    
-                                    <% if (p.getEstado() != null && p.getEstado().equalsIgnoreCase("Pendiente")) { %>
-                                        <!-- Botones para estado 'Pendiente': Aprobar y Rechazar -->
-                                        <button 
+					    <tr>
+					        <th>Cliente</th>
+					        <th>Cuenta Destino</th>
+					        <th>Tipo de cuenta</th>
+					        <th>Fecha de solicitud</th>
+					        <th>Monto</th>                    
+					        <th>Cantidad de cuotas</th>
+					        <th>Cuotas Pagadas</th> <!-- Nueva columna -->
+					        <th>Estado</th>
+					        <th>Acciones</th>
+					    </tr>
+					</thead>
+					<tbody>
+					    <%
+					        List<Prestamo> listaPrestamos = (List<Prestamo>) request.getAttribute("prestamos"); 
+					        if (listaPrestamos != null) {
+					            for (Prestamo p : listaPrestamos) {
+					    %>
+					    <tr>
+					        <td><%= p.get_cliente().getNombreCompleto() %></td>
+					        <td><%= p.get_cuenta().getNroCuenta()%></td>
+					        <td><%= p.get_cuenta().getTipoCuenta()%></td>
+					        <td><%= p.getFecha()%></td>
+					        <td><%= p.getImporte_solicitado()%></td>
+					        <td><%= p.getCantidad_cuotas()%></td>
+					        <td><%= p.getCuotas_pagadas()%></td> <!-- Nueva celda -->
+					        <td><%= p.getEstado() %></td>
+					        <td>
+					           <div class="acciones-botones">                                    
+					                <% if (p.getEstado() != null && p.getEstado().equalsIgnoreCase("Pendiente")) { %>
+					                    <button 
                                             type="button" 
                                             class="boton-aprobar" 
                                             onclick="abrirConfirmacion({
                                                 action: '${pageContext.request.contextPath}/ServletAprobacionPrestamos',
                                                 mensaje: '¿Seguro que desea aprobar este préstamo?',
                                                 botonTexto: 'Aprobar',
-                                                botonClase: 'btn-success', <%-- Ajustado para clases de Bootstrap --%>
+                                                botonClase: 'btn-success',
                                                 inputs: [
                                                     { name: 'idPrestamo', value: '<%= p.getId_prestamo() %>' },
                                                     { name: 'accion', value: 'aprobar' }
                                                 ]
                                             })">Aprobar</button>
-                                        <button 
+                                          <button 
                                             type="button" 
                                             class="boton-rechazar" 
                                             onclick="abrirConfirmacion({
                                                 action: '${pageContext.request.contextPath}/ServletAprobacionPrestamos',
                                                 mensaje: '¿Seguro que desea rechazar este préstamo?',
                                                 botonTexto: 'Rechazar',
-                                                botonClase: 'btn-danger', <%-- Ajustado para clases de Bootstrap --%>
+                                                botonClase: 'btn-danger', 
                                                 inputs: [
                                                     { name: 'idPrestamo', value: '<%= p.getId_prestamo() %>' },
                                                     { name: 'accion', value: 'rechazar' }
                                                 ]
                                             })">Rechazar</button>
-                                    <% } else if (p.getEstado() != null && p.getEstado().equalsIgnoreCase("Rechazado")) { %>
-                                        <!-- Botón para estado 'Rechazado': Solo Aprobar -->
-                                        <button 
-                                            type="button" 
-                                            class="boton-aprobar" 
-                                            onclick="abrirConfirmacion({
-                                                action: '${pageContext.request.contextPath}/ServletAprobacionPrestamos',
-                                                mensaje: '¿Seguro que desea aprobar este préstamo?',
-                                                botonTexto: 'Aprobar',
-                                                botonClase: 'btn-success', <%-- Ajustado para clases de Bootstrap --%>
-                                                inputs: [
-                                                    { name: 'idPrestamo', value: '<%= p.getId_prestamo() %>' },
-                                                    { name: 'accion', value: 'aprobar' }
-                                                ]
-                                            })">Aprobar</button>
-                                    <% } else { %>
-                                        <!-- Si el estado es 'Aprobado' no se muestran botones de acción -->
-                                        <span>-</span> 
-                                    <% } %>
-	 							</div>
-	                        </td>
-	                    </tr>
-	                    <%
-                            	}
-                        	}
-                    	%>
-	                </tbody>
+					                <% } else { %>
+					                    <span>-</span> 
+					                <% } %>
+					            </div>
+					        </td>
+					    </tr>
+					    <%
+					            }
+					        }
+					    %>
+					</tbody>
 	            </table>
         </div>
     </div>

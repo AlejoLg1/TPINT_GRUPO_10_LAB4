@@ -57,57 +57,63 @@ public class PrestamoDaoImpl implements PrestamoDao {
         return estado;
     }
 
-	@Override
-	public List<Prestamo> Listar(){
-		List<Prestamo> prestamos = new ArrayList<>();
-	    Connection conexion = null;
-	    PreparedStatement stmt = null;
-	    ResultSet rs = null;
+    @Override
+    public List<Prestamo> Listar(){
+        List<Prestamo> prestamos = new ArrayList<>();
+        Connection conexion = null;
+        PreparedStatement stmt = null;
+        ResultSet rs = null;
 
-	    try {
-	        conexion = Conexion.getConexion().getSQLConexion();
-	        String query = "SELECT id_prestamo, id_cliente, nro_cuenta, fecha, "
-	        		+ "importe_solicitado, cantidad_cuotas, monto_cuota, estado FROM prestamo WHERE autorizacion != 1 and estado = 'Pendiente'";
-	        stmt = conexion.prepareStatement(query);
-	        rs = stmt.executeQuery();
+        try {
+            conexion = Conexion.getConexion().getSQLConexion();
+            // Cambiar la query para traer todos los autorizados
+            String query = "SELECT id_prestamo, id_cliente, nro_cuenta, fecha, "
+                    + "importe_solicitado, cantidad_cuotas, monto_cuota, estado, cuotas_pagadas "
+                    + "FROM prestamo WHERE autorizacion = 1 or estado = 'Pendiente'";
+            stmt = conexion.prepareStatement(query);
+            rs = stmt.executeQuery();
 
-	        while (rs.next()) {
-	            Prestamo prestamo = new Prestamo();
-	            
-	            int nro_cta = rs.getInt("nro_cuenta");
-	            CuentaDaoImpl cuentaDao = new CuentaDaoImpl();
-	            Cuenta cuenta = cuentaDao.obtenerCuentaPorId(nro_cta);
-	            
-	            int id_cliente = rs.getInt("id_cliente");	            
-	            ClienteDaoImpl clienteDao = new ClienteDaoImpl();
-	            Cliente cliente = clienteDao.obtenerPorIdCliente(id_cliente);
-	            
-	            prestamo.setId_prestamo(rs.getInt("id_prestamo"));
-	            prestamo.set_cliente(cliente);
-	            prestamo.set_cuenta(cuenta);
-	            prestamo.setFecha(rs.getTimestamp("fecha"));
-	            prestamo.setImporte_solicitado(rs.getInt("importe_solicitado"));
-	            prestamo.setCantidad_cuotas(rs.getInt("cantidad_cuotas"));
-	            prestamo.setMonto_cuota(rs.getDouble("monto_cuota"));
-	            prestamo.setAutorizacion(false);
-	            prestamo.setEstado(rs.getString("estado"));
-	            prestamos.add(prestamo);
-	        }
+            while (rs.next()) {
+                Prestamo prestamo = new Prestamo();
 
-	    } catch (SQLException e) {
-	        e.printStackTrace();
-	    } finally {
-	        try {
-	            if (rs != null) rs.close();
-	            if (stmt != null) stmt.close();
-	            if (conexion != null) conexion.close();
-	        } catch (SQLException e) {
-	            e.printStackTrace();
-	        }
-	    }
+                int nro_cta = rs.getInt("nro_cuenta");
+                CuentaDaoImpl cuentaDao = new CuentaDaoImpl();
+                Cuenta cuenta = cuentaDao.obtenerCuentaPorId(nro_cta);
 
-	    return prestamos;
-	}
+                int id_cliente = rs.getInt("id_cliente");	            
+                ClienteDaoImpl clienteDao = new ClienteDaoImpl();
+                Cliente cliente = clienteDao.obtenerPorIdCliente(id_cliente);
+
+                prestamo.setId_prestamo(rs.getInt("id_prestamo"));
+                prestamo.set_cliente(cliente);
+                prestamo.set_cuenta(cuenta);
+                prestamo.setFecha(rs.getTimestamp("fecha"));
+                prestamo.setImporte_solicitado(rs.getDouble("importe_solicitado"));
+                prestamo.setCantidad_cuotas(rs.getInt("cantidad_cuotas"));
+                prestamo.setMonto_cuota(rs.getDouble("monto_cuota"));
+                prestamo.setAutorizacion(true);
+                prestamo.setEstado(rs.getString("estado"));
+                // Nuevo: setear cuotas pagadas
+                prestamo.setCuotas_pagadas(rs.getInt("cuotas_pagadas"));
+
+                prestamos.add(prestamo);
+            }
+
+        } catch (SQLException e) {
+            e.printStackTrace();
+        } finally {
+            try {
+                if (rs != null) rs.close();
+                if (stmt != null) stmt.close();
+                if (conexion != null) conexion.close();
+            } catch (SQLException e) {
+                e.printStackTrace();
+            }
+        }
+
+        return prestamos;
+    }
+
 
 	@Override
 	public boolean aprobarPrestamo(int idPrestamo) {
