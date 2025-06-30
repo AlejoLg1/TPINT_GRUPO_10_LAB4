@@ -10,10 +10,7 @@
     <ul class="nav-left">
         <li><a href="<%= request.getContextPath() %>/ServletMenuAdmin" class="<%= "inicio".equals(request.getAttribute("activePage")) ? "active" : "" %>">Inicio</a></li>
 
-        <% if ("admin".equals(rol)) { %>
-            <li><a href="<%= request.getContextPath() %>/ServletListarCliente" class="<%= "clientes".equals(request.getAttribute("activePage")) ? "active" : "" %>">Clientes</a></li>
-        <% } %>
-        
+        <li><a href="<%= request.getContextPath() %>/ServletListarCliente" class="<%= "clientes".equals(request.getAttribute("activePage")) ? "active" : "" %>">Clientes</a></li>
 		<li><a href="<%= request.getContextPath() %>/ServletListarUsuario" class="<%= "usuarios".equals(request.getAttribute("activePage")) ? "active" : "" %>">Usuarios</a></li>
         <li><a href="<%= request.getContextPath() %>/ServletCuenta" class="<%= "cuentas".equals(request.getAttribute("activePage")) ? "active" : "" %>">Cuentas</a></li>
         <li><a href="<%= request.getContextPath() %>/ServletListarPrestamos" class="<%= "prestamos".equals(request.getAttribute("activePage")) ? "active" : "" %>">Préstamos</a></li>
