@@ -1,6 +1,7 @@
 package daoImpl;
 
 import java.sql.*;
+import java.sql.Date;
 import java.util.*;
 import dao.CuotaDao;
 import dominio.Cuota;
@@ -125,7 +126,7 @@ public class CuotaDaoImpl implements CuotaDao {
         List<Cuota> lista = new ArrayList<>();
         Connection con = Conexion.getConexion().getSQLConexion();
 
-        String query = "SELECT c.id_cuota, c.id_prestamo, c.nro_cuenta, c.numero_cuota, c.monto, c.fecha_pago, c.estado " +
+        String query = "SELECT c.id_cuota, c.id_prestamo, c.nro_cuenta, c.numero_cuota, c.monto, c.fecha_pago, c.fecha_vencimiento, c.estado " +
                        "FROM Cuota c " +
                        "JOIN Prestamo p ON c.id_prestamo = p.id_prestamo " +
                        "WHERE p.id_cliente = ?";
@@ -163,10 +164,20 @@ public class CuotaDaoImpl implements CuotaDao {
             cuota.setNroCuenta(rs.getInt("nro_cuenta"));
             cuota.setNumeroCuota(rs.getInt("numero_cuota"));
             cuota.setMonto(rs.getBigDecimal("monto"));
-            cuota.setFechaPago(rs.getDate("fecha_pago").toLocalDate());
+
+            // ✅ Validación null para fecha_pago
+            Date fechaPagoSql = rs.getDate("fecha_pago");
+            if (fechaPagoSql != null) {
+                cuota.setFechaPago(fechaPagoSql.toLocalDate());
+            } else {
+                cuota.setFechaPago(null);
+            }
+            
+            cuota.setFechaVencimiento(rs.getDate("fecha_vencimiento").toLocalDate());
             cuota.setEstado(rs.getString("estado"));
             lista.add(cuota);
         }
+
 
         rs.close();
         ps.close();

@@ -94,6 +94,7 @@
 		            <th>Cuota N°</th>
 		            <th>Importe</th>
 		            <th>Vencimiento</th>
+		            <th>Pago</th>
 		            <th>Estado</th>
 		            <th>Acción</th>
 		        </tr>
@@ -108,6 +109,7 @@
 			            <td><%= cuota.getIdPrestamo() %></td>
 			            <td><%= cuota.getNumeroCuota() %></td>
 			            <td>$<%= cuota.getMonto() %></td>
+			            <td><%= cuota.getFechaVencimiento() %></td>
 			            <td><%= cuota.getFechaPago() != null ? cuota.getFechaPago() : "Sin fecha" %></td>
 			            <td><%= cuota.getEstado() %></td>
 			            <td>
