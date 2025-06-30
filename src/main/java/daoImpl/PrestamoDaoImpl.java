@@ -191,17 +191,43 @@ public class PrestamoDaoImpl implements PrestamoDao {
 	                return false;
 	            }
 	            
-	            // 4. Crear cuotas pedidas
+	            // 4. Crear cuotas pedidas + intereses
 	            CuotaDaoImpl cuotaDao = new CuotaDaoImpl();
 	            LocalDate fechaHoy = LocalDate.now();
 
+	            double porcentajeInteres = 0;
+
+	            switch(prestamo.getCantidad_cuotas()) {
+	                case 12:
+	                    porcentajeInteres = 0.25;
+	                    break;
+	                case 24:
+	                    porcentajeInteres = 0.40;
+	                    break;
+	                case 36:
+	                    porcentajeInteres = 0.60;
+	                    break;
+	                case 48:
+	                    porcentajeInteres = 0.80;
+	                    break;
+	                case 60:
+	                    porcentajeInteres = 1.00;
+	                    break;
+	                case 72:
+	                    porcentajeInteres = 1.20;
+	                    break;
+	            }
+	            
+	            double montoConInteres = prestamo.getImporte_solicitado() * (1 + porcentajeInteres);
+	            double montoCuota = montoConInteres / prestamo.getCantidad_cuotas();
+	            
 	            for (int i = 1; i <= prestamo.getCantidad_cuotas(); i++) {
 	                Cuota cuota = new Cuota();
 	                cuota.setIdPrestamo(idPrestamo);
 	                cuota.setNroCuenta(prestamo.get_cuenta().getNroCuenta());
 	                cuota.setNumeroCuota(i);
-	                cuota.setMonto(BigDecimal.valueOf(prestamo.getMonto_cuota()));
-	                cuota.setFechaPago(fechaHoy.plusMonths(i)); // siguiente cuota cada mes
+	                cuota.setMonto(BigDecimal.valueOf(montoCuota));
+	                cuota.setFechaVencimiento(fechaHoy.plusMonths(i));
 	                cuota.setEstado("Pendiente");
 
 	                boolean creada = cuotaDao.crearCuota(cuota, conexion);
@@ -210,6 +236,7 @@ public class PrestamoDaoImpl implements PrestamoDao {
 	                    return false;
 	                }
 	            }
+
 
 	            // 5. Commit general si todo sale bien
 	            conexion.commit();

@@ -93,14 +93,21 @@ public class CuotaDaoImpl implements CuotaDao {
     
     public boolean crearCuota(Cuota cuota, Connection conn) {
         boolean creada = false;
-        String sql = "INSERT INTO cuota (id_prestamo, nro_cuenta, numero_cuota, monto, fecha_pago, estado) VALUES (?, ?, ?, ?, ?, ?)";
+        String sql = "INSERT INTO cuota (id_prestamo, nro_cuenta, numero_cuota, monto, fecha_pago, fecha_vencimiento, estado) VALUES (?, ?, ?, ?, ?, ?, ?)";
         try (PreparedStatement pst = conn.prepareStatement(sql)) {
             pst.setInt(1, cuota.getIdPrestamo());
             pst.setInt(2, cuota.getNroCuenta());
             pst.setInt(3, cuota.getNumeroCuota());
             pst.setBigDecimal(4, cuota.getMonto());
-            pst.setDate(5, java.sql.Date.valueOf(cuota.getFechaPago()));
-            pst.setString(6, cuota.getEstado());
+
+            if (cuota.getFechaPago() != null) {
+                pst.setDate(5, java.sql.Date.valueOf(cuota.getFechaPago()));
+            } else {
+                pst.setNull(5, java.sql.Types.DATE);
+            }
+            
+            pst.setDate(6, java.sql.Date.valueOf(cuota.getFechaVencimiento()));
+            pst.setString(7, cuota.getEstado());
 
             int filas = pst.executeUpdate();
             if (filas > 0) {
@@ -111,6 +118,7 @@ public class CuotaDaoImpl implements CuotaDao {
         }
         return creada;
     }
+
     
     @Override
     public List<Cuota> obtenerCuotasPendientesConFiltros(int idCliente, Integer idPrestamo, String fechaVencimiento, String estado) throws Exception {

@@ -119,12 +119,14 @@ CREATE TABLE Cuota (
     nro_cuenta INT NOT NULL,
     numero_cuota INT NOT NULL,
     monto DECIMAL(12,2) NOT NULL,
-    fecha_pago DATE NOT NULL,
+    fecha_pago DATE NULL,
+    fecha_vencimiento DATE NOT NULL,
     estado ENUM('PENDIENTE', 'PAGADO', 'ATRASADO') NOT NULL DEFAULT 'PENDIENTE',
     
     FOREIGN KEY (nro_cuenta) REFERENCES Cuenta(nro_cuenta),
     FOREIGN KEY (id_prestamo) REFERENCES Prestamo(id_prestamo)
 );
+
 
 
 -- Usuario administrador bancario

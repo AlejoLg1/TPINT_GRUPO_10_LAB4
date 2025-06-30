@@ -10,6 +10,7 @@ public class Cuota {
     private int numeroCuota;
     private BigDecimal monto;
     private LocalDate fechaPago;
+    private LocalDate fechaVencimiento;
     private String estado;
 
     // Getters y setters
@@ -67,5 +68,13 @@ public class Cuota {
 
     public void setEstado(String estado) {
         this.estado = estado;
+    }
+    
+    public LocalDate getFechaVencimiento() {
+        return fechaVencimiento;
+    }
+
+    public void setFechaVencimiento(LocalDate fechaVencimiento) {
+        this.fechaVencimiento = fechaVencimiento;
     }
 }
