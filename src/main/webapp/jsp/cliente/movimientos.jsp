@@ -32,6 +32,7 @@
     <div class="welcome-card">
         <h1>Movimientos de cuenta: <%= request.getAttribute("nroCuenta") %></h1>
 
+      
         <table id="tablaMovimientos" class="table table-striped table-hover" style="width:100%">
             <thead class="table-light">
                 <tr>
@@ -60,6 +61,12 @@
                 %>
             </tbody>
         </table>
+
+        <br>
+        
+        <div class="mb-3 text-center">
+            <a href="${pageContext.request.contextPath}/ServletVerCuentas" class="btn btn-secondary">Volver</a>
+        </div>
     </div>
 </div>
 
