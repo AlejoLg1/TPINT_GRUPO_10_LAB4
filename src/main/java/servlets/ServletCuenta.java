@@ -21,9 +21,29 @@ public class ServletCuenta extends HttpServlet {
 
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-        dao.CuentaDao cuentaDao = new daoImpl.CuentaDaoImpl();
+    	String busqueda = request.getParameter("busqueda");
+    	String tipoCuenta = request.getParameter("tipoCuenta");
+    	String saldoMinStr = request.getParameter("saldoMin");
+    	String saldoMaxStr = request.getParameter("saldoMax");
 
-        java.util.List<Object[]> listaCuentas = cuentaDao.listarConDatos();
+    	java.math.BigDecimal saldoMin = null;
+    	java.math.BigDecimal saldoMax = null;
+
+    	try {
+    	    if (saldoMinStr != null && !saldoMinStr.isEmpty()) {
+    	        saldoMin = new java.math.BigDecimal(saldoMinStr);
+    	    }
+    	    if (saldoMaxStr != null && !saldoMaxStr.isEmpty()) {
+    	        saldoMax = new java.math.BigDecimal(saldoMaxStr);
+    	    }
+    	} catch (NumberFormatException e) {
+    	    e.printStackTrace();
+    	}
+
+    	
+    	dao.CuentaDao cuentaDao = new daoImpl.CuentaDaoImpl();
+    	java.util.List<Object[]> listaCuentas = cuentaDao.filtrarCuentas(busqueda, tipoCuenta, saldoMin, saldoMax);
+
         
         String errorCuenta = (String) request.getSession().getAttribute("errorCuenta");
         if (errorCuenta != null) {

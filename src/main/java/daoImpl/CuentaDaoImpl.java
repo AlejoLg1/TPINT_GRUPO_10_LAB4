@@ -332,6 +332,69 @@ public class CuentaDaoImpl implements CuentaDao {
 	    }
 	}
 	
+	@Override
+	public List<Object[]> filtrarCuentas(String busqueda, String tipoCuenta, BigDecimal saldoMin, BigDecimal saldoMax) {
+	    List<Object[]> lista = new ArrayList<>();
+	    Connection cn = Conexion.getConexion().getSQLConexion();
+
+	    StringBuilder query = new StringBuilder(
+	        "SELECT c.nro_cuenta, c.cbu, tc.descripcion AS tipo_cuenta, cli.nombre, cli.apellido, c.saldo, c.fecha_creacion, c.estado " +
+	        "FROM Cuenta c " +
+	        "JOIN Tipo_Cuenta tc ON c.id_tipo_cuenta = tc.id_tipo_cuenta " +
+	        "JOIN Cliente cli ON c.id_cliente = cli.id_cliente " +
+	        "WHERE 1=1 "
+	    );
+
+	    List<Object> params = new ArrayList<>();
+
+	    if (busqueda != null && !busqueda.isEmpty()) {
+	        query.append("AND (cli.nombre LIKE ? OR cli.apellido LIKE ? OR c.cbu LIKE ?) ");
+	        params.add("%" + busqueda + "%");
+	        params.add("%" + busqueda + "%");
+	        params.add("%" + busqueda + "%");
+	    }
+
+	    if (tipoCuenta != null && !tipoCuenta.isEmpty()) {
+	        query.append("AND tc.descripcion = ? ");
+	        params.add(tipoCuenta);
+	    }
+
+	    if (saldoMin != null) {
+	        query.append("AND c.saldo >= ? ");
+	        params.add(saldoMin);
+	    }
+
+	    if (saldoMax != null) {
+	        query.append("AND c.saldo <= ? ");
+	        params.add(saldoMax);
+	    }
+
+	    query.append("ORDER BY c.nro_cuenta ASC");
+
+	    try (PreparedStatement pst = cn.prepareStatement(query.toString())) {
+	        for (int i = 0; i < params.size(); i++) {
+	            pst.setObject(i + 1, params.get(i));
+	        }
+
+	        ResultSet rs = pst.executeQuery();
+	        while (rs.next()) {
+	            Object[] fila = new Object[8];
+	            fila[0] = rs.getInt("nro_cuenta");
+	            fila[1] = rs.getString("cbu");
+	            fila[2] = rs.getString("tipo_cuenta");
+	            fila[3] = rs.getString("nombre") + " " + rs.getString("apellido");
+	            fila[4] = rs.getBigDecimal("saldo");
+	            fila[5] = rs.getTimestamp("fecha_creacion").toLocalDateTime();
+	            fila[6] = rs.getBoolean("estado");
+	            fila[7] = rs.getInt("nro_cuenta");
+	            lista.add(fila);
+	        }
+	    } catch (SQLException e) {
+	        e.printStackTrace();
+	    }
+
+	    return lista;
+	}
 
 
 }

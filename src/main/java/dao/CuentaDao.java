@@ -16,5 +16,6 @@ public interface CuentaDao {
 	 Cuenta obtenerCuentaPorCBU(String cbu);
 	 public boolean actualizar(Cuenta cuenta);
 	 boolean actualizarSaldo(int nroCuenta, BigDecimal nuevoSaldo);
+	 List<Object[]> filtrarCuentas(String busqueda, String tipoCuenta, BigDecimal saldoMin, BigDecimal saldoMax);
 
 }
