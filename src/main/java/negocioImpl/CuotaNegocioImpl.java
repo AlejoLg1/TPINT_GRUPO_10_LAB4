@@ -26,6 +26,11 @@ public class CuotaNegocioImpl implements CuotaNegocio {
     public List<Cuota> listarCuotasPendientesPorCliente(int idCliente) throws Exception {
         return cuotaDao.obtenerCuotasPendientes(idCliente);
     }
+    
+    @Override
+    public List<Cuota> listarCuotasPendientesConFiltros(int idCliente, Integer idPrestamo, String fechaVencimiento, String estado) throws Exception {
+        return cuotaDao.obtenerCuotasPendientesConFiltros(idCliente, idPrestamo, fechaVencimiento, estado);
+    }
 
     @Override
     public boolean procesarPagoCuotas(List<Cuota> cuotas, int nroCuenta) throws Exception {

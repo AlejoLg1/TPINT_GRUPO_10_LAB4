@@ -1,5 +1,6 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
 <%@ page import="java.util.List" %>
+<%@ page import="java.util.ArrayList" %>
 <%@ page import="dominio.Cuota" %>
 <%@ page session="true" %>
 <%
@@ -37,7 +38,55 @@
     <div class="welcome-card">
         <h1>Pagar cuotas</h1>
         <p>Las siguientes cuotas están pendientes de pago:</p>
+		
+		<form action="ServletPagoCuotas" method="get" class="row g-3 mb-4">
+		    <div class="col-md-3">
+		        <select name="idPrestamo" class="form-select">
+		            <option value="">Nº de Préstamo</option>
+		            <% 
+		                // Generar dinámicamente las opciones de préstamos disponibles
+		                if (cuotasPendientes != null) {
+		                    List<Integer> prestamosAgregados = new ArrayList<>();
+		                    for (Cuota c : cuotasPendientes) {
+		                        if (!prestamosAgregados.contains(c.getIdPrestamo())) {
+		                            prestamosAgregados.add(c.getIdPrestamo());
+		            %>
+		                <option value="<%= c.getIdPrestamo() %>"><%= c.getIdPrestamo() %></option>
+		            <%
+		                        }
+		                    }
+		                }
+		            %>
+		        </select>
+		    </div>
+		
 
+		
+		    <div class="col-md-3">
+		        <select name="estado" class="form-select">
+		            <option value="">-- Estado --</option>
+		            <option value="PENDIENTE">Pendiente</option>
+		            <option value="PAGADO">Pagado</option>
+		        </select>
+		    </div>
+			
+		    <div class="w-100"></div>
+			
+			<div class="col-md-3">
+				<label>Fecha de vencimiento: </label>
+		       <input type="date" name="fechaVencimiento" class="form-control" placeholder="Fecha de vencimiento">
+		    </div>
+		    
+		    <div class="w-100"></div>
+		
+		    <div class="col-md-2">
+		        <button type="submit" class="btn btn-outline-primary w-100">Filtrar</button>
+		    </div>
+		    <div class="col-md-2">
+		        <a href="ServletPagoCuotas" class="btn btn-outline-secondary w-100">Limpiar</a>
+		    </div>
+		</form>
+		
         <table class="table table-striped table-hover tabla-cuotas" style="width:100%; margin-top: 20px;">
 		    <thead class="table-light">
 		        <tr>
@@ -50,37 +99,34 @@
 		        </tr>
 		    </thead>
 		    <tbody>
-		        <%-- debug cantidad de cuotas --%>
-		        <% out.println("Total cuotas recibidas: " + (cuotasPendientes != null ? cuotasPendientes.size() : "null")); %>
-		        <%
-		            if (cuotasPendientes != null && !cuotasPendientes.isEmpty()) {
-		                for (Cuota cuota : cuotasPendientes) {
-		        %>
-		            <tr>
-		                <td><%= cuota.getIdPrestamo() %></td>
-		                <td><%= cuota.getNumeroCuota() %></td>
-		                <td>$<%= cuota.getMonto() %></td>
-		                <td><%= cuota.getFechaPago() != null ? cuota.getFechaPago() : "Sin fecha" %></td>
-		                <td><%= cuota.getEstado() %></td>
-		                <td>
-		                    <form action="ServletConfirmarPagoCuotas" method="post">
-		                        <input type="hidden" name="cuotas" value="<%= cuota.getIdCuota() %>" />
-		                        <button type="submit" class="btn btn-primary btn-sm">Pagar</button>
-		                    </form>
-		                </td>
-		            </tr>
-		        <%
-		                }
-		            } else {
-		        %>
-		            <tr>
-		                <td colspan="6">No hay cuotas pendientes para mostrar.</td>
-		            </tr>
-		        <%
-		            }
-		        %>
-		    </tbody>
-		</table>
+			    <% out.println("Total cuotas recibidas: " + (cuotasPendientes != null ? cuotasPendientes.size() : "null")); %>
+			    <%
+			        if (cuotasPendientes != null && !cuotasPendientes.isEmpty()) {
+			            for (Cuota cuota : cuotasPendientes) {
+			    %>
+			        <tr>
+			            <td><%= cuota.getIdPrestamo() %></td>
+			            <td><%= cuota.getNumeroCuota() %></td>
+			            <td>$<%= cuota.getMonto() %></td>
+			            <td><%= cuota.getFechaPago() != null ? cuota.getFechaPago() : "Sin fecha" %></td>
+			            <td><%= cuota.getEstado() %></td>
+			            <td>
+			                <% if ("PAGADO".equalsIgnoreCase(cuota.getEstado())) { %>
+			                    -
+			                <% } else { %>
+			                    <form action="ServletConfirmarPagoCuotas" method="post">
+			                        <input type="hidden" name="cuotas" value="<%= cuota.getIdCuota() %>" />
+			                        <button type="submit" class="btn btn-primary btn-sm">Pagar</button>
+			                    </form>
+			                <% } %>
+			            </td>
+			        </tr>
+			    <%
+			            }
+			        }
+			    %>
+			</tbody>
+		</table>				
     </div>
 </div>
 

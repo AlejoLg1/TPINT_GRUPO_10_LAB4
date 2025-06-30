@@ -111,5 +111,61 @@ public class CuotaDaoImpl implements CuotaDao {
         }
         return creada;
     }
+    
+    @Override
+    public List<Cuota> obtenerCuotasPendientesConFiltros(int idCliente, Integer idPrestamo, String fechaVencimiento, String estado) throws Exception {
+        List<Cuota> lista = new ArrayList<>();
+        Connection con = Conexion.getConexion().getSQLConexion();
+
+        String query = "SELECT c.id_cuota, c.id_prestamo, c.nro_cuenta, c.numero_cuota, c.monto, c.fecha_pago, c.estado " +
+                       "FROM Cuota c " +
+                       "JOIN Prestamo p ON c.id_prestamo = p.id_prestamo " +
+                       "WHERE p.id_cliente = ?";
+
+        List<Object> params = new ArrayList<>();
+        params.add(idCliente);
+
+        if (idPrestamo != null) {
+            query += " AND c.id_prestamo = ?";
+            params.add(idPrestamo);
+        }
+
+        if (fechaVencimiento != null && !fechaVencimiento.isEmpty()) {
+            query += " AND DATE(c.fecha_pago) = ?";
+            params.add(java.sql.Date.valueOf(fechaVencimiento));
+        }
+
+        if (estado != null && !estado.isEmpty()) {
+            query += " AND c.estado = ?";
+            params.add(estado);
+        }
+
+        PreparedStatement ps = con.prepareStatement(query);
+
+        for (int i = 0; i < params.size(); i++) {
+            ps.setObject(i + 1, params.get(i));
+        }
+
+        ResultSet rs = ps.executeQuery();
+
+        while (rs.next()) {
+            Cuota cuota = new Cuota();
+            cuota.setIdCuota(rs.getInt("id_cuota"));
+            cuota.setIdPrestamo(rs.getInt("id_prestamo"));
+            cuota.setNroCuenta(rs.getInt("nro_cuenta"));
+            cuota.setNumeroCuota(rs.getInt("numero_cuota"));
+            cuota.setMonto(rs.getBigDecimal("monto"));
+            cuota.setFechaPago(rs.getDate("fecha_pago").toLocalDate());
+            cuota.setEstado(rs.getString("estado"));
+            lista.add(cuota);
+        }
+
+        rs.close();
+        ps.close();
+        con.close();
+
+        return lista;
+    }
+
 
 }

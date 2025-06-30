@@ -31,9 +31,19 @@ public class ServletPagoCuotas extends HttpServlet {
 
         int idCliente = (int) idClienteObj;
 
+        // Obtener filtros
+        String idPrestamoStr = request.getParameter("idPrestamo");
+        String fechaVencimiento = request.getParameter("fechaVencimiento");
+        String estado = request.getParameter("estado");
+
+        Integer idPrestamo = null;
+        if (idPrestamoStr != null && !idPrestamoStr.isEmpty()) {
+            idPrestamo = Integer.parseInt(idPrestamoStr);
+        }
+
         try {
             CuotaNegocioImpl cuotaNegocio = new CuotaNegocioImpl();
-            List<Cuota> cuotasPendientes = cuotaNegocio.listarCuotasPendientesPorCliente(idCliente);
+            List<Cuota> cuotasPendientes = cuotaNegocio.listarCuotasPendientesConFiltros(idCliente, idPrestamo, fechaVencimiento, estado);
             request.setAttribute("cuotasPendientes", cuotasPendientes);
             request.getRequestDispatcher("jsp/cliente/pagarCuotas.jsp").forward(request, response);
         } catch (Exception e) {
@@ -41,6 +51,7 @@ public class ServletPagoCuotas extends HttpServlet {
             response.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR, "Error al obtener cuotas");
         }
     }
+
 
     @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {

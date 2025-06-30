@@ -8,4 +8,6 @@ public interface CuotaNegocio {
 
     boolean procesarPagoCuotas(List<Cuota> cuotas, int nroCuenta) throws Exception;
 
+	List<Cuota> listarCuotasPendientesConFiltros(int idCliente, Integer idPrestamo, String fechaVencimiento,
+			String estado) throws Exception;
 }
