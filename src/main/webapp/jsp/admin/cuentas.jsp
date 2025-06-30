@@ -66,9 +66,16 @@
                 <div class="col-md-2">
                     <input type="number" name="saldoMax" class="form-control" placeholder="Saldo hasta" step="0.01">
                 </div>
+                
+     			<div class="w-100"></div>
+     			
                 <div class="col-md-2">
                     <button type="submit" class="btn btn-outline-primary w-100">Filtrar</button>
                 </div>
+                <div class="col-md-2">
+				    <a href="ServletCuenta" class="btn btn-outline-secondary w-100">Limpiar</a>
+				</div>
+				
             </form>
 
             <!-- Tabla de cuentas -->
