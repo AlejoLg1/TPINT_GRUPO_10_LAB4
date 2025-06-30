@@ -55,18 +55,22 @@ public class ServletModificarUsuario extends HttpServlet {
 
     @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-        boolean status = false;
+		String msg = "✅ Usuario modificado correctamente ";
+    	boolean status = false;
+    	int idUsuario = -1;
         
         HttpSession session = request.getSession(false);
 		Usuario usuarioSession = (Usuario) session.getAttribute("usuario");
-
+		
+        UsuarioDao dao = new UsuarioDaoImpl();
+        
 		AutenticacionNegocioImpl auth = new AutenticacionNegocioImpl();
 
 		if (usuarioSession == null || !auth.validarRolAdmin(usuarioSession)) {
 		    response.sendRedirect(request.getContextPath() + "/ServletMenuAdmin");
 		    return;
 		}
-		
+
         try {
             String idParam = request.getParameter("id");
             String tipoUser = request.getParameter("tipoUser");
@@ -74,7 +78,7 @@ public class ServletModificarUsuario extends HttpServlet {
             String passRepetida = request.getParameter("passRepetida");
 
             if (idParam == null) throw new IllegalArgumentException("Falta el ID de usuario.");
-            int idUsuario = Integer.parseInt(idParam);
+            idUsuario = Integer.parseInt(idParam);
 
             Usuario usuario = new Usuario();
             usuario.setIdUsuario(idUsuario);
@@ -99,17 +103,30 @@ public class ServletModificarUsuario extends HttpServlet {
 
             if (modo.isEmpty()) throw new IllegalArgumentException("No se enviaron cambios válidos.");
 
-            UsuarioDao dao = new UsuarioDaoImpl();
             status = dao.Modificar(usuario, modo);
-
+            
+        } catch (IllegalArgumentException e) {
+            status = false;
+            msg = "❌ " + e.getMessage();
+            e.printStackTrace();
         } catch (Exception e) {
             status = false;
+            msg = "❌ Ocurrio un error durante la modificacion";
             e.printStackTrace();
         }
 
-        request.setAttribute("estado", status);
-        RequestDispatcher rd = request.getRequestDispatcher("/ServletListarUsuario");
-        rd.forward(request, response);
+        Usuario usuario = dao.obtenerPorId(idUsuario);
+        
+	    request.setAttribute("estado", status);
+	    request.setAttribute("mensaje", msg);
+
+        if (usuario != null) {
+            request.setAttribute("usuarioMod", usuario);
+            request.getRequestDispatcher("/jsp/admin/altaUsuario.jsp").forward(request, response);
+        } else {
+            response.sendRedirect(request.getContextPath() + "/jsp/admin/usuarios.jsp");
+        }
+        
     }
 
 

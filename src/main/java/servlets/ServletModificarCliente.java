@@ -64,7 +64,7 @@ public class ServletModificarCliente extends HttpServlet {
 		Usuario usuario = (Usuario) session.getAttribute("usuario");
 		
 		int id = Integer.parseInt(request.getParameter("idCliente"));
-		String msg = "Modificacion realizada exitosamente !";
+		String msg = "✅ Modificacion realizada exitosamente !";
 		boolean status = false;
 		
 		 ClienteDao dao = new ClienteDaoImpl();
@@ -157,19 +157,19 @@ public class ServletModificarCliente extends HttpServlet {
 
 		}catch(NombreUsuarioExistenteException ex1) {
 			status = false;
-			msg = ex1.getMessage();
+			msg = "❌ " + ex1.getMessage();
 		}catch(DniYaRegistradoException ex2) {
 			status = false;
-			msg = ex2.getMessage();
+			msg = "❌ " + ex2.getMessage();
 		}catch (ContrasenasNoCoincidenException e) {
 			status = false;
-			msg = e.getMessage();
+			msg = "❌ " + e.getMessage();
 		}catch (AutenticacionException e) {
 			status = false;
-			msg = e.getMessage();
+			msg = "❌ " + e.getMessage();
 		}catch (Exception e) {
 			status = false;
-			msg = "Ocurrio un error durante la modificacion";
+			msg = "❌ Ocurrio un error durante la modificacion";
 			e.printStackTrace();
 		}
 	    

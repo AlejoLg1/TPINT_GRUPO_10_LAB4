@@ -48,7 +48,7 @@ public class ServletAltaUsuario extends HttpServlet {
 		
         if (request.getParameter("btnUsuario") != null) {
             boolean status = false;
-            String mensajeError = null;
+            String msg = "✅ Usuario registrado correctamente ";
 
             try {
                 String tipoUser = request.getParameter("tipoUser");
@@ -80,22 +80,23 @@ public class ServletAltaUsuario extends HttpServlet {
                 status = dao.Agregar(nuevoUsuario);
 
             } catch (NombreUsuarioExistenteException e) {
-                mensajeError = e.getMessage();
+            	status = false;
+                msg = "❌ " + e.getMessage();
             } catch (TodosLosCamposObligatorios e) {
-                mensajeError = e.getMessage();
+            	status = false;
+                msg = "❌ " + e.getMessage();
 	        } catch (ContrasenasNoCoincidenException e) {
-	            request.setAttribute("mensajeError", e.getMessage());
-	            RequestDispatcher rd = request.getRequestDispatcher("/jsp/admin/altaUsuario.jsp");
-	            rd.forward(request, response);
-	            return;
+	            status = false;
+	            msg = "❌ " + e.getMessage();
 	        }
             catch (Exception e) {
-                mensajeError = "Error inesperado al procesar la solicitud.";
+            	status = false;
+                msg = "❌ Error inesperado al procesar la solicitud.";
                 e.printStackTrace();
             }
 
             request.setAttribute("estado", status);
-            request.setAttribute("mensajeError", mensajeError);
+            request.setAttribute("mensaje", msg);
             RequestDispatcher rd = request.getRequestDispatcher("/jsp/admin/altaUsuario.jsp");
             rd.forward(request, response);
             return;

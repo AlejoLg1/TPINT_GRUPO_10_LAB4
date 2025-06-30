@@ -6,9 +6,9 @@ import dominio.Usuario;
 
 public interface UsuarioDao {
 	
-	public boolean Agregar(Usuario usuario);
+	public boolean Agregar(Usuario usuario) throws Exception;
 	public boolean ExisteNombreUsuario(String nombreUsuario);
-	public boolean Modificar(Usuario usuario, String accion);
+	public boolean Modificar(Usuario usuario, String accion) throws Exception;
 	public boolean Eliminar(Usuario usuario);
 	public boolean ValidarUsuario(Usuario usuario);
 	public Usuario obtenerPorId(int id);

@@ -61,7 +61,7 @@ public class ServletAltaCliente extends HttpServlet {
 		}
 		
 		boolean status = false;
-		String msg = "Cliente registrado correctamente !";
+		String msg = "✅ Cliente registrado correctamente !";
 		
 		String nombre = request.getParameter("nombre") == null? "" : request.getParameter("nombre");
 	    String apellido = request.getParameter("apellido") == null? "" : request.getParameter("apellido");
@@ -140,25 +140,25 @@ public class ServletAltaCliente extends HttpServlet {
 
 			}catch(NombreUsuarioExistenteException ex1) {
 				status = false;
-				msg = ex1.getMessage();
+				msg = "❌ " + ex1.getMessage();
 				reenviarDatos(request, response);
 				
 			}catch(DniYaRegistradoException ex2) {
 				status = false;
-				msg = ex2.getMessage();
+				msg = "❌ " + ex2.getMessage();
 				reenviarDatos(request, response);
 			
 			}catch (ContrasenasNoCoincidenException e) {
 				status = false;
-				msg = e.getMessage();
+				msg = "❌ " + e.getMessage();
 				reenviarDatos(request, response);
 			}catch (AutenticacionException e) {
 				status = false;
 				reenviarDatos(request, response);
-				msg = e.getMessage();
+				msg = "❌ " + e.getMessage();
 			}catch (Exception e) {
 				status = false;
-				msg = "Ocurrio un error durante el registro";
+				msg = "❌ Ocurrio un error durante el registro";
 				e.printStackTrace();
 			}
 

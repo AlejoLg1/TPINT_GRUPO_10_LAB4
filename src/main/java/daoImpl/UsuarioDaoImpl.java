@@ -14,7 +14,7 @@ import utils.Conexion;
 public class UsuarioDaoImpl implements UsuarioDao {
 
 	@Override
-	public boolean Agregar(Usuario usuario) {
+	public boolean Agregar(Usuario usuario) throws Exception {
 	    Connection cn = Conexion.getConexion().getSQLConexion();
 	    boolean agregado = false;
 
@@ -37,6 +37,7 @@ public class UsuarioDaoImpl implements UsuarioDao {
 
 	    } catch (Exception e) {
 	        e.printStackTrace();
+	        throw e;
 	    }
 
 	    return agregado;
@@ -45,7 +46,7 @@ public class UsuarioDaoImpl implements UsuarioDao {
 
 
 	@Override
-	public boolean Modificar(Usuario usuario, String accion) {
+	public boolean Modificar(Usuario usuario, String accion) throws Exception {
 	    Connection cn = Conexion.getConexion().getSQLConexion();
 	    boolean modificado = false;
 
@@ -95,6 +96,7 @@ public class UsuarioDaoImpl implements UsuarioDao {
 
 	    } catch (Exception e) {
 	        e.printStackTrace();
+	        throw e;
 	    }
 
 	    return modificado;

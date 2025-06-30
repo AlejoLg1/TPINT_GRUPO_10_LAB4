@@ -90,7 +90,7 @@ public class ServletTransferenciasUsuario extends HttpServlet {
 	
 	protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         HttpSession session = request.getSession();
-        String msg = "Operacion realizada con exito";
+        String msg = "✅ Operacion realizada con exito";
         boolean status = false;
 
         if (request.getParameter("btnTransferir") != null) {
@@ -120,16 +120,16 @@ public class ServletTransferenciasUsuario extends HttpServlet {
 
             } catch(TransferenciaException e) {
             	status = false;
-            	msg = e.getMessage();
+            	msg = "❌ " + e.getMessage();
             } catch(MovimientoException e) {
             	status = false;
-            	msg = e.getMessage();
+            	msg = "❌ " + e.getMessage();
             } catch (CuentaExistenteExcenption e) {
-                msg = e.getMessage();
+            	msg = "❌ " + e.getMessage();
             } catch (Exception e) {
                 status = false;
                 e.printStackTrace();
-                msg = "Ocurrio un error al realizar la transferencia.";
+                msg = "❌ Ocurrio un error al realizar la transferencia.";
             }
         }
 

@@ -74,7 +74,7 @@ public class ServletSolicitarPrestamo extends HttpServlet {
     protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 
         boolean status = false;
-        String msg = "Solicitud realizado con exito";
+        String msg = "✅ Solicitud realizado con exito";
 
         try {
             String idCuenta = request.getParameter("cuentasCliente");
@@ -121,12 +121,13 @@ public class ServletSolicitarPrestamo extends HttpServlet {
             
         } catch (PrestamoException e) {
             status = false;
-            msg = e.getMessage();
+            msg = "❌ " + e.getMessage();
         } catch (CuentaExistenteExcenption e) {
             status = false;
-            msg = e.getMessage();
+            msg = "❌ " + e.getMessage();
         } catch (Exception e) {
             status = false;
+            msg = "❌ Ocurrio un error durante la solicitud";
             e.printStackTrace();
         }
         
