@@ -23,24 +23,26 @@ public class ServletListarUsuario extends HttpServlet {
 	}
 
 	protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-		
-		HttpSession session = request.getSession(false);
-		Usuario usuario = (Usuario) session.getAttribute("usuario");
+	    HttpSession session = request.getSession(false);
+	    Usuario usuario = (Usuario) session.getAttribute("usuario");
 
-		AutenticacionNegocioImpl auth = new AutenticacionNegocioImpl();
-		
-		//if (usuario == null || !auth.validarRolAdmin(usuario)) {
-		if (usuario == null) {
-		    response.sendRedirect(request.getContextPath() + "/ServletMenuAdmin");
-		    return;
-		}
+	    AutenticacionNegocioImpl auth = new AutenticacionNegocioImpl();
 
-	    
-		UsuarioDao dao = new UsuarioDaoImpl();
-		List<Usuario> listaUsuarios = dao.Listar();
+	    if (usuario == null) {
+	        response.sendRedirect(request.getContextPath() + "/ServletMenuAdmin");
+	        return;
+	    }
 
-		request.setAttribute("usuarios", listaUsuarios);
-		request.getRequestDispatcher("/jsp/admin/usuarios.jsp").forward(request, response);
+	    // Obtener filtros desde request
+	    String nombreUsuario = request.getParameter("usuario");
+	    String rol = request.getParameter("rol");
+	    String estado = request.getParameter("estado");
+
+	    UsuarioDao dao = new UsuarioDaoImpl();
+	    List<Usuario> listaUsuarios = dao.listarConFiltros(nombreUsuario, rol, estado);
+
+	    request.setAttribute("usuarios", listaUsuarios);
+	    request.getRequestDispatcher("/jsp/admin/usuarios.jsp").forward(request, response);
 	}
 
 	protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {

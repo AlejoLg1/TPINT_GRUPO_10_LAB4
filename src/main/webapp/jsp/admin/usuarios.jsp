@@ -50,6 +50,39 @@
                 <a href="${pageContext.request.contextPath}/jsp/admin/altaUsuario.jsp" class="btn btn-primary">+ Crear Usuario</a>
             </div>
 
+            <!-- 🔎 Filtros -->
+            <form action="${pageContext.request.contextPath}/ServletListarUsuario" method="get" class="row g-3 mb-4">
+                <div class="col-md-4">
+                    <input type="text" name="usuario" class="form-control" placeholder="Buscar por nombre de usuario">
+                </div>
+                
+                <div class="col-md-3">
+                    <select name="rol" class="form-select">
+                        <option value="">-- Rol --</option>
+                        <option value="Admin">Admin</option>
+                        <option value="Usuario">Usuario</option>
+                    </select>
+                </div>
+
+                <div class="col-md-3">
+                    <select name="estado" class="form-select">
+                        <option value="">-- Estado --</option>
+                        <option value="Activo">Activo</option>
+                        <option value="Inactivo">Inactivo</option>
+                    </select>
+                </div>
+
+                <div class="w-100"></div> <!-- Salto de línea -->
+
+                <div class="col-md-2">
+                    <button type="submit" class="btn btn-outline-primary w-100">Filtrar</button>
+                </div>
+                <div class="col-md-2">
+                    <a href="${pageContext.request.contextPath}/ServletListarUsuario" class="btn btn-outline-secondary w-100">Limpiar</a>
+                </div>
+            </form>
+
+            <!-- 🔽 Tabla -->
             <table class="table table-striped table-hover tabla-usuario" style="width:100%;">
                 <thead class="table-light">
                     <tr>
@@ -76,31 +109,31 @@
                         <td>
                             <% if (u.isEstado()) { %>
                                 <button 
-								  type="button"
-								  class="btn btn-danger btn-sm me-1"
-								  onclick="abrirConfirmacion({
-								    action: '${pageContext.request.contextPath}/ServletBajaUsuario',
-								    mensaje: '¿Estás seguro que deseas desactivar al usuario <%= u.getNombreUsuario() %>?',
-								    botonTexto: 'Desactivar',
-								    botonClase: 'btn-danger',
-								    inputs: [{ name: 'id', value: '<%= u.getIdUsuario() %>' }]
-								  })">
-								  Desactivar
-								</button>
+                                  type="button"
+                                  class="btn btn-danger btn-sm me-1"
+                                  onclick="abrirConfirmacion({
+                                    action: '${pageContext.request.contextPath}/ServletBajaUsuario',
+                                    mensaje: '¿Estás seguro que deseas desactivar al usuario <%= u.getNombreUsuario() %>?',
+                                    botonTexto: 'Desactivar',
+                                    botonClase: 'btn-danger',
+                                    inputs: [{ name: 'id', value: '<%= u.getIdUsuario() %>' }]
+                                  })">
+                                  Desactivar
+                                </button>
                                 <a href="${pageContext.request.contextPath}/ServletModificarUsuario?id=<%= u.getIdUsuario() %>" class="btn btn-warning btn-sm">Modificar</a>
                             <% } else { %>
                                 <button 
-								  type="button"
-								  class="btn btn-success btn-sm"
-								  onclick="abrirConfirmacion({
-								    action: '${pageContext.request.contextPath}/ServletActivarUsuario',
-								    mensaje: '¿Deseas activar nuevamente al usuario <%= u.getNombreUsuario() %>?',
-								    botonTexto: 'Activar',
-								    botonClase: 'btn-success',
-								    inputs: [{ name: 'id', value: '<%= u.getIdUsuario() %>' }]
-								  })">
-								  Activar
-								</button>
+                                  type="button"
+                                  class="btn btn-success btn-sm"
+                                  onclick="abrirConfirmacion({
+                                    action: '${pageContext.request.contextPath}/ServletActivarUsuario',
+                                    mensaje: '¿Deseas activar nuevamente al usuario <%= u.getNombreUsuario() %>?',
+                                    botonTexto: 'Activar',
+                                    botonClase: 'btn-success',
+                                    inputs: [{ name: 'id', value: '<%= u.getIdUsuario() %>' }]
+                                  })">
+                                  Activar
+                                </button>
                             <% } %>
                         </td>
                     </tr>
@@ -113,6 +146,7 @@
         </div>
     </div>
 </div>
+
 
 <!-- jQuery -->
   <script src="https://code.jquery.com/jquery-3.7.0.min.js"></script>

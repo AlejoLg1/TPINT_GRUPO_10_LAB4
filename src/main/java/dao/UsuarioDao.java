@@ -16,5 +16,6 @@ public interface UsuarioDao {
 	public Usuario obtenerPorIdCliente(int idCliente);
 	public int ObtenerNuevoId();
 	public List<Usuario> Listar();
+	List<Usuario> listarConFiltros(String nombreUsuario, String rol, String estado);
 	public int contarAdminsActivos();
 }

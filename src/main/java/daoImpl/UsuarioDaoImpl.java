@@ -296,5 +296,58 @@ public class UsuarioDaoImpl implements UsuarioDao {
         return cantidad;
     }
 
+    @Override
+    public List<Usuario> listarConFiltros(String nombreUsuario, String rol, String estado) {
+        Connection cn = Conexion.getConexion().getSQLConexion();
+        List<Usuario> lista = new ArrayList<>();
+
+        String query = "SELECT id_usuario, nombre_usuario, clave, tipo, is_admin, estado "
+                     + "FROM Usuario WHERE tipo != 'CLIENTE'";
+
+        List<Object> params = new ArrayList<>();
+
+        if (nombreUsuario != null && !nombreUsuario.isEmpty()) {
+            query += " AND nombre_usuario LIKE ?";
+            params.add("%" + nombreUsuario + "%");
+        }
+
+        if (rol != null && !rol.isEmpty()) {
+            query += " AND is_admin = ?";
+            params.add(rol.equals("Admin"));
+        }
+
+        if (estado != null && !estado.isEmpty()) {
+            query += " AND estado = ?";
+            params.add(estado.equals("Activo"));
+        }
+
+        try {
+            PreparedStatement pst = cn.prepareStatement(query);
+
+            // Setear parámetros dinámicos
+            for (int i = 0; i < params.size(); i++) {
+                pst.setObject(i + 1, params.get(i));
+            }
+
+            ResultSet rs = pst.executeQuery();
+
+            while (rs.next()) {
+                Usuario u = new Usuario();
+                u.setIdUsuario(rs.getInt("id_usuario"));
+                u.setNombreUsuario(rs.getString("nombre_usuario"));
+                u.setClave(rs.getString("clave"));
+                u.setTipo(rs.getString("tipo"));
+                u.setIsAdmin(rs.getBoolean("is_admin"));
+                u.setEstado(rs.getBoolean("estado"));
+
+                lista.add(u);
+            }
+
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+        return lista;
+    }
 
 }
