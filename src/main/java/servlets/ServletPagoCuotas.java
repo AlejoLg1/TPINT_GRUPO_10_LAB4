@@ -42,6 +42,7 @@ public class ServletPagoCuotas extends HttpServlet {
         }
     }
 
+    @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
         HttpSession session = request.getSession();
         Object idClienteObj = session.getAttribute("idCliente");
@@ -54,33 +55,42 @@ public class ServletPagoCuotas extends HttpServlet {
         int idCliente = (int) idClienteObj;
 
         try {
-            String[] cuotasSeleccionadas = request.getParameterValues("cuotas");
+            String idCuotaStr = request.getParameter("cuotas");
             String nroCuentaStr = request.getParameter("nroCuenta");
 
-            if (cuotasSeleccionadas == null || cuotasSeleccionadas.length == 0 || nroCuentaStr == null) {
+            if (idCuotaStr == null || nroCuentaStr == null) {
                 request.setAttribute("mensaje", "⚠️ No seleccionaste ninguna cuota o cuenta.");
                 request.getRequestDispatcher("jsp/cliente/pagarCuotas.jsp").forward(request, response);
                 return;
             }
 
             int nroCuenta = Integer.parseInt(nroCuentaStr);
-            CuotaNegocioImpl cuotaNegocio = new CuotaNegocioImpl();
-            List<Cuota> cuotasAPagar = new ArrayList<>();
+            int idCuota = Integer.parseInt(idCuotaStr);
 
-            for (String idCuotaStr : cuotasSeleccionadas) {
-                int idCuota = Integer.parseInt(idCuotaStr);
-                Cuota c = cuotaNegocio.obtenerCuotaPorId(idCuota);
-                if (c != null && c.getMonto() != null) {
-                    cuotasAPagar.add(c);
-                }
+            CuotaNegocioImpl cuotaNegocio = new CuotaNegocioImpl();
+            Cuota cuota = cuotaNegocio.obtenerCuotaPorId(idCuota);
+
+            if (cuota == null || cuota.getMonto() == null) {
+                request.setAttribute("mensaje", "⚠️ No se pudo obtener la cuota seleccionada.");
+                request.getRequestDispatcher("jsp/cliente/pagarCuotas.jsp").forward(request, response);
+                return;
             }
+
+            List<Cuota> cuotasAPagar = new ArrayList<>();
+            cuotasAPagar.add(cuota);
 
             boolean exito = cuotaNegocio.procesarPagoCuotas(cuotasAPagar, nroCuenta);
 
             if (exito) {
-                request.setAttribute("mensaje", "✅ Las cuotas fueron pagadas correctamente.");
+                request.setAttribute("mensaje", "✅ La cuota fue pagada correctamente.");
             } else {
                 request.setAttribute("mensaje", "❌ No se pudo realizar el pago. Verificá tu saldo.");
+
+                Cuota cuotaActualizada = cuotaNegocio.obtenerCuotaPorId(idCuota);
+                cuotasAPagar.clear();
+                if (cuotaActualizada != null) {
+                    cuotasAPagar.add(cuotaActualizada);
+                }
             }
 
             // Volver a mostrar la pantalla de confirmación con datos
@@ -94,7 +104,25 @@ public class ServletPagoCuotas extends HttpServlet {
         } catch (Exception e) {
             e.printStackTrace();
             request.setAttribute("mensaje", "❌ Error inesperado al procesar el pago.");
+
+            try {
+                String idCuotaStr = request.getParameter("cuotas");
+                if (idCuotaStr != null) {
+                    CuotaNegocioImpl cuotaNegocio = new CuotaNegocioImpl();
+                    Cuota cuotaError = cuotaNegocio.obtenerCuotaPorId(Integer.parseInt(idCuotaStr));
+                    if (cuotaError != null) {
+                        List<Cuota> cuotasError = new ArrayList<>();
+                        cuotasError.add(cuotaError);
+                        request.setAttribute("cuotasSeleccionadas", cuotasError);
+                    }
+                }
+            } catch (Exception ex2) {
+                ex2.printStackTrace();
+            }
+
             request.getRequestDispatcher("jsp/cliente/confirmarPago.jsp").forward(request, response);
         }
     }
+
+
 }

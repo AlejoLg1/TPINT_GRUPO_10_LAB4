@@ -63,15 +63,24 @@ button {
     font-size: 15px;
     border-radius: 5px;
     cursor: pointer;
-    margin-top: 20px;
+    margin-top: 0px;
 }
 
-button:hover {
-    background-color: #2980b9;
-}
+
 
 /* Total a pagar */
 p strong {
     font-size: 18px;
     color: #2c3e50;
+}
+
+button.btn-close {
+    padding: 1.25rem 1rem;
+    margin-top: 0px;
+}
+
+.alert {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
 }

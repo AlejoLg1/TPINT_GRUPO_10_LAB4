@@ -7,6 +7,7 @@ import dao.MovimientosDao;
 import dao.CuentaDao;
 import daoImpl.CuotaDaoImpl;
 import daoImpl.MovimientoDaoImpl;
+import daoImpl.PrestamoDaoImpl;
 import daoImpl.CuentaDaoImpl;
 import dominio.Cuota;
 import dominio.Cuenta;
@@ -28,52 +29,62 @@ public class CuotaNegocioImpl implements CuotaNegocio {
 
     @Override
     public boolean procesarPagoCuotas(List<Cuota> cuotas, int nroCuenta) throws Exception {
+        if (cuotas == null || cuotas.isEmpty()) {
+            throw new Exception("No se recibió ninguna cuota para procesar.");
+        }
+
+        Cuota cuota = cuotas.get(0); // Tomamos la única cuota recibida
+
         Connection conn = null;
         try {
             conn = utils.Conexion.getConexion().getSQLConexion();
             conn.setAutoCommit(false);
 
-            // Calcular total
-            BigDecimal total = BigDecimal.ZERO;
-            for (Cuota c : cuotas) {
-                if (c.getMonto() != null) {
-                    total = total.add(c.getMonto());
-                    System.out.println("- Cuota ID: " + c.getIdCuota() + " | Monto: " + c.getMonto());
-                } else {
-                    System.out.println("⚠️ Cuota con ID " + c.getIdCuota() + " tiene monto nulo");
-                }
-            }
-
-            // Obtener saldo actual
             Cuenta cuenta = cuentaDao.obtenerCuentaPorId(nroCuenta);
-            BigDecimal saldo = cuenta.getSaldo();
+            BigDecimal saldoActual = cuenta.getSaldo();
 
-            if (saldo.compareTo(total) < 0) {
-                throw new Exception("Saldo insuficiente");
+            if (cuota.getMonto() == null || saldoActual.compareTo(cuota.getMonto()) < 0) {
+                if (conn != null) conn.rollback();
+                return false;
             }
 
             // Descontar saldo de la cuenta
-            BigDecimal nuevoSaldo = saldo.subtract(total);
-            boolean saldoActualizado = cuentaDao.actualizarSaldo(nroCuenta, nuevoSaldo);
+            boolean saldoActualizado = cuentaDao.actualizarSaldo(
+                nroCuenta,
+                cuota.getMonto(),
+                false, // es resta
+                conn
+            );
             if (!saldoActualizado) {
-                throw new Exception("No se pudo actualizar el saldo de la cuenta.");
+                throw new Exception("No se pudo actualizar el saldo para la cuota ID: " + cuota.getIdCuota());
             }
 
-            // Registrar movimiento negativo
+            // Registrar movimiento
             Movimiento mov = new Movimiento();
             mov.setNroCuenta(nroCuenta);
-            mov.setDetalle("Pago de cuotas de préstamo");
-            mov.setImporte(total.negate());
+            mov.setDetalle("Pago cuota préstamo N°" + cuota.getIdPrestamo() + " - Cuota " + cuota.getNumeroCuota());
+            mov.setImporte(cuota.getMonto().negate());
             mov.setFecha(LocalDateTime.now());
-            mov.setIdTipoMovimiento(2); // Asegurate que este ID exista en tipo_movimiento
+            mov.setIdTipoMovimiento(3); // Pago Cuota Prestamo
 
             movimientoDao.insertarMovimiento(mov, conn);
 
-            // Marcar cuotas como pagadas
-            boolean pagadas = cuotaDao.pagarCuotas(cuotas, nroCuenta, conn);
+            // Marcar cuota como pagada
+            boolean pagada = cuotaDao.pagarCuota(cuota, nroCuenta, conn);
+            if (!pagada) {
+                throw new Exception("No se pudo marcar la cuota como pagada.");
+            }
+
+            // Actualizar cuotas_pagadas en Prestamo
+            PrestamoDaoImpl prestamoDao = new PrestamoDaoImpl();
+            boolean cuotasActualizadas = prestamoDao.actualizarCuotasPagadas(cuota.getIdPrestamo(), conn);
+            if (!cuotasActualizadas) {
+                throw new Exception("No se pudo actualizar la cantidad de cuotas pagadas en el préstamo ID: " + cuota.getIdPrestamo());
+            }
 
             conn.commit();
-            return pagadas;
+            return true;
+
         } catch (Exception ex) {
             if (conn != null) conn.rollback();
             throw ex;
@@ -81,6 +92,7 @@ public class CuotaNegocioImpl implements CuotaNegocio {
             if (conn != null) conn.close();
         }
     }
+
 
     public Cuota obtenerCuotaPorId(int idCuota) throws Exception {
         return cuotaDao.obtenerCuotaPorId(idCuota);
