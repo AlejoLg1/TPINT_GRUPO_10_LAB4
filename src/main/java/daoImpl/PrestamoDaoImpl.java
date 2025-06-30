@@ -151,7 +151,7 @@ public class PrestamoDaoImpl implements PrestamoDao {
 	            mov.setDetalle("Alta de préstamo N°" + prestamo.getId_prestamo());
 	            mov.setImporte(BigDecimal.valueOf(prestamo.getImporte_solicitado()));
 	            mov.setFecha(LocalDateTime.now());
-	            mov.setIdTipoMovimiento(2); // Ajusta al ID real de 'Alta de préstamo'
+	            mov.setIdTipoMovimiento(2); // Alta de Préstamo
 
 	            int idMov = -1;
 	            try {
@@ -169,7 +169,7 @@ public class PrestamoDaoImpl implements PrestamoDao {
 
 
 	            
-	            // 4. Crear cuotas según cantidad de cuotas
+	            // 4. Crear cuotas pedidas
 	            CuotaDaoImpl cuotaDao = new CuotaDaoImpl();
 	            LocalDate fechaHoy = LocalDate.now();
 
