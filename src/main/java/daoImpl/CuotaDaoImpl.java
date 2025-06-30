@@ -42,26 +42,23 @@ public class CuotaDaoImpl implements CuotaDao {
     }
 
     @Override
-    public boolean pagarCuotas(List<Cuota> cuotas, int nroCuenta, Connection conn) throws Exception {
+    public boolean pagarCuota(Cuota cuota, int nroCuenta, Connection conn) throws Exception {
         String update = "UPDATE Cuota SET estado = 'PAGADO', fecha_pago = ? WHERE id_cuota = ?";
-        PreparedStatement ps = conn.prepareStatement(update);
-        java.sql.Date hoy = java.sql.Date.valueOf(java.time.LocalDate.now());
+        try (PreparedStatement ps = conn.prepareStatement(update)) {
+            java.sql.Date hoy = java.sql.Date.valueOf(java.time.LocalDate.now());
 
-        for (Cuota c : cuotas) {
             ps.setDate(1, hoy);
-            ps.setInt(2, c.getIdCuota());
-            ps.addBatch();
+            ps.setInt(2, cuota.getIdCuota());
+
+            int result = ps.executeUpdate();
+            return result > 0;
+
+        } catch (Exception e) {
+            e.printStackTrace();
+            throw new Exception("Error al pagar la cuota ID: " + cuota.getIdCuota(), e);
         }
-
-        int[] results = ps.executeBatch();
-        ps.close();
-
-        for (int result : results) {
-            if (result == 0) return false;
-        }
-
-        return true;
     }
+
     
     public Cuota obtenerCuotaPorId(int idCuota) {
         Cuota cuota = null;
@@ -93,4 +90,26 @@ public class CuotaDaoImpl implements CuotaDao {
 
         return cuota;
     }
+    
+    public boolean crearCuota(Cuota cuota, Connection conn) {
+        boolean creada = false;
+        String sql = "INSERT INTO cuota (id_prestamo, nro_cuenta, numero_cuota, monto, fecha_pago, estado) VALUES (?, ?, ?, ?, ?, ?)";
+        try (PreparedStatement pst = conn.prepareStatement(sql)) {
+            pst.setInt(1, cuota.getIdPrestamo());
+            pst.setInt(2, cuota.getNroCuenta());
+            pst.setInt(3, cuota.getNumeroCuota());
+            pst.setBigDecimal(4, cuota.getMonto());
+            pst.setDate(5, java.sql.Date.valueOf(cuota.getFechaPago()));
+            pst.setString(6, cuota.getEstado());
+
+            int filas = pst.executeUpdate();
+            if (filas > 0) {
+                creada = true;
+            }
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return creada;
+    }
+
 }
