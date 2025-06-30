@@ -1,9 +1,12 @@
 package daoImpl;
 
+import java.math.BigDecimal;
 import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -11,6 +14,8 @@ import dao.PrestamoDao;
 import dominio.Cliente;
 import dominio.Prestamo;
 import dominio.Cuenta;
+import dominio.Cuota;
+import dominio.Movimiento;
 import utils.Conexion;
 import dominio.TipoCuenta;
 
@@ -106,23 +111,98 @@ public class PrestamoDaoImpl implements PrestamoDao {
 
 	@Override
 	public boolean aprobarPrestamo(int idPrestamo) {
-		boolean actualizado = false;
+	    boolean actualizado = false;
 	    Connection conexion = null;
 	    PreparedStatement stmt = null;
 
 	    try {
 	        conexion = Conexion.getConexion().getSQLConexion();
+	        conexion.setAutoCommit(false); // Habilitar control de transacciones manual
+
+	        // 1. Actualizar estado del préstamo
 	        String query = "UPDATE prestamo SET autorizacion = 1, estado = 'Aprobado' WHERE id_prestamo = ?";
 	        stmt = conexion.prepareStatement(query);
 	        stmt.setInt(1, idPrestamo);
 	        int filas = stmt.executeUpdate();
+
 	        if (filas > 0) {
-	            conexion.commit();  
+	            // 2. Obtener datos del préstamo aprobado
+	            Prestamo prestamo = obtenerPrestamoPorId(idPrestamo);
+
+	            // 3. Actualizar saldo de la cuenta sumando el importe solicitado
+	            CuentaDaoImpl cuentaDao = new CuentaDaoImpl();
+	            boolean saldoActualizado = cuentaDao.actualizarSaldo(
+	                prestamo.get_cuenta().getNroCuenta(),
+	                BigDecimal.valueOf(prestamo.getImporte_solicitado()),
+	                true,
+	                conexion
+	            );
+
+	            if (!saldoActualizado) {
+	                conexion.rollback();
+	                return false;
+	            }
+	            
+	            // 3.1. Registrar movimiento de alta de préstamo
+	            MovimientoDaoImpl movimientoDao = new MovimientoDaoImpl();
+
+	            Movimiento mov = new Movimiento();
+	            mov.setNroCuenta(prestamo.get_cuenta().getNroCuenta());
+	            mov.setDetalle("Alta de préstamo N°" + prestamo.getId_prestamo());
+	            mov.setImporte(BigDecimal.valueOf(prestamo.getImporte_solicitado()));
+	            mov.setFecha(LocalDateTime.now());
+	            mov.setIdTipoMovimiento(2); // Ajusta al ID real de 'Alta de préstamo'
+
+	            int idMov = -1;
+	            try {
+	                idMov = movimientoDao.insertarMovimiento(mov, conexion);
+	            } catch (Exception e) {
+	                e.printStackTrace();
+	                conexion.rollback();
+	                return false;
+	            }
+
+	            if (idMov <= 0) {
+	                conexion.rollback();
+	                return false;
+	            }
+
+
+	            
+	            // 4. Crear cuotas según cantidad de cuotas
+	            CuotaDaoImpl cuotaDao = new CuotaDaoImpl();
+	            LocalDate fechaHoy = LocalDate.now();
+
+	            for (int i = 1; i <= prestamo.getCantidad_cuotas(); i++) {
+	                Cuota cuota = new Cuota();
+	                cuota.setIdPrestamo(idPrestamo);
+	                cuota.setNroCuenta(prestamo.get_cuenta().getNroCuenta());
+	                cuota.setNumeroCuota(i);
+	                cuota.setMonto(BigDecimal.valueOf(prestamo.getMonto_cuota()));
+	                cuota.setFechaPago(fechaHoy.plusMonths(i)); // siguiente cuota cada mes
+	                cuota.setEstado("Pendiente");
+
+	                boolean creada = cuotaDao.crearCuota(cuota, conexion);
+	                if (!creada) {
+	                    conexion.rollback();
+	                    return false;
+	                }
+	            }
+
+	            // 5. Commit general si todo sale bien
+	            conexion.commit();
 	            actualizado = true;
+	        } else {
+	            conexion.rollback();
 	        }
 
 	    } catch (SQLException e) {
 	        e.printStackTrace();
+	        try {
+	            if (conexion != null) conexion.rollback();
+	        } catch (SQLException ex) {
+	            ex.printStackTrace();
+	        }
 	    } finally {
 	        try {
 	            if (stmt != null) stmt.close();
@@ -133,8 +213,9 @@ public class PrestamoDaoImpl implements PrestamoDao {
 	    }
 
 	    return actualizado;
-		
 	}
+
+
 
 	@Override
 	public boolean rechazarPrestamo(int idPrestamo) {
@@ -278,4 +359,59 @@ public class PrestamoDaoImpl implements PrestamoDao {
         }
         return listaPrestamos;
 	}
+	
+	@Override
+	public Prestamo obtenerPrestamoPorId(int idPrestamo) {
+	    Prestamo prestamo = null;
+	    String sql = "SELECT p.id_prestamo, p.importe_solicitado, p.cantidad_cuotas, p.monto_cuota, p.estado, " +
+	                 "c.nro_cuenta, c.id_cliente " +
+	                 "FROM prestamo p " +
+	                 "JOIN cuenta c ON p.nro_cuenta = c.nro_cuenta " +
+	                 "WHERE p.id_prestamo = ?";
+
+	    try (Connection conn = Conexion.getConexion().getSQLConexion();
+	         PreparedStatement pst = conn.prepareStatement(sql)) {
+
+	        pst.setInt(1, idPrestamo);
+
+	        ResultSet rs = pst.executeQuery();
+	        if (rs.next()) {
+	            prestamo = new Prestamo();
+	            prestamo.setId_prestamo(rs.getInt("id_prestamo"));
+	            prestamo.setImporte_solicitado(rs.getDouble("importe_solicitado"));
+	            prestamo.setCantidad_cuotas(rs.getInt("cantidad_cuotas"));
+	            prestamo.setMonto_cuota(rs.getDouble("monto_cuota"));
+	            prestamo.setEstado(rs.getString("estado"));
+
+	            // Obtener cuenta
+	            Cuenta cuenta = new Cuenta();
+	            cuenta.setNroCuenta(rs.getInt("nro_cuenta"));
+	            prestamo.set_cuenta(cuenta);
+
+	            // Si necesitas el cliente completo, usa ClienteDaoImpl aquí.
+	            ClienteDaoImpl clienteDao = new ClienteDaoImpl();
+	            Cliente cliente = clienteDao.obtenerPorIdCliente(rs.getInt("id_cliente"));
+	            prestamo.set_cliente(cliente);
+	        }
+
+	    } catch (SQLException e) {
+	        e.printStackTrace();
+	    }
+
+	    return prestamo;
+	}
+
+	public boolean actualizarCuotasPagadas(int idPrestamo, Connection conn) throws Exception {
+	    String query = "UPDATE Prestamo SET cuotas_pagadas = cuotas_pagadas + 1 WHERE id_prestamo = ?";
+	    try (PreparedStatement stmt = conn.prepareStatement(query)) {
+	        stmt.setInt(1, idPrestamo);
+	        int filas = stmt.executeUpdate();
+	        return filas > 0;
+	    } catch (Exception e) {
+	        e.printStackTrace();
+	        throw new Exception("Error al actualizar cuotas pagadas del préstamo ID: " + idPrestamo, e);
+	    }
+	}
+
+
 }

@@ -2,13 +2,14 @@ package dao;
 
 import java.util.List;
 
-import dominio.Cliente;
+
 import dominio.Prestamo;
 
 public interface PrestamoDao {
-    boolean registrarPrestamo(Prestamo prestamo);
 	public List<Prestamo> Listar();
+	public List<Prestamo> obtenerPrestamosFiltrados(String busqueda, Double montoMin, Double montoMax, String estado, String fechaSolicitud);
+	Prestamo obtenerPrestamoPorId(int idPrestamo);
+    boolean registrarPrestamo(Prestamo prestamo);
 	boolean aprobarPrestamo(int nroPrestamo);
 	boolean rechazarPrestamo(int nroPrestamo);
-    public List<Prestamo> obtenerPrestamosFiltrados(String busqueda, Double montoMin, Double montoMax, String estado, String fechaSolicitud);
 }

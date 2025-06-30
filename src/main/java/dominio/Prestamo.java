@@ -12,6 +12,7 @@ public class Prestamo {
     private double monto_cuota;
     private boolean autorizacion;
     private String estado;
+    private int cuotas_pagadas;
 
     // Getters y setters
     public int getId_prestamo() { return id_prestamo; }
@@ -38,6 +39,9 @@ public class Prestamo {
     public boolean isAutorizacion() { return autorizacion; }
     public void setAutorizacion(boolean autorizacion) { this.autorizacion = autorizacion; }
     
-    public String getEstado() {return estado;}
-    public void setEstado(String estado) {this.estado = estado;}
+    public String getEstado() { return estado; }
+    public void setEstado(String estado) { this.estado = estado; }
+
+    public int getCuotas_pagadas() { return cuotas_pagadas; }
+    public void setCuotas_pagadas(int cuotas_pagadas) { this.cuotas_pagadas = cuotas_pagadas; } 
 }
