@@ -47,7 +47,6 @@
 			        <option value="">-- Estado --</option>
 			        <option value="Aprobado">Aprobado</option>
 			        <option value="Pendiente">Pendiente</option>  
-			        <option value="Rechazado">Rechazado</option>            
 			    </select>
 			    
                 <br>
