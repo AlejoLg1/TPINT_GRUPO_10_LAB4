@@ -6,7 +6,7 @@ import java.util.List;
 import dominio.Prestamo;
 
 public interface PrestamoDao {
-	public List<Prestamo> Listar();
+	List<Prestamo> ListarConFiltros(String busqueda, Double montoMin, Double montoMax, String estado, String fechaSolicitud);
 	public List<Prestamo> obtenerPrestamosFiltrados(String busqueda, Double montoMin, Double montoMax, String estado, String fechaSolicitud);
 	Prestamo obtenerPrestamoPorId(int idPrestamo);
     boolean registrarPrestamo(Prestamo prestamo);

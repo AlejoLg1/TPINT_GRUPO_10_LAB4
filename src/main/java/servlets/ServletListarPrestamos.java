@@ -16,47 +16,61 @@ import daoImpl.PrestamoDaoImpl;
 import dominio.Prestamo;
 import dominio.Usuario;
 
-/**
- * Servlet implementation class ServletListarPrestamos
- */
+
 @WebServlet("/ServletListarPrestamos")
 public class ServletListarPrestamos extends HttpServlet {
 	private static final long serialVersionUID = 1L;
        
-    /**
-     * @see HttpServlet#HttpServlet()
-     */
+
     public ServletListarPrestamos() {
         super();
-        // TODO Auto-generated constructor stub
     }
 
-	/**
-	 * @see HttpServlet#doGet(HttpServletRequest request, HttpServletResponse response)
-	 */
-	protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-		
-		HttpSession session = request.getSession(false);
-		Usuario usuario = (Usuario) session.getAttribute("usuario");
+    protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+        HttpSession session = request.getSession(false);
+        Usuario usuario = (Usuario) session.getAttribute("usuario");
 
-		AutenticacionNegocioImpl auth = new AutenticacionNegocioImpl();
-		
-		//if (usuario == null || !auth.validarRolAdmin(usuario)) {
-		if (usuario == null) {
-		    response.sendRedirect(request.getContextPath() + "/ServletMenuAdmin");
-		    return;
-		}
-		
-		PrestamoDao dao = new PrestamoDaoImpl();
-		List<Prestamo> listaPrestamos = dao.Listar();
+        AutenticacionNegocioImpl auth = new AutenticacionNegocioImpl();
+        if (usuario == null) {
+            response.sendRedirect(request.getContextPath() + "/ServletMenuAdmin");
+            return;
+        }
 
-		request.setAttribute("prestamos", listaPrestamos);
-		request.getRequestDispatcher("/jsp/admin/prestamos.jsp").forward(request, response);
-	}
+        // Obtener filtros desde request
+        String busqueda = request.getParameter("busqueda");
 
-	/**
-	 * @see HttpServlet#doPost(HttpServletRequest request, HttpServletResponse response)
-	 */
+        Double montoMin = null;
+        try {
+            String montoMinStr = request.getParameter("montoMin");
+            if (montoMinStr != null && !montoMinStr.isEmpty()) {
+                montoMin = Double.parseDouble(montoMinStr);
+            }
+        } catch (NumberFormatException e) {
+           throw e;
+        }
+
+        Double montoMax = null;
+        try {
+            String montoMaxStr = request.getParameter("montoMax");
+            if (montoMaxStr != null && !montoMaxStr.isEmpty()) {
+                montoMax = Double.parseDouble(montoMaxStr);
+            }
+        } catch (NumberFormatException e) {
+        	throw e;
+        }
+
+        String estado = request.getParameter("estadoPrestamo");
+        String fechaSolicitud = request.getParameter("fechaSolicitud");
+
+        PrestamoDao dao = new PrestamoDaoImpl();
+        List<Prestamo> listaPrestamos = dao.ListarConFiltros(busqueda, montoMin, montoMax, estado, fechaSolicitud);
+
+        request.setAttribute("prestamos", listaPrestamos);
+        request.getRequestDispatcher("/jsp/admin/prestamos.jsp").forward(request, response);
+    }
+
+
+
 	protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 		// TODO Auto-generated method stub
 		doGet(request, response);

@@ -56,9 +56,9 @@ public class PrestamoDaoImpl implements PrestamoDao {
 
         return estado;
     }
-
+    
     @Override
-    public List<Prestamo> Listar(){
+    public List<Prestamo> ListarConFiltros(String busqueda, Double montoMin, Double montoMax, String estado, String fechaSolicitud) {
         List<Prestamo> prestamos = new ArrayList<>();
         Connection conexion = null;
         PreparedStatement stmt = null;
@@ -66,11 +66,43 @@ public class PrestamoDaoImpl implements PrestamoDao {
 
         try {
             conexion = Conexion.getConexion().getSQLConexion();
-            // Cambiar la query para traer todos los autorizados
-            String query = "SELECT id_prestamo, id_cliente, nro_cuenta, fecha, "
-                    + "importe_solicitado, cantidad_cuotas, monto_cuota, estado, cuotas_pagadas "
-                    + "FROM prestamo WHERE autorizacion = 1 or estado = 'Pendiente'";
-            stmt = conexion.prepareStatement(query);
+
+            StringBuilder query = new StringBuilder("SELECT id_prestamo, id_cliente, nro_cuenta, fecha, importe_solicitado, cantidad_cuotas, monto_cuota, estado, cuotas_pagadas FROM prestamo WHERE (autorizacion = 1 OR estado = 'Pendiente')");
+
+            List<Object> params = new ArrayList<>();
+
+            if (busqueda != null && !busqueda.isEmpty()) {
+                query.append(" AND nro_cuenta LIKE ?");
+                params.add("%" + busqueda + "%");
+            }
+
+            if (montoMin != null) {
+                query.append(" AND importe_solicitado >= ?");
+                params.add(montoMin);
+            }
+
+            if (montoMax != null) {
+                query.append(" AND importe_solicitado <= ?");
+                params.add(montoMax);
+            }
+
+            if (estado != null && !estado.isEmpty()) {
+                query.append(" AND estado = ?");
+                params.add(estado);
+            }
+
+            if (fechaSolicitud != null && !fechaSolicitud.isEmpty()) {
+                query.append(" AND DATE(fecha) = ?");
+                params.add(fechaSolicitud);
+            }
+
+            stmt = conexion.prepareStatement(query.toString());
+
+            // Setear parámetros
+            for (int i = 0; i < params.size(); i++) {
+                stmt.setObject(i + 1, params.get(i));
+            }
+
             rs = stmt.executeQuery();
 
             while (rs.next()) {
@@ -80,7 +112,7 @@ public class PrestamoDaoImpl implements PrestamoDao {
                 CuentaDaoImpl cuentaDao = new CuentaDaoImpl();
                 Cuenta cuenta = cuentaDao.obtenerCuentaPorId(nro_cta);
 
-                int id_cliente = rs.getInt("id_cliente");	            
+                int id_cliente = rs.getInt("id_cliente");
                 ClienteDaoImpl clienteDao = new ClienteDaoImpl();
                 Cliente cliente = clienteDao.obtenerPorIdCliente(id_cliente);
 
@@ -93,7 +125,6 @@ public class PrestamoDaoImpl implements PrestamoDao {
                 prestamo.setMonto_cuota(rs.getDouble("monto_cuota"));
                 prestamo.setAutorizacion(true);
                 prestamo.setEstado(rs.getString("estado"));
-                // Nuevo: setear cuotas pagadas
                 prestamo.setCuotas_pagadas(rs.getInt("cuotas_pagadas"));
 
                 prestamos.add(prestamo);
@@ -113,6 +144,7 @@ public class PrestamoDaoImpl implements PrestamoDao {
 
         return prestamos;
     }
+
 
 
 	@Override

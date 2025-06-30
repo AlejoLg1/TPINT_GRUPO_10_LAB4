@@ -35,31 +35,38 @@
         <div class="welcome-card">
             <h1>Aprobación de Prestamos</h1>
 
-            <!-- Filtros y búsqueda -->
             <form action="ServletAprobacionPrestamos" method="get" class="filtros-form">
-                <label>Buscar por cliente o CBU:</label>
-                <input type="text" name="busqueda" placeholder="Nombre o CBU">
-
-                <label>Monto desde:</label>
-                <input type="number" name="montoMin" step="0.01">
-
-                <label>Monto hasta:</label>
-                <input type="number" name="MontoMax" step="0.01">
+			    <input type="text" name="busqueda" placeholder="Buscar CBU">
+			
+			    <input type="number" name="montoMin" step="0.01" placeholder="Monto desde">
+			
+			    <input type="number" name="montoMax" step="0.01" placeholder="Monto hasta">
+			    <br>
+			
+			    <select name="estadoPrestamo">
+			        <option value="">-- Estado --</option>
+			        <option value="Aprobado">Aprobado</option>
+			        <option value="Pendiente">Pendiente</option>  
+			        <option value="Rechazado">Rechazado</option>            
+			    </select>
+			    
+                <br>
                 <br>
                 
-                <label>Estado: </label>
-                <select name="estadoPrestamo">
-                    <option value="">-- Todos --</option>
-                    <option value="Aprobado">Aprobado</option>
-                    <option value="Pendiente">Pendiente</option>  
-                    <option value="Rechazado">Rechazado</option>            
-                </select>
-                
-                <label>Fecha de solicitud: </label>
-                <input type="date" name="fechaSolicitud">
+                <div style="display: block; margin-top: 10px;">
+				    <label>Fecha de solicitud: </label>
+				    <input type="date" name="fechaSolicitud">
+				</div>
 
-                <button type="submit" class="boton-filtrar">Filtrar</button>
-            </form>
+                <br>
+                
+                <div class="col-md-2">
+                    <button type="submit" class="btn btn-outline-primary w-100">Filtrar</button>
+                </div>
+                <div class="col-md-2">
+				    <a href="ServletAprobacionPrestamos" class="btn btn-outline-secondary w-100">Limpiar</a>
+				</div>
+			</form>
 
             <!-- Tabla de prestamos -->
 	            <table class="tabla-prestamos">
