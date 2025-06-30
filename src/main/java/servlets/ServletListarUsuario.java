@@ -28,8 +28,9 @@ public class ServletListarUsuario extends HttpServlet {
 		Usuario usuario = (Usuario) session.getAttribute("usuario");
 
 		AutenticacionNegocioImpl auth = new AutenticacionNegocioImpl();
-
-		if (usuario == null || !auth.validarRolAdmin(usuario)) {
+		
+		//if (usuario == null || !auth.validarRolAdmin(usuario)) {
+		if (usuario == null) {
 		    response.sendRedirect(request.getContextPath() + "/ServletMenuAdmin");
 		    return;
 		}
