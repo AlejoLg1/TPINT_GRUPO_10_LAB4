@@ -103,7 +103,7 @@
 					                <% if (p.getEstado() != null && p.getEstado().equalsIgnoreCase("Pendiente")) { %>
 					                    <button 
                                             type="button" 
-                                            class="boton-aprobar" 
+                                            class="btn btn-success btn-sm" 
                                             onclick="abrirConfirmacion({
                                                 action: '${pageContext.request.contextPath}/ServletAprobacionPrestamos',
                                                 mensaje: '¿Seguro que desea aprobar este préstamo?',
@@ -116,7 +116,7 @@
                                             })">Aprobar</button>
                                           <button 
                                             type="button" 
-                                            class="boton-rechazar" 
+                                            class="btn btn-danger btn-sm me-1" 
                                             onclick="abrirConfirmacion({
                                                 action: '${pageContext.request.contextPath}/ServletAprobacionPrestamos',
                                                 mensaje: '¿Seguro que desea rechazar este préstamo?',
