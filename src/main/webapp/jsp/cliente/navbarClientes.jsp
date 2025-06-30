@@ -5,14 +5,19 @@
 <!-- Ademas incluir archivo css navbarClientesEstilos en cada archivo css -->
 
     
-<div class="navbar">
+<div class="mi-navbar">
     <ul class="nav-left">
-	 	<li><a href="${pageContext.request.contextPath}/jsp/cliente/menuCliente.jsp">Inicio</a></li>
-	    <li><a href="${pageContext.request.contextPath}/ServletVerCuentas">Mis cuentas</a></li>
-	    <li><a href="${pageContext.request.contextPath}/ServletTransferenciasUsuario">Transferencias</a></li>
-	    <li><a href="${pageContext.request.contextPath}/ServletSolicitarPrestamo">Préstamos</a></li>
-	    <li><a href="${pageContext.request.contextPath}/ServletPagoCuotas">Pago de cuotas</a></li>
-	    <li><a href="${pageContext.request.contextPath}/ServletMisDatosCliente">Mis datos</a></li>
+	 	<li><a href="${pageContext.request.contextPath}/ServletMenuCliente" class="<%= "inicio".equals(request.getAttribute("activePage")) ? "active" : "" %>">Inicio</a></li>
+
+		<li><a href="${pageContext.request.contextPath}/ServletVerCuentas" class="<%= "cuentas".equals(request.getAttribute("activePage")) ? "active" : "" %>">Mis cuentas</a></li>
+		
+		<li><a href="${pageContext.request.contextPath}/ServletTransferenciasUsuario" class="<%= "transferencias".equals(request.getAttribute("activePage")) ? "active" : "" %>">Transferencias</a></li>
+		
+		<li><a href="${pageContext.request.contextPath}/ServletSolicitarPrestamo" class="<%= "prestamos".equals(request.getAttribute("activePage")) ? "active" : "" %>">Préstamos</a></li>
+		
+		<li><a href="${pageContext.request.contextPath}/ServletPagoCuotas" class="<%= "pagoCuotas".equals(request.getAttribute("activePage")) ? "active" : "" %>">Pago de cuotas</a></li>
+		
+		<li><a href="${pageContext.request.contextPath}/ServletMisDatosCliente" class="<%= "datos".equals(request.getAttribute("activePage")) ? "active" : "" %>">Mis datos</a></li>
     </ul>
     
 	<div class="logout">
