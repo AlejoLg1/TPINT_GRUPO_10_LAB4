@@ -46,19 +46,6 @@ public class ServletModificarCliente extends HttpServlet {
 		}
 		
 		int id = Integer.parseInt(request.getParameter("id"));
-
-		// Recuperar mensajes desde sesion (si existen)
-        String mensaje = (String) session.getAttribute("mensaje");
-        Boolean estado = (Boolean) session.getAttribute("estado");
-
-        if (mensaje != null) {
-            request.setAttribute("mensaje", mensaje);
-            request.setAttribute("estado", estado);
-
-            // Eliminar los atributos de sesion para que no se repitan
-            session.removeAttribute("mensaje");
-            session.removeAttribute("estado");
-        }
 		
         ClienteDao dao = new ClienteDaoImpl();
         Cliente cliente= dao.obtenerPorIdCliente(id);
@@ -81,7 +68,6 @@ public class ServletModificarCliente extends HttpServlet {
 		boolean status = false;
 		
 		 ClienteDao dao = new ClienteDaoImpl();
-	     Cliente cliente= dao.obtenerPorIdCliente(id);
 
 		AutenticacionNegocioImpl auth = new AutenticacionNegocioImpl();
 
@@ -187,12 +173,17 @@ public class ServletModificarCliente extends HttpServlet {
 			e.printStackTrace();
 		}
 	    
-	    //request.setAttribute("id", request.getParameter("idCliente"));
+        Cliente cliente= dao.obtenerPorIdCliente(id);
+
 	    request.setAttribute("estado", status);
 	    request.setAttribute("mensaje", msg);
 	    
-	    RequestDispatcher rd = request.getRequestDispatcher("/ServletListarCliente");
-	    rd.forward(request, response);
+        if (cliente != null) {
+            request.setAttribute("clienteMod", cliente);
+            request.getRequestDispatcher("/jsp/admin/altaCliente.jsp").forward(request, response);
+        } else {
+            response.sendRedirect(request.getContextPath() + "/jsp/admin/clientes.jsp");
+        }
 	}
 	
 }
