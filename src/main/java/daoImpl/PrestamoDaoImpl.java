@@ -128,22 +128,8 @@ public class PrestamoDaoImpl implements PrestamoDao {
 	        if (filas > 0) {
 	            // 2. Obtener datos del préstamo aprobado
 	            Prestamo prestamo = obtenerPrestamoPorId(idPrestamo);
-
-	            // 3. Actualizar saldo de la cuenta sumando el importe solicitado
-	            CuentaDaoImpl cuentaDao = new CuentaDaoImpl();
-	            boolean saldoActualizado = cuentaDao.actualizarSaldo(
-	                prestamo.get_cuenta().getNroCuenta(),
-	                BigDecimal.valueOf(prestamo.getImporte_solicitado()),
-	                true,
-	                conexion
-	            );
-
-	            if (!saldoActualizado) {
-	                conexion.rollback();
-	                return false;
-	            }
 	            
-	            // 3.1. Registrar movimiento de alta de préstamo
+	            // 3. Registrar movimiento de alta de préstamo
 	            MovimientoDaoImpl movimientoDao = new MovimientoDaoImpl();
 
 	            Movimiento mov = new Movimiento();
@@ -166,8 +152,6 @@ public class PrestamoDaoImpl implements PrestamoDao {
 	                conexion.rollback();
 	                return false;
 	            }
-
-
 	            
 	            // 4. Crear cuotas pedidas
 	            CuotaDaoImpl cuotaDao = new CuotaDaoImpl();

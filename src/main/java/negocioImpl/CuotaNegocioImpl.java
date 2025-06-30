@@ -48,17 +48,6 @@ public class CuotaNegocioImpl implements CuotaNegocio {
                 return false;
             }
 
-            // Descontar saldo de la cuenta
-            boolean saldoActualizado = cuentaDao.actualizarSaldo(
-                nroCuenta,
-                cuota.getMonto(),
-                false, // es resta
-                conn
-            );
-            if (!saldoActualizado) {
-                throw new Exception("No se pudo actualizar el saldo para la cuota ID: " + cuota.getIdCuota());
-            }
-
             // Registrar movimiento
             Movimiento mov = new Movimiento();
             mov.setNroCuenta(nroCuenta);
