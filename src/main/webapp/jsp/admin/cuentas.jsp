@@ -51,7 +51,7 @@
             <!-- Filtros -->
             <form action="ServletCuenta" method="get" class="row g-3 mb-4">
                 <div class="col-md-4">
-                    <input type="text" name="busqueda" class="form-control" placeholder="Buscar por cliente o CBU">
+                    <input type="text" name="busqueda" class="form-control" placeholder="Buscar por CBU">
                 </div>
                 <div class="col-md-2">
                     <select name="tipoCuenta" class="form-select">
