@@ -47,7 +47,7 @@ public class TransferenciaNegocioImpl implements TransferenciaNegocio {
 	        movSalida.setDetalle("Transferencia salida");
 	        movSalida.setImporte(BigDecimal.valueOf(transferencia.getImporte() * -1));
 
-	        int idMovSalida = movimientoDao.insertarMovimientoDesdeNegocio(conn, movSalida);
+	        int idMovSalida = movimientoDao.insertarMovimiento(movSalida, conn);
 	        if (idMovSalida == -1) throw new MovimientoException("Error al registrar movimiento de salida");
 
 	        //  Movimiento entrada
@@ -58,7 +58,7 @@ public class TransferenciaNegocioImpl implements TransferenciaNegocio {
 	        movEntrada.setDetalle("Transferencia entrada");
 	        movEntrada.setImporte(BigDecimal.valueOf(transferencia.getImporte()));
 
-	        int idMovEntrada = movimientoDao.insertarMovimientoDesdeNegocio(conn, movEntrada);
+	        int idMovEntrada = movimientoDao.insertarMovimiento(movEntrada, conn);
 	        if (idMovEntrada == -1) throw new MovimientoException("Error al registrar movimiento de entrada");
 
 	        //  Datos de transferencia
