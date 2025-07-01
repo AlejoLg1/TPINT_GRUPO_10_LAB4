@@ -15,9 +15,20 @@ CREATE TABLE Usuario (
 CREATE TABLE Direccion (
     id_direccion INT AUTO_INCREMENT PRIMARY KEY,
     calle VARCHAR(100) NOT NULL,
-    numero VARCHAR(5) NOT NULL,
-    localidad VARCHAR(50) NOT NULL,
-    provincia VARCHAR(50) NOT NULL
+    numero VARCHAR(5) NOT NULL
+);
+
+CREATE TABLE Provincia(
+	id_provincia INT AUTO_INCREMENT PRIMARY KEY,
+	nombre_provincia varchar(50) not null
+);
+
+CREATE TABLE Localidad(
+	id_localidad INT AUTO_INCREMENT PRIMARY KEY,
+    id_provincia INT not null,
+	nombre_localidad varchar(50) not null,
+    
+	FOREIGN KEY (id_provincia) REFERENCES Provincia(id_provincia)
 );
 
 -- Tabla de clientes (solo si el usuario es cliente)
@@ -25,6 +36,8 @@ CREATE TABLE Cliente (
     id_cliente INT AUTO_INCREMENT PRIMARY KEY,
     id_usuario INT UNIQUE NOT NULL,
     id_direccion INT NOT NULL,
+    id_provincia int not null,
+    id_localidad int not null,
     dni VARCHAR(15) UNIQUE NOT NULL,
     cuil VARCHAR(20) UNIQUE NOT NULL,
     nombre VARCHAR(50) NOT NULL,
@@ -39,7 +52,9 @@ CREATE TABLE Cliente (
     estado BOOLEAN DEFAULT TRUE,
 
     FOREIGN KEY (id_usuario) REFERENCES Usuario(id_usuario) ON DELETE CASCADE,
-    FOREIGN KEY (id_direccion) REFERENCES Direccion(id_direccion)
+    FOREIGN KEY (id_direccion) REFERENCES Direccion(id_direccion),
+    FOREIGN KEY (id_provincia) REFERENCES Provincia(id_provincia),
+    FOREIGN KEY (id_localidad) REFERENCES Localidad(id_localidad)
 );
 
 -- Tabla de tipos de cuenta 
@@ -133,8 +148,99 @@ CREATE TABLE Cuota (
 INSERT INTO Usuario (nombre_usuario, clave, tipo, is_admin, estado)
 VALUES ('admin', '1234', 'BANCARIO', TRUE, TRUE);
 
-INSERT INTO Direccion (calle,numero,localidad,provincia)
-VALUES ('calle cliente','1111','localidad cliente','provincia cliente');
+INSERT INTO Direccion (calle,numero)
+VALUES ('calle cliente','1111');
+
+INSERT INTO Provincia (nombre_provincia) VALUES
+('Buenos Aires'),
+('Catamarca'),
+( 'Chaco'),
+( 'Chubut'),
+( 'Córdoba'),
+( 'Corrientes'),
+( 'Entre Ríos'),
+( 'Formosa'),
+( 'Jujuy'),
+('La Pampa'),
+('La Rioja'),
+( 'Mendoza'),
+( 'Misiones'),
+( 'Neuquén'),
+( 'Río Negro'),
+( 'Salta'),
+( 'San Juan'),
+( 'San Luis'),
+( 'Santa Cruz'),
+( 'Santa Fe'),
+( 'Santiago del Estero'),
+( 'Tierra del Fuego'),
+( 'Tucumán'),
+( 'Ciudad Autónoma de Buenos Aires');
+
+
+INSERT INTO Localidad ( nombre_localidad, id_provincia) VALUES
+('La Plata', 1),
+( 'San Fernando del Valle de Catamarca', 2),
+( 'Resistencia', 3),
+( 'Rawson', 4),
+( 'Córdoba', 5),
+( 'Corrientes', 6),
+( 'Paraná', 7),
+( 'Formosa', 8),
+( 'San Salvador de Jujuy', 9),
+( 'Santa Rosa', 10),
+( 'La Rioja', 11),
+( 'Mendoza', 12),
+( 'Posadas', 13),
+( 'Neuquén', 14),
+( 'Viedma', 15),
+( 'Salta', 16),
+( 'San Juan', 17),
+( 'San Luis', 18),
+( 'Río Gallegos', 19),
+( 'Santa Fe', 20),
+( 'Santiago del Estero', 21),
+( 'Ushuaia', 22),
+( 'San Miguel de Tucumán', 23),
+( 'Ciudad Autónoma de Buenos Aires', 24),
+('Avellaneda', 1),
+('Bahía Blanca', 1),
+('Banfield', 1),
+('Berazategui', 1),
+('Berisso', 1),
+('Campana', 1),
+('Chivilcoy', 1),
+('Florencio Varela', 1),
+('General Rodríguez', 1),
+('Hurlingham', 1),
+('Ituzaingó', 1),
+('José C. Paz', 1),
+('Junín', 1),
+('La Matanza', 1),
+('Lanús', 1),
+('Lomas de Zamora', 1),
+('Mar del Plata', 1),
+('Merlo', 1),
+('Moreno', 1),
+('Morón', 1),
+('Olavarría', 1),
+('Pergamino', 1),
+('Pilar', 1),
+('Quilmes', 1),
+('San Fernando', 1),
+('San Isidro', 1),
+('San Justo', 1),
+('San Martín', 1),
+('San Miguel', 1),
+('Tandil', 1),
+('Tigre', 1),
+('Tres de Febrero', 1),
+('Vicente López', 1),
+('Zárate', 1);
+
+
+
+
 
 -- Insert Tipos de Cuentas
 INSERT INTO Tipo_cuenta (descripcion) VALUES ('Caja de ahorro'), ('Cuenta corriente');
@@ -151,8 +257,6 @@ CREATE DEFINER=`root`@`localhost` PROCEDURE `insertarCliente`(
     IN p_clave VARCHAR(100),
     IN p_calle VARCHAR(100),
     IN p_numero VARCHAR(5),
-    IN p_localidad VARCHAR(50),
-    IN p_provincia VARCHAR(50),
     IN p_dni VARCHAR(15),
     IN p_cuil VARCHAR(20),
     IN p_nombre VARCHAR(50),
@@ -161,61 +265,65 @@ CREATE DEFINER=`root`@`localhost` PROCEDURE `insertarCliente`(
     IN p_nacionalidad VARCHAR(50),
     IN p_fecha_nacimiento DATE,
     IN p_correo VARCHAR(100),
-    IN p_telefono VARCHAR(20)
+    IN p_telefono VARCHAR(20),
+     IN p_id_provincia INT,
+    IN p_id_localidad INT
 )
 BEGIN
     DECLARE v_id_usuario INT;
     DECLARE v_id_direccion INT;
     DECLARE existe_usuario INT DEFAULT 0;
     DECLARE existe_dni INT DEFAULT 0;
-    DECLARE exite_cuil INT DEFAULT 0;
+    DECLARE existe_cuil INT DEFAULT 0;
 
-    -- Validar existencia
+    -- Validar existencia de usuario, DNI y CUIL
     SELECT COUNT(*) INTO existe_usuario
-    FROM usuario
+    FROM Usuario
     WHERE nombre_usuario = p_nombre_usuario;
 
     SELECT COUNT(*) INTO existe_dni
-    FROM cliente
+    FROM Cliente
     WHERE dni = p_dni;
 
-    SELECT COUNT(*) INTO exite_cuil
-    FROM cliente
+    SELECT COUNT(*) INTO existe_cuil
+    FROM Cliente
     WHERE cuil = p_cuil;
 
     IF existe_usuario > 0 THEN
-       SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT = 'El nombre de usuario ya existe.';
+        SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT = 'El nombre de usuario ya existe.';
     END IF;
 
     IF existe_dni > 0 THEN
-        SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT = 'El DNI de usuario ya esta registrado.';
+        SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT = 'El DNI ya está registrado.';
     END IF;
-    
-	IF exite_cuil > 0 THEN
-        SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT = 'El CUIL de usuario ya esta registrado.';
+
+    IF existe_cuil > 0 THEN
+        SIGNAL SQLSTATE '45000' SET MESSAGE_TEXT = 'El CUIL ya está registrado.';
     END IF;
 
     -- Insertar en Usuario
-    INSERT INTO usuario (nombre_usuario, clave, tipo, is_admin, estado)
+    INSERT INTO Usuario (nombre_usuario, clave, tipo, is_admin, estado)
     VALUES (p_nombre_usuario, p_clave, 'CLIENTE', FALSE, TRUE);
     SET v_id_usuario = LAST_INSERT_ID();
 
     -- Insertar en Direccion
-    INSERT INTO Direccion (calle, numero, localidad, provincia)
-    VALUES (p_calle, p_numero, p_localidad, p_provincia);
+    INSERT INTO Direccion (calle, numero)
+    VALUES (p_calle, p_numero);
     SET v_id_direccion = LAST_INSERT_ID();
 
     -- Insertar en Cliente
-    INSERT INTO cliente (
-        dni, cuil, nombre, apellido, sexo, nacionalidad, fecha_nacimiento, correo, telefono, id_usuario, id_direccion, estado
+    INSERT INTO Cliente (
+        dni, cuil, nombre, apellido, sexo, nacionalidad, fecha_nacimiento, correo, telefono,
+        id_usuario, id_direccion, id_provincia, id_localidad, estado
     )
     VALUES (
-        p_dni, p_cuil, p_nombre, p_apellido, p_sexo, p_nacionalidad, p_fecha_nacimiento, p_correo, p_telefono, v_id_usuario, v_id_direccion, TRUE
+        p_dni, p_cuil, p_nombre, p_apellido, p_sexo, p_nacionalidad, p_fecha_nacimiento, p_correo, p_telefono,
+        v_id_usuario, v_id_direccion, p_id_provincia, p_id_localidad, TRUE
     );
-END
-//
+END 
 
-DELIMITER ;
+// DELIMITER ;
+
 
 -- Procedure ListarCuentasPorCliente
 
@@ -291,13 +399,15 @@ SELECT
   D.id_direccion,
   D.calle,
   D.numero,
-  D.localidad,
-  D.provincia,
+  l.nombre_localidad,
+  p.nombre_provincia,
   C.correo,
   C.telefono,
   C.estado
 FROM Cliente C
-INNER JOIN Direccion D ON C.id_direccion = D.id_direccion;
+inner join Provincia p on p.id_provincia = c.id_provincia
+inner join Localidad l on l.id_localidad = c.id_localidad
+INNER JOIN Direccion D ON C.id_direccion = D.id_direccion
 
 DELIMITER ;
 
