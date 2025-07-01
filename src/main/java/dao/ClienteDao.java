@@ -8,6 +8,8 @@ import dominio.Usuario;
 import excepciones.DniYaRegistradoException;
 import excepciones.NombreUsuarioExistenteException;
 import dominio.Cliente;
+import dominio.Provincia;
+import dominio.Localidad;
 
 public interface ClienteDao {
 	public boolean Agregar(Cliente cliente, Usuario usuario,  Direccion direccion)throws NombreUsuarioExistenteException, DniYaRegistradoException, SQLException;
