@@ -214,7 +214,7 @@ function onProvinciaChange(select) {
             defaultOption.text = "--Seleccione localidad--";
             localidadSelect.appendChild(defaultOption);
 
-            // Poblar nuevas localidades
+            // Localidades
             data.forEach(localidad => {
                 const option = document.createElement('option');
                 option.value = localidad.id;
