@@ -6,6 +6,8 @@ public class Cliente {
 	    private Usuario usuario;
 	    private int idUsuario;
 	    private Direccion Direccion;
+	    private Localidad localidad;
+	    private Provincia provincia;
 	    private String dni;
 	    private String cuil;
 	    private String nombre;
@@ -22,13 +24,15 @@ public class Cliente {
 	    	this.Direccion = new Direccion();
 	    }
 
-	    public Cliente(int idCliente, Usuario usuario, int idUsuario, Direccion direccion, String dni, String cuil,
+	    public Cliente(int idCliente, Usuario usuario, int idUsuario, Direccion direccion,Provincia provincia, Localidad localidad, String dni, String cuil,
 	                   String nombre, String apellido, String sexo, String nacionalidad,
 	                   java.time.LocalDate fechaNacimiento, String correo, String telefono, boolean estado) {
 	        this.idCliente = idCliente;
 	        this.usuario = usuario;
 	        this.idUsuario = idUsuario;
 	        this.Direccion = direccion;
+	        this.provincia = provincia;
+	        this.localidad = localidad;
 	        this.dni = dni;
 	        this.cuil = cuil;
 	        this.nombre = nombre;
@@ -165,4 +169,20 @@ public class Cliente {
 	        else if(this.sexo.equals("F")) return "Femenino";
 	        else return "Indefinido";
 	    }
+
+		public Provincia getProvincia() {
+			return provincia;
+		}
+
+		public void setProvincia(Provincia provincia) {
+			this.provincia = provincia;
+		}
+
+		public Localidad getLocalidad() {
+			return localidad;
+		}
+
+		public void setLocalidad(Localidad localidad) {
+			this.localidad = localidad;
+		}
 }
