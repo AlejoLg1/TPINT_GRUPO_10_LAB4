@@ -88,7 +88,7 @@
             <select name="idLocalidad" id="localidad" required>
                 <% for (Localidad loc : localidades) { %>
                     <option value="<%= loc.getId() %>"
-                    <%= (request.getAttribute("idLocalidad") != null && String.valueOf(loc.getId()).equals(String.valueOf(request.getAttribute("idLocalidad")))) ? "selected" : "" %>>
+                    <%= (request.getAttribute("idLocalidad") != null && String.valueOf(loc.getId()).equals(String.valueOf(request.getAttribute("idLocalidad")))) ? "selected" : 1 %>>
                         <%= loc.getNombre() %>
                     </option>
                 <% } %>
