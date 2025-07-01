@@ -1,5 +1,6 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
-<%@ page import="java.util.*, dominio.Reporte" %>
+<%@ page import="java.util.*" %>
+<%@ page import="dominio.Reporte" %>
 <%
     Object usuario = session.getAttribute("usuario");
     if (usuario == null) {
