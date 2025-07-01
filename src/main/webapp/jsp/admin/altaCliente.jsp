@@ -1,5 +1,8 @@
 <%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
 <%@ page import="dominio.Cliente" %>
+<%@ page import="dominio.Localidad" %>
+<%@ page import="dominio.Provincia" %>
+<%@ page import="java.util.*" %>
 <%
     Object usuario = session.getAttribute("usuario");
     if (usuario == null) {
@@ -27,29 +30,72 @@
     <div class="welcome-card">
         <h1><%= esModificacion ? "Modificar Cliente" : "Alta de Cliente" %></h1>
 
-		<%  // Mensaje de confirmacion de exito de solicitud
-			boolean estado = (request.getAttribute("estado") != null ? (boolean)request.getAttribute("estado") : false);
-			String msg = (String)request.getAttribute("mensaje");
-		
-			if(request.getAttribute("estado") != null)
-			{
-				if(estado == true)
-				{%>
-					  <p style="color: green; font-weight: bold; margin-bottom: 15px;"><%= msg %></p>
-				<%}
-				else{
-					%> <p style="color: red; font-weight: bold; margin-bottom: 15px;"><%= msg %></p><%
-				}
-			}
-		%>
+        <%  // Mensaje de confirmación de estado
+            boolean estado = (request.getAttribute("estado") != null ? (boolean)request.getAttribute("estado") : false);
+            String msg = (String)request.getAttribute("mensaje");
+
+            if(request.getAttribute("estado") != null) {
+                if(estado) {
+        %>
+                    <p style="color: green; font-weight: bold; margin-bottom: 15px;"><%= msg %></p>
+        <%
+                } else {
+        %>
+                    <p style="color: red; font-weight: bold; margin-bottom: 15px;"><%= msg %></p>
+        <%
+                }
+            }
+        %>
 
         <form action="${pageContext.request.contextPath}/<%= esModificacion ? "ServletModificarCliente" : "ServletAltaCliente" %>" method="post">
             <% if (esModificacion) { %>
                 <input type="hidden" name="idCliente" value="<%= clienteMod.getIdCliente() %>">
                 <input type="hidden" name="idDireccion" value="<%= clienteMod.getDireccion() != null ? clienteMod.getDireccion().getId() : 0 %>">
                 <input type="hidden" name="idUsuario" value="<%= clienteMod.getUsuario() != null ? clienteMod.getUsuario().getIdUsuario() : 0 %>">
+                <input type="hidden" name="idProvincia" value="<%= clienteMod.getProvincia() != null ? clienteMod.getProvincia().getId() : 0 %>">
+                <input type="hidden" name="idLocalidad" value="<%= clienteMod.getLocalidad() != null ? clienteMod.getLocalidad().getId() : 0 %>">
             <% } %>
 
+<div class="form-item">
+    <label for="provincia">Provincia:</label>
+    <select name="idProvincia" id="provincia" required onchange="onProvinciaChange(this)">
+        <option value="">--Seleccione provincia--</option>
+        <% 
+            List<Provincia> provincias = (List<Provincia>) request.getAttribute("provincias");
+            String idProvinciaSel = request.getParameter("idProvincia");
+
+            if (provincias != null) {
+                for (Provincia p : provincias) {
+                    boolean selected = idProvinciaSel != null && idProvinciaSel.equals(String.valueOf(p.getId()));
+        %>
+                    <option value="<%= p.getId() %>" <%= selected ? "selected" : "" %>><%= p.getNombre() %></option>
+        <%
+                }
+            }
+        %>
+    </select>
+</div>
+
+
+
+ <%
+    List<Localidad> localidades = (List<Localidad>) request.getAttribute("localidades");
+    if (localidades != null && !localidades.isEmpty()) {
+%>
+    <div class="form-group">
+        <div class="form-item">
+            <label for="localidad">Localidad:</label>
+            <select name="idLocalidad" id="localidad" required>
+                <% for (Localidad loc : localidades) { %>
+                    <option value="<%= loc.getId() %>"
+                    <%= (request.getAttribute("idLocalidad") != null && String.valueOf(loc.getId()).equals(String.valueOf(request.getAttribute("idLocalidad")))) ? "selected" : "" %>>
+                        <%= loc.getNombre() %>
+                    </option>
+                <% } %>
+            </select>
+        </div>
+    </div>
+<% } %>
             <div class="form-group">
                 <div class="form-item">
                     <label for="nombre">Nombre:</label>
@@ -63,14 +109,14 @@
 
                 <div class="form-item">
                     <label for="dni">DNI:</label>
-                    <input type="text" id="dni" name="dni" value="<%= request.getAttribute("dni") != null ? request.getAttribute("dni") : (esModificacion ? clienteMod.getDni() : "") %>" <%= esModificacion ? "readonly=\"readonly\"" : "" %> required pattern="[0-9]+" title="Solo se permiten números.">
+                    <input type="text" id="dni" name="dni" value="<%= request.getAttribute("dni") != null ? request.getAttribute("dni") : (esModificacion ? clienteMod.getDni() : "") %>" <%= esModificacion ? "readonly" : "" %> required pattern="[0-9]+" title="Solo se permiten números.">
                 </div>
             </div>
 
             <div class="form-group">
                 <div class="form-item">
                     <label for="cuil">CUIL:</label>
-                    <input type="text" id="cuil" name="cuil" value="<%= request.getAttribute("cuil") != null ? request.getAttribute("cuil") : (esModificacion ? clienteMod.getCuil() : "") %>" <%= esModificacion ? "readonly=\"readonly\"" : "" %> required pattern="[0-9]+" title="Solo se permiten números.">
+                    <input type="text" id="cuil" name="cuil" value="<%= request.getAttribute("cuil") != null ? request.getAttribute("cuil") : (esModificacion ? clienteMod.getCuil() : "") %>" <%= esModificacion ? "readonly" : "" %> required pattern="[0-9]+" title="Solo se permiten números.">
                 </div>
 
                 <div class="form-item">
@@ -94,17 +140,9 @@
                     <label for="numero">Número:</label>
                     <input type="text" id="numero" name="numero" value="<%= request.getAttribute("numero") != null ? request.getAttribute("numero") : (esModificacion && clienteMod.getDireccion() != null ? clienteMod.getDireccion().getNumero() : "") %>" required pattern="[0-9]+" title="Solo se permiten números.">
                 </div>
-
-                <div class="form-item">
-                    <label for="localidad">Localidad:</label>
-                    <input type="text" id="localidad" name="localidad" value="<%= request.getAttribute("localidad") != null ? request.getAttribute("localidad") : (esModificacion && clienteMod.getDireccion() != null ? clienteMod.getDireccion().getLocalidad() : "") %>" required>
-                </div>
-
-                <div class="form-item">
-                    <label for="provincia">Provincia:</label>
-                    <input type="text" id="provincia" name="provincia" value="<%= request.getAttribute("provincia") != null ? request.getAttribute("provincia") : (esModificacion && clienteMod.getDireccion() != null ? clienteMod.getDireccion().getProvincia() : "") %>" required>
-                </div>
             </div>
+            
+
 
             <div class="form-group">
                 <div class="form-item">
@@ -128,13 +166,12 @@
             </div>
 
             <hr style="margin: 30px 0;">
-
             <h2>Datos de Usuario</h2>
 
             <div class="form-group">
                 <div class="form-item">
                     <label for="username">Usuario:</label>
-                    <input type="text" id="username" name="username" value="<%= request.getAttribute("username") != null ? request.getAttribute("username") : (esModificacion ? clienteMod.getUsuario().getNombreUsuario() : "") %>" required <%= esModificacion ? "readonly=\"readonly\"" : "" %>>
+                    <input type="text" id="username" name="username" value="<%= request.getAttribute("username") != null ? request.getAttribute("username") : (esModificacion ? clienteMod.getUsuario().getNombreUsuario() : "") %>" required <%= esModificacion ? "readonly" : "" %>>
                 </div>
 
                 <div class="form-item">
@@ -158,4 +195,11 @@
 
 <%@ include file="../comunes/footer.jsp" %>
 </body>
+
+<script>
+    function onProvinciaChange(select) {
+        const idProvincia = select.value;
+        window.location.href = 'ServletAltaCliente?idProvincia=' + idProvincia;
+    }
+</script>
 </html>
