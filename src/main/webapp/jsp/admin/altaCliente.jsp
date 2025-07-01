@@ -78,24 +78,25 @@
 
 
 
- <%
-    List<Localidad> localidades = (List<Localidad>) request.getAttribute("localidades");
-    if (localidades != null && !localidades.isEmpty()) {
-%>
-    <div class="form-group">
-        <div class="form-item">
-            <label for="localidad">Localidad:</label>
-            <select name="idLocalidad" id="localidad" required>
-                <% for (Localidad loc : localidades) { %>
-                    <option value="<%= loc.getId() %>"
-                    <%= (request.getAttribute("idLocalidad") != null && String.valueOf(loc.getId()).equals(String.valueOf(request.getAttribute("idLocalidad")))) ? "selected" : 1 %>>
-                        <%= loc.getNombre() %>
-                    </option>
-                <% } %>
-            </select>
-        </div>
-    </div>
-<% } %>
+			<div class="form-group">
+			  <div class="form-item">
+			    <label for="localidad">Localidad:</label>
+			    <select name="idLocalidad" id="localidad" required>
+			      <option value="">--Seleccione localidad--</option>
+			      <%
+			      List<Localidad> localidades = (List<Localidad>) request.getAttribute("localidades");
+			      if (localidades != null && !localidades.isEmpty()) {
+			        for (Localidad loc : localidades) {
+			      %>
+			        <option value="<%= loc.getId() %>"><%= loc.getNombre() %></option>
+			      <%
+			        }
+			      }
+			      %>
+			    </select>
+			  </div>
+			</div>
+
             <div class="form-group">
                 <div class="form-item">
                     <label for="nombre">Nombre:</label>
@@ -197,9 +198,32 @@
 </body>
 
 <script>
-    function onProvinciaChange(select) {
-        const idProvincia = select.value;
-        window.location.href = 'ServletAltaCliente?idProvincia=' + idProvincia;
-    }
+function onProvinciaChange(select) {
+    const idProvincia = select.value;
+
+    // Llamada al servlet que devuelve localidades
+    fetch('${pageContext.request.contextPath}/ServletLocalidades?idProvincia=' + idProvincia)
+        .then(response => response.json())
+        .then(data => {
+            const localidadSelect = document.getElementById('localidad');
+            localidadSelect.innerHTML = '';
+
+            // Agregar opción por defecto
+            const defaultOption = document.createElement('option');
+            defaultOption.value = "";
+            defaultOption.text = "--Seleccione localidad--";
+            localidadSelect.appendChild(defaultOption);
+
+            // Poblar nuevas localidades
+            data.forEach(localidad => {
+                const option = document.createElement('option');
+                option.value = localidad.id;
+                option.text = localidad.nombre;
+                localidadSelect.appendChild(option);
+            });
+        })
+        .catch(error => console.error('Error al cargar localidades:', error));
+}
 </script>
+
 </html>

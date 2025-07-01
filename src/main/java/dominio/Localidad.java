@@ -2,6 +2,7 @@ package dominio;
 
 public class Localidad {
 	private int id;
+	private int id_provincia;
 	private String nombre;
 	
 	public Localidad() {
@@ -24,6 +25,14 @@ public class Localidad {
 	}
 	public void setNombre(String nombre) {
 		this.nombre = nombre;
+	}
+
+	public int getId_provincia() {
+		return id_provincia;
+	}
+
+	public void setId_provincia(int id_provincia) {
+		this.id_provincia = id_provincia;
 	}
 	
 	
