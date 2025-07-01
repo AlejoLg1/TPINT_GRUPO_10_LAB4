@@ -76,12 +76,12 @@
 	
 	            <div class="form-item">
 	                <label for="localidad">Localidad:</label>
-	                <input type="text" id="localidad" value="<%=cliente.getDireccion().getLocalidad()%>" readonly>
+	                <input type="text" id="localidad" value="<%=cliente.getLocalidad().getId() %>" readonly>
 	            </div>
 	
 	            <div class="form-item">
 	                <label for="provincia">Provincia:</label>
-	                <input type="text" id="provincia" value="<%=cliente.getDireccion().getProvincia()%>" readonly>
+	                <input type="text" id="provincia" value="<%=cliente.getProvincia().getId() %>" readonly>
 	            </div>
 	        </div>
 	
