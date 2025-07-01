@@ -49,12 +49,15 @@
                 <% 
                     List<Cuenta> cuentasCliente = (List<Cuenta>) request.getAttribute("cuentasCliente");
                     if (cuentasCliente != null && !cuentasCliente.isEmpty()) {
+                    	int i=1;
                         for (Cuenta cuenta : cuentasCliente) {
                 %>
                     <option value="<%= cuenta.getNroCuenta() %>">
-                        <%= cuenta.getNroCuenta() %> - <%= cuenta.getTipoCuenta() %>
+                        <%= i %>- <%= cuenta.getTipoCuenta() %> 
+                         
                     </option>
                 <% 
+                		i++; 
                         }
                     } else {
                 %>
