@@ -90,7 +90,7 @@
 					    %>
 					    <tr>
 					        <td><%= p.get_cliente().getNombreCompleto() %></td>
-					        <td><%= p.get_cuenta().getNroCuenta()%></td>
+					        <td><div class="text-break"><%= p.get_cuenta().getCbu() %></div></td>
 					        <td><%= p.get_cuenta().getTipoCuenta()%></td>
 					        <td><%= p.getFecha()%></td>
 					        <td><%= p.getImporte_solicitado()%></td>
