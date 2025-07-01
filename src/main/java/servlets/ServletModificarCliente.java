@@ -11,11 +11,18 @@ import negocioImpl.AutenticacionNegocioImpl;
 
 import java.io.IOException;
 import java.time.LocalDate;
+import java.util.List;
 
+import dao.ProvinciaDao;
+import dao.LocalidadDao;
+import daoImpl.LocalidadDaoImpl;
+import daoImpl.ProvinciaDaoImpl;
 import dao.ClienteDao;
 import daoImpl.ClienteDaoImpl;
 import dominio.Cliente;
 import dominio.Direccion;
+import dominio.Localidad;
+import dominio.Provincia;
 import dominio.Usuario;
 import excepciones.AutenticacionException;
 import excepciones.ContrasenasNoCoincidenException;
@@ -37,21 +44,31 @@ public class ServletModificarCliente extends HttpServlet {
 	protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 		HttpSession session = request.getSession(false);
 		Usuario usuario = (Usuario) session.getAttribute("usuario");
-
-		AutenticacionNegocioImpl auth = new AutenticacionNegocioImpl();
-
-		if (usuario == null || !auth.validarRolAdmin(usuario)) {
-		    response.sendRedirect(request.getContextPath() + "/ServletMenuAdmin");
-		    return;
-		}
 		
-		int id = Integer.parseInt(request.getParameter("id"));
-		
-        ClienteDao dao = new ClienteDaoImpl();
-        Cliente cliente= dao.obtenerPorIdCliente(id);
+		 int id = Integer.parseInt(request.getParameter("id"));
+
+		    ClienteDao dao = new ClienteDaoImpl();
+		    Cliente cliente = dao.obtenerPorIdCliente(id);
+
+		    ProvinciaDao pdao = new daoImpl.ProvinciaDaoImpl();
+		    LocalidadDao ldao = new LocalidadDaoImpl();
+
+		    // ✅ Cargar provincias siempre
+		    List<Provincia> provincias = pdao.obtenerTodas();
+		    request.setAttribute("provincias", provincias);
+
+		    // ✅ Cargar localidades solo si hay provincia
+		    if (cliente != null && cliente.getProvincia() != null) {
+		        int idProv = cliente.getProvincia().getId();
+		        List<Localidad> localidades = ldao.obtenerPorProvincia(idProv);
+		        request.setAttribute("localidades", localidades);
+		    }
+       
+
 
         if (cliente != null) {
             request.setAttribute("clienteMod", cliente);
+            
             request.getRequestDispatcher("/jsp/admin/altaCliente.jsp").forward(request, response);
         } else {
             response.sendRedirect(request.getContextPath() + "/jsp/admin/clientes.jsp");
@@ -99,8 +116,11 @@ public class ServletModificarCliente extends HttpServlet {
         // Datos de dirección
 	    String Calle = request.getParameter("direccion");
 	    String numero = request.getParameter("numero");
-	    String localidad = request.getParameter("localidad");
-	    String provincia = request.getParameter("provincia");
+	   
+	    int idProvincia = Integer.parseInt(request.getParameter("idProvincia"));
+	    int idLocalidad = Integer.parseInt(request.getParameter("idLocalidad"));
+	   
+	   
 		 
 
 	    try {
@@ -119,6 +139,16 @@ public class ServletModificarCliente extends HttpServlet {
 		    if(!cuil.contains(dni))
 		    	throw new AutenticacionException("El cuil no contiene el dni ingresado");
 		    
+		    
+		    //Datos Provinvcia
+		    Provincia prov = new Provincia();
+		    prov.setId(idProvincia);
+		    
+		    
+		    //Datos Localidad
+		    Localidad loc = new Localidad();
+		    loc.setId(idLocalidad);
+		    
 		    //Datos cliente
 		    Cliente Cliente = new Cliente();
 		    Cliente.setApellido(apellido);
@@ -132,6 +162,8 @@ public class ServletModificarCliente extends HttpServlet {
 		    Cliente.setSexo(sexo);
 		    Cliente.setTelefono(telefono);
 		    Cliente.setIdCliente(idCliente);
+		    Cliente.setProvincia(prov);
+		    Cliente.setLocalidad(loc);
 		    
 		    
 		  //Datos Usuario
@@ -147,11 +179,8 @@ public class ServletModificarCliente extends HttpServlet {
 		  //Datos Direccion
 		    Direccion direccion = new Direccion();
 		    direccion.setCalle(Calle);
-		    direccion.setLocalidad(localidad);
 		    direccion.setNumero(numero);
-		    direccion.setProvincia(provincia);
 		    direccion.setId(idDireccion);
-		    
 	        // Guardar
 	        status = dao.Modificar(Cliente, Usuario, direccion);
 
