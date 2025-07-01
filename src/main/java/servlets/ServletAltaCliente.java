@@ -228,15 +228,41 @@ public class ServletAltaCliente extends HttpServlet {
 	    request.setAttribute("fechanac", request.getParameter("fechanac"));
 	    request.setAttribute("direccion", request.getParameter("direccion"));
 	    request.setAttribute("numero", request.getParameter("numero"));
-	    request.setAttribute("email", request.getParameter("correo"));
+	    request.setAttribute("email", request.getParameter("email"));
 	    request.setAttribute("telefono", request.getParameter("telefono"));
 	    request.setAttribute("sexo", request.getParameter("sexo"));
 	    request.setAttribute("username", request.getParameter("username"));
 	    request.setAttribute("pass", request.getParameter("pass"));
 	    request.setAttribute("passRepetida", request.getParameter("passRepetida"));
+	 // Provincias
 	    ProvinciaDao provinciaDao = new ProvinciaDaoImpl();
-	    List<Provincia> provincias = provinciaDao.obtenerTodas(); 
+	    List<Provincia> provincias = provinciaDao.obtenerTodas();
 	    request.setAttribute("provincias", provincias);
+
+	    String strIdProvincia = request.getParameter("idProvincia");
+	    if (strIdProvincia != null && !strIdProvincia.isEmpty()) {
+	        try {
+	            int idProvincia = Integer.parseInt(strIdProvincia);
+	            request.setAttribute("idProvincia", idProvincia); // para mantener selección
+
+	            // Localidades correspondientes
+	            LocalidadDao localidadDao = new LocalidadDaoImpl();
+	            List<Localidad> localidades = localidadDao.obtenerPorProvincia(idProvincia);
+	            request.setAttribute("localidades", localidades);
+	        } catch (NumberFormatException e) {
+	            e.printStackTrace();
+	        }
+	    }
+
+	    String strIdLocalidad = request.getParameter("idLocalidad");
+	    if (strIdLocalidad != null && !strIdLocalidad.isEmpty()) {
+	        try {
+	            int idLocalidad = Integer.parseInt(strIdLocalidad);
+	            request.setAttribute("idLocalidad", idLocalidad); // para mantener selección
+	        } catch (NumberFormatException e) {
+	            e.printStackTrace();
+	        }
+	    }
 	}
 
 	private void cargarDatosProvinciaYLocalidad(HttpServletRequest request) {
