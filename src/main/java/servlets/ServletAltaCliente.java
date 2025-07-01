@@ -185,6 +185,11 @@ public class ServletAltaCliente extends HttpServlet {
 			    
 				ClienteDao dao = new ClienteDaoImpl();
 				status = dao.Agregar(nuevoCliente, nuevoUsuario,direccion);
+				if (status) {
+				    response.sendRedirect(request.getContextPath() + "/ServletListarCliente");
+				    return;
+				}
+
 
 			}catch(NombreUsuarioExistenteException ex1) {
 				status = false;
