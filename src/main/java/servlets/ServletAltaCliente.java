@@ -144,6 +144,7 @@ public class ServletAltaCliente extends HttpServlet {
 			    	throw new AutenticacionException("El cuil no contiene el dni ingresado");
 			    
 			    if (idLocalidad == 0) {
+			    	request.setAttribute(msg, "Debe seleccionar una localidad");
 			        throw new Exception("Debe seleccionar una localidad válida.");
 			    }
 			    
