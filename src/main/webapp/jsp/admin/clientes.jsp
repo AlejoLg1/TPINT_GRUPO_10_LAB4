@@ -35,7 +35,7 @@
         <div class="card-body">
             <div class="d-flex justify-content-between align-items-center mb-4">
                 <h2 class="mb-0">Listado de Clientes</h2>
-                <a href="${pageContext.request.contextPath}/jsp/admin/altaCliente.jsp" class="btn btn-primary">+ Crear Cliente</a>
+                <a href="${pageContext.request.contextPath}/ServletAltaCliente" class="btn btn-primary">+ Crear Cliente</a>
             </div>
 
             <table class="table table-striped table-hover tabla-cliente" style="width:100%;">
