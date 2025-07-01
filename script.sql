@@ -148,9 +148,6 @@ CREATE TABLE Cuota (
 INSERT INTO Usuario (nombre_usuario, clave, tipo, is_admin, estado)
 VALUES ('admin', '1234', 'BANCARIO', TRUE, TRUE);
 
-INSERT INTO Direccion (calle,numero)
-VALUES ('calle cliente','1111');
-
 INSERT INTO Provincia (nombre_provincia) VALUES
 ('Buenos Aires'),
 ('Catamarca'),
