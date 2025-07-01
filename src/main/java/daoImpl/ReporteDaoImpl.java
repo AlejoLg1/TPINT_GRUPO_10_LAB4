@@ -5,6 +5,7 @@ import java.sql.Date;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.List;
 import dominio.Reporte;  
@@ -119,8 +120,11 @@ public class ReporteDaoImpl implements dao.ReporteDao {
                         String estadoCuota = rs.getString("estado");
                         java.math.BigDecimal monto = rs.getBigDecimal("monto");
                         Date fechaPago = rs.getDate("fecha_pago");
+                        
+                        SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy"); 
+                        String fechaFormateada = (fechaPago != null) ? sdf.format(fechaPago) : "-";
 
-                        String descripcion = "Moroso: " + nombre + " " + apellido + " - Estado: " + estadoCuota + " - Monto: $" + monto + " - Fecha de pago: " + fechaPago;
+                        String descripcion = nombre + " " + apellido + " - Estado: " + estadoCuota + " - Fecha de pago: " + fechaFormateada;
                         lista.add(new Reporte(descripcion, 1, monto));
                     }
                     break;
