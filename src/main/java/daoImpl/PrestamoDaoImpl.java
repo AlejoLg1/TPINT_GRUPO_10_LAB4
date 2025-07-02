@@ -67,7 +67,7 @@ public class PrestamoDaoImpl implements PrestamoDao {
         try {
             conexion = Conexion.getConexion().getSQLConexion();
 
-            StringBuilder query = new StringBuilder("SELECT id_prestamo, id_cliente, nro_cuenta, fecha, importe_solicitado, cantidad_cuotas, monto_cuota, estado, cuotas_pagadas FROM prestamo WHERE (autorizacion = 1 OR estado = 'Pendiente')");
+            StringBuilder query = new StringBuilder("SELECT id_prestamo, id_cliente, nro_cuenta, fecha, importe_solicitado, cantidad_cuotas, monto_cuota, estado, cuotas_pagadas FROM prestamo WHERE estado = 'Pendiente'");
 
             List<Object> params = new ArrayList<>();
 

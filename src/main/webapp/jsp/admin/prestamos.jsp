@@ -33,7 +33,7 @@
 
 	<div class="main-container">
         <div class="welcome-card">
-            <h1>Aprobación de Prestamos</h1>
+            <h1>Administración de Prestamos</h1>
 
             <form action="ServletAprobacionPrestamos" method="get" class="filtros-form">
 			    <input type="text" name="busqueda" placeholder="Buscar CBU">
@@ -46,7 +46,8 @@
 			    <select name="estadoPrestamo">
 			        <option value="">-- Estado --</option>
 			        <option value="Aprobado">Aprobado</option>
-			        <option value="Pendiente">Pendiente</option>  
+			        <option value="Pendiente">Pendiente</option>
+			        <option value="Rechazado">Rechazado</option>    
 			    </select>
 			    
                 <br>
@@ -63,7 +64,7 @@
                     <button type="submit" class="btn btn-outline-primary w-100">Filtrar</button>
                 </div>
                 <div class="col-md-2">
-				    <a href="ServletAprobacionPrestamos" class="btn btn-outline-secondary w-100">Limpiar</a>
+				    <a href="ServletListarPrestamos" class="btn btn-outline-secondary w-100">Limpiar</a>
 				</div>
 			</form>
 
@@ -126,6 +127,20 @@
                                                     { name: 'accion', value: 'rechazar' }
                                                 ]
                                             })">Rechazar</button>
+                                    <% } else if (p.getEstado() != null && p.getEstado().equalsIgnoreCase("Rechazado")) { %>                                        
+                                        <button 
+                                            type="button" 
+                                            class="btn btn-success btn-sm" 
+                                            onclick="abrirConfirmacion({
+                                                action: '${pageContext.request.contextPath}/ServletAprobacionPrestamos',
+                                                mensaje: '¿Seguro que desea aprobar este préstamo?',
+                                                botonTexto: 'Aprobar',
+                                                botonClase: 'btn-success',
+                                                inputs: [
+                                                    { name: 'idPrestamo', value: '<%= p.getId_prestamo() %>' },
+                                                    { name: 'accion', value: 'aprobar' }
+                                                ]
+                                            })">Aprobar</button>
 					                <% } else { %>
 					                    <span>-</span> 
 					                <% } %>
