@@ -86,6 +86,7 @@ public class ClienteDaoImpl implements ClienteDao {
 	    String queryCliente = "UPDATE cliente SET dni=?, cuil=?, nombre=?, apellido=?, sexo=?, id_direccion = ?, id_provincia = ?, id_localidad = ?, "
 	            + "nacionalidad=?, fecha_nacimiento=?, correo=?, telefono=? WHERE id_cliente=?";
 	    String queryUsuario = "UPDATE usuario SET nombre_usuario=?, clave=? WHERE id_usuario=?";
+	    String queryDireccion = "UPDATE direccion set calle = ?, numero=? Where id_direccion=?";
 
 	    try {
 	        cn = Conexion.getConexion().getSQLConexion();
@@ -106,13 +107,25 @@ public class ClienteDaoImpl implements ClienteDao {
 	            pstCliente.setString(11, cliente.getCorreo());
 	            pstCliente.setString(12, cliente.getTelefono());
 	            pstCliente.setInt(13, cliente.getIdCliente());
+	  
 	            
 	            int filasCliente = pstCliente.executeUpdate();
 	            if (filasCliente == 0) {
 	                throw new SQLException("No se actualizó el cliente");
 	            }
 	        }
-
+	        
+	        //Actualizar Direccion 
+	        try (PreparedStatement pstDireccion = cn.prepareStatement(queryDireccion)) {
+	            pstDireccion.setString(1, direccion.getCalle());
+	            pstDireccion.setString(2, direccion.getNumero());
+	            pstDireccion.setInt(3, direccion.getId());
+	            
+	            int filasUsuario = pstDireccion.executeUpdate();
+	            if (filasUsuario == 0) {
+	                throw new SQLException("No se actualizo la direccion");
+	            }
+	        }
 
 	        
 
@@ -372,6 +385,8 @@ public class ClienteDaoImpl implements ClienteDao {
 		            usuario.setNombreUsuario(rs.getString("nombre_usuario"));
 		            usuario.setIdUsuario(rs.getInt("id_usuario"));
 		            cliente.setUsuario(usuario);
+		            cliente.setProvincia(provincia);
+		            cliente.setLocalidad(localidad);
 		        }
 
 		    } catch (SQLException e) {
