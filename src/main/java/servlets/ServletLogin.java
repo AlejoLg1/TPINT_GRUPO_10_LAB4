@@ -67,6 +67,6 @@ public class ServletLogin extends HttpServlet {
 
 
     protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-        response.sendRedirect(request.getContextPath() + "/jsp/comunes/login.jsp");
+    	request.getRequestDispatcher("/jsp/comunes/login.jsp").forward(request, response);
     }
 }

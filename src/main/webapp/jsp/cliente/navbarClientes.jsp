@@ -23,7 +23,7 @@
 	<div class="logout">
 	    <span class="user-info">Usuario: <%= session.getAttribute("usuario") %></span>
 	    <span class="separator">|</span>
-	    <a href="<%= request.getContextPath() %>/jsp/comunes/login.jsp" class="logout-link">Salir</a>
+	    <a href="<%= request.getContextPath() %>/ServletLogin" class="logout-link">Salir</a>
 	</div>
 
 
