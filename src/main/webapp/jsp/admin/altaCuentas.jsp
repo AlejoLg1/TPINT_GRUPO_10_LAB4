@@ -22,6 +22,14 @@
 <head>
     <title><%= esModificacion ? "Modificar Cuenta" : "Alta de Cuenta" %></title>
     <link rel="stylesheet" href="${pageContext.request.contextPath}/css/cuentaEstilos.css">
+
+    <!-- Select2 CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet" />
+
+    <!-- jQuery -->
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <!-- Select2 JS -->
+    <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
 </head>
 <body>
     <% request.setAttribute("activePage", "cuentas"); %>
@@ -46,10 +54,10 @@
                 <% } %>
 
                 <label>Cliente:</label>
-				<% if (esModificacion) { %>
-				    <input type="hidden" name="clienteId" value="<%= cuentaMod.getIdCliente() %>">
-				<% } %>
-				<select name="clienteId" required <%= esModificacion ? "disabled" : "" %>>
+                <% if (esModificacion) { %>
+                    <input type="hidden" name="clienteId" value="<%= cuentaMod.getIdCliente() %>">
+                <% } %>
+                <select name="clienteId" required <%= esModificacion ? "disabled" : "" %>>
 
                     <option value="">-- Seleccionar Cliente --</option>
                     <%
@@ -86,16 +94,24 @@
                        value="<%= esModificacion ? cuentaMod.getSaldo() : "10000.00" %>" 
                        <%= esModificacion ? "" : "readonly" %> step="0.01">
 
-				<button type="submit" class="boton-formulario boton-guardar">
-				    <%= esModificacion ? "Guardar Cambios" : "Crear Cuenta" %>
-				</button>
-				
+                <button type="submit" class="boton-formulario boton-guardar">
+                    <%= esModificacion ? "Guardar Cambios" : "Crear Cuenta" %>
+                </button>
 
-				<button type="button" onclick="location.href='ServletCuenta'" class="boton-formulario boton-volver">Volver</button>
+                <button type="button" onclick="location.href='ServletCuenta'" class="boton-formulario boton-volver">Volver</button>
             </form>
         </div>
     </div>
 
     <%@ include file="../comunes/footer.jsp" %>
+
+    <script>
+        $(document).ready(function() {
+            $('select[name="clienteId"]').select2({
+                placeholder: "-- Seleccionar Cliente --",
+                width: '100%'
+            });
+        });
+    </script>
 </body>
 </html>

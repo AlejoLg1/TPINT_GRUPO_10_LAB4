@@ -146,6 +146,46 @@ table {
     border: 1px solid #ccc;
 }
 
+.form-alta-cuenta .select2-container .select2-selection--single {
+    height: 42px; /* ajusta a la altura exacta del select normal */
+    padding: 10px;
+    border-radius: 6px;
+    border: 1px solid #ccc;
+    font-size: 14px;
+    box-sizing: border-box; /* asegura que respete height + padding */
+}
+
+.form-alta-cuenta .select2-container--default .select2-selection--single .select2-selection__rendered {
+    line-height: 22px; /* ajusta para centrar el texto verticalmente */
+}
+
+.form-alta-cuenta .select2-container--default .select2-selection--single .select2-selection__arrow {
+    height: 42px; /* igual que el height del input */
+    top: 50%;
+    transform: translateY(-50%);
+    right: 10px;
+}
+
+.select2-container--default .select2-selection--single .select2-selection__placeholder {
+    color: #000;
+}
+
+.select2-container--default .select2-selection--single .select2-selection__arrow {
+    right: 0px;
+}
+
+.select2-container--default .select2-selection--single .select2-selection__arrow b {
+    border-color: black transparent transparent transparent;
+}
+
+/* ✅ Limitar altura del dropdown de resultados a ~5 opciones con scroll */
+.form-alta-cuenta .select2-container .select2-results__options {
+    max-height: 200px; /* 5 x 40px aprox */
+    overflow-y: auto;
+}
+
+
+
 .boton-formulario {
     display: block;
     width: 100%;
