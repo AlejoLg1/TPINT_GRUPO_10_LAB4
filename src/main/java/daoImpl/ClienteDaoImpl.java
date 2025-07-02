@@ -272,8 +272,8 @@ public class ClienteDaoImpl implements ClienteDao {
 	            int idLocalidad = rs.getInt("id_localidad");
 	            String calle = rs.getString("calle");
 	            String numero = rs.getString("numero");
-	            String localidad = rs.getString("localidad");
-	            String provincia = rs.getString("provincia");
+	            String localidad = rs.getString("nombre_localidad");
+	            String provincia = rs.getString("nombre_provincia");
 	            cliente.setCorreo(rs.getString("correo"));
 	            cliente.setTelefono(rs.getString("telefono"));
 	            cliente.setEstado(rs.getBoolean("estado"));
