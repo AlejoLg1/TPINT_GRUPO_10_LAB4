@@ -8,6 +8,7 @@ import dao.UsuarioDao;
 import daoImpl.UsuarioDaoImpl;
 import dominio.Usuario;
 import excepciones.NombreUsuarioExistenteException;
+import excepciones.AutenticacionException;
 import excepciones.ContrasenasNoCoincidenException;
 import excepciones.TodosLosCamposObligatorios;
 
@@ -64,7 +65,13 @@ public class ServletAltaUsuario extends HttpServlet {
                 if (!pass.equals(passRepetida)) {
                     throw new ContrasenasNoCoincidenException("Las contraseñas no coinciden.");
                 }
-
+                
+                if (username.contains(" "))
+			        throw new AutenticacionException("El nombre de usuario no puede contener espacios.");
+			    
+			    if (pass.contains(" "))
+			        throw new ContrasenasNoCoincidenException("La contraseña no puede contener espacios.");
+			    
                 UsuarioDao dao = new UsuarioDaoImpl();
                 if (dao.ExisteNombreUsuario(username)) {
                     throw new NombreUsuarioExistenteException("El nombre de usuario ya está en uso.");
@@ -89,6 +96,10 @@ public class ServletAltaUsuario extends HttpServlet {
 	            status = false;
 	            msg = "❌ " + e.getMessage();
 	        }
+            catch (AutenticacionException e) {
+				status = false;
+				msg = "❌ " + e.getMessage();
+            }
             catch (Exception e) {
             	status = false;
                 msg = "❌ Error inesperado al procesar la solicitud.";

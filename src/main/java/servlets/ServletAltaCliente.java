@@ -145,6 +145,12 @@ public class ServletAltaCliente extends HttpServlet {
 			    if(!cuil.contains(dni))
 			    	throw new AutenticacionException("El cuil no contiene el dni ingresado");
 			    
+			    if (username.contains(" "))
+			        throw new AutenticacionException("El nombre de usuario no puede contener espacios.");
+			    
+			    if (pass.contains(" "))
+			        throw new ContrasenasNoCoincidenException("La contraseña no puede contener espacios.");
+			    
 			    if (idLocalidad == 0) {
 			    	request.setAttribute(msg, "Debe seleccionar una localidad");
 			        throw new Exception("Debe seleccionar una localidad válida.");
