@@ -61,10 +61,10 @@
                     </select>
                 </div>
                 <div class="col-md-2">
-                    <input type="number" name="saldoMin" class="form-control" placeholder="Saldo desde" step="0.01">
+                    <input type="number" name="saldoMin" class="form-control" placeholder="Saldo desde" step="0.01" min="0">
                 </div>
                 <div class="col-md-2">
-                    <input type="number" name="saldoMax" class="form-control" placeholder="Saldo hasta" step="0.01">
+                    <input type="number" name="saldoMax" class="form-control" placeholder="Saldo hasta" step="0.01" min="0">
                 </div>
                 
      			<div class="w-100"></div>
