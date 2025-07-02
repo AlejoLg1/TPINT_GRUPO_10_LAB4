@@ -38,9 +38,9 @@
             <form action="ServletAprobacionPrestamos" method="get" class="filtros-form">
 			    <input type="text" name="busqueda" placeholder="Buscar CBU">
 			
-			    <input type="number" name="montoMin" step="0.01" placeholder="Monto desde">
+			    <input type="number" name="montoMin" step="0.01" placeholder="Monto desde" min="0">
 			
-			    <input type="number" name="montoMax" step="0.01" placeholder="Monto hasta">
+			    <input type="number" name="montoMax" step="0.01" placeholder="Monto hasta" min="0">
 			    <br>
 			
 			    <select name="estadoPrestamo">
