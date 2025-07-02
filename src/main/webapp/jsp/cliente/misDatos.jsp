@@ -79,12 +79,12 @@
 	
 	            <div class="form-item">
 	                <label for="localidad">Localidad:</label>
-	                <input type="text" id="localidad" value="<%=cliente.getLocalidad().getId() %>" readonly>
+	                <input type="text" id="localidad" value="<%=cliente.getLocalidad().getNombre() %>" readonly>
 	            </div>
 	
 	            <div class="form-item">
 	                <label for="provincia">Provincia:</label>
-	                <input type="text" id="provincia" value="<%=cliente.getProvincia().getId() %>" readonly>
+	                <input type="text" id="provincia" value="<%=cliente.getProvincia().getNombre() %>" readonly>
 	            </div>
 	        </div>
 	
