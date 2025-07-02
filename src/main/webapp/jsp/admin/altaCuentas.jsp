@@ -92,7 +92,7 @@
                 <label>Monto Inicial:</label>
                 <input type="number" name="montoInicial" 
                        value="<%= esModificacion ? cuentaMod.getSaldo() : "10000.00" %>" 
-                       <%= esModificacion ? "" : "readonly" %> step="0.01">
+                       <%= esModificacion ? "" : "readonly" %> step="0.01" min="0">
 
                 <button type="submit" class="boton-formulario boton-guardar">
                     <%= esModificacion ? "Guardar Cambios" : "Crear Cuenta" %>
