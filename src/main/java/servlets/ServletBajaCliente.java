@@ -36,10 +36,10 @@ public class ServletBajaCliente extends HttpServlet {
 
 		AutenticacionNegocioImpl auth = new AutenticacionNegocioImpl();
 
-		if (usuario == null || !auth.validarRolAdmin(usuario)) {
-		    response.sendRedirect(request.getContextPath() + "/ServletMenuAdmin");
-		    return;
-		}
+        if (usuario == null || (!auth.validarRolAdmin(usuario) && !auth.validarRolBancario(usuario))) {
+            response.sendRedirect(request.getContextPath() + "/ServletLogin");
+            return;
+        }
 		
 		response.getWriter().append("Served at: ").append(request.getContextPath());
 	}
@@ -51,10 +51,10 @@ public class ServletBajaCliente extends HttpServlet {
 
 		AutenticacionNegocioImpl auth = new AutenticacionNegocioImpl();
 
-		if (usuario == null || !auth.validarRolAdmin(usuario)) {
-		    response.sendRedirect(request.getContextPath() + "/ServletMenuAdmin");
-		    return;
-		}
+        if (usuario == null || (!auth.validarRolAdmin(usuario) && !auth.validarRolBancario(usuario))) {
+            response.sendRedirect(request.getContextPath() + "/ServletLogin");
+            return;
+        }
 		
 		int idCliente = Integer.parseInt(request.getParameter("id"));
 		

@@ -5,6 +5,9 @@ import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import jakarta.servlet.http.HttpSession;
+import negocioImpl.AutenticacionNegocioImpl;
+
 import java.io.IOException;
 import java.util.List;
 import java.math.BigDecimal;
@@ -18,6 +21,7 @@ import daoImpl.TipoCuentaDaoImpl;
 import dominio.Cliente;
 import dominio.Cuenta;
 import dominio.TipoCuenta;
+import dominio.Usuario;
 
 @WebServlet("/ServletAltaCuenta")
 public class ServletAltaCuenta extends HttpServlet {
@@ -29,7 +33,17 @@ public class ServletAltaCuenta extends HttpServlet {
 
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-        String idParam = request.getParameter("id");
+    	HttpSession session = request.getSession(false);
+		Usuario usuario = (Usuario) session.getAttribute("usuario");
+
+		AutenticacionNegocioImpl auth = new AutenticacionNegocioImpl();
+
+        if (usuario == null || (!auth.validarRolAdmin(usuario) && !auth.validarRolBancario(usuario))) {
+            response.sendRedirect(request.getContextPath() + "/ServletLogin");
+            return;
+        }
+        
+    	String idParam = request.getParameter("id");
 
         if (idParam != null) {
             try {
@@ -51,7 +65,17 @@ public class ServletAltaCuenta extends HttpServlet {
 
     @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-        CuentaDao cuentaDao = new CuentaDaoImpl();
+    	HttpSession session = request.getSession(false);
+		Usuario usuario = (Usuario) session.getAttribute("usuario");
+
+		AutenticacionNegocioImpl auth = new AutenticacionNegocioImpl();
+
+        if (usuario == null || (!auth.validarRolAdmin(usuario) && !auth.validarRolBancario(usuario))) {
+            response.sendRedirect(request.getContextPath() + "/ServletLogin");
+            return;
+        }
+        
+    	CuentaDao cuentaDao = new CuentaDaoImpl();
 
         try {
             String idCuentaParam = request.getParameter("cuentaId");

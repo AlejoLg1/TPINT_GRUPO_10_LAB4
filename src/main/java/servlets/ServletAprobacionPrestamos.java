@@ -16,36 +16,27 @@ import dao.PrestamoDao;
 import dominio.Prestamo;
 import dominio.Usuario;
 
-/**
- * Servlet implementation class ServletAprobacionPrestamos
- */
+
 @WebServlet("/ServletAprobacionPrestamos")
 public class ServletAprobacionPrestamos extends HttpServlet {
 	private static final long serialVersionUID = 1L;
        
-    /**
-     * @see HttpServlet#HttpServlet()
-     */
+
     public ServletAprobacionPrestamos() {
         super();
         // TODO Auto-generated constructor stub
     }
 
-	/**
-	 * @see HttpServlet#doGet(HttpServletRequest request, HttpServletResponse response)
-	 */
     protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-    	
     	HttpSession session = request.getSession(false);
 		Usuario usuario = (Usuario) session.getAttribute("usuario");
 
 		AutenticacionNegocioImpl auth = new AutenticacionNegocioImpl();
 
-		if (usuario == null || !auth.validarRolAdmin(usuario)) {
-		    response.sendRedirect(request.getContextPath() + "/ServletMenuAdmin");
-		    return;
-		}
-    	
+        if (usuario == null || (!auth.validarRolAdmin(usuario) && !auth.validarRolBancario(usuario))) {
+            response.sendRedirect(request.getContextPath() + "/ServletLogin");
+            return;
+        }
     	
         PrestamoDao dao = new PrestamoDaoImpl(); 
 
@@ -92,11 +83,18 @@ public class ServletAprobacionPrestamos extends HttpServlet {
     
     }
 
-	/**
-	 * @see HttpServlet#doPost(HttpServletRequest request, HttpServletResponse response)
-	 */
-	protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 
+	protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+		HttpSession session = request.getSession(false);
+		Usuario usuario = (Usuario) session.getAttribute("usuario");
+
+		AutenticacionNegocioImpl auth = new AutenticacionNegocioImpl();
+
+        if (usuario == null || (!auth.validarRolAdmin(usuario) && !auth.validarRolBancario(usuario))) {
+            response.sendRedirect(request.getContextPath() + "/ServletLogin");
+            return;
+        }
+        
 		String idPrestamoStr = request.getParameter("idPrestamo");
         String accion = request.getParameter("accion"); 
         

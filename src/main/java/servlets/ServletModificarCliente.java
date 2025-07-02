@@ -44,6 +44,13 @@ public class ServletModificarCliente extends HttpServlet {
 	protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 		HttpSession session = request.getSession(false);
 		Usuario usuario = (Usuario) session.getAttribute("usuario");
+
+		AutenticacionNegocioImpl auth = new AutenticacionNegocioImpl();
+
+        if (usuario == null || (!auth.validarRolAdmin(usuario) && !auth.validarRolBancario(usuario))) {
+            response.sendRedirect(request.getContextPath() + "/ServletLogin");
+            return;
+        }
 		
 		 int id = Integer.parseInt(request.getParameter("id"));
 
@@ -72,19 +79,19 @@ public class ServletModificarCliente extends HttpServlet {
 	protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 		HttpSession session = request.getSession(false);
 		Usuario usuario = (Usuario) session.getAttribute("usuario");
+
+		AutenticacionNegocioImpl auth = new AutenticacionNegocioImpl();
+
+        if (usuario == null || (!auth.validarRolAdmin(usuario) && !auth.validarRolBancario(usuario))) {
+            response.sendRedirect(request.getContextPath() + "/ServletLogin");
+            return;
+        }
 		
 		int id = Integer.parseInt(request.getParameter("idCliente"));
 		String msg = "✅ Modificacion realizada exitosamente !";
 		boolean status = false;
 		
 		 ClienteDao dao = new ClienteDaoImpl();
-
-		AutenticacionNegocioImpl auth = new AutenticacionNegocioImpl();
-
-		if (usuario == null || !auth.validarRolAdmin(usuario)) {
-		    response.sendRedirect(request.getContextPath() + "/ServletMenuAdmin");
-		    return;
-		}
 		
         int idCliente = Integer.parseInt(request.getParameter("idCliente"));
         int idDireccion = Integer.parseInt(request.getParameter("idDireccion"));

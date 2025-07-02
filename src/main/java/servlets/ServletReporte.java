@@ -4,11 +4,16 @@ import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import jakarta.servlet.http.HttpSession;
+import negocioImpl.AutenticacionNegocioImpl;
+
 import java.io.IOException;
  
 import dao.ReporteDao;
 import daoImpl.ReporteDaoImpl;
 import dominio.Reporte;
+import dominio.Usuario;
+
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.List;
@@ -21,14 +26,32 @@ public class ServletReporte extends HttpServlet {
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
-        // Mostrar formulario vacío al entrar por GET
+    	HttpSession session = request.getSession(false);
+		Usuario usuario = (Usuario) session.getAttribute("usuario");
+
+		AutenticacionNegocioImpl auth = new AutenticacionNegocioImpl();
+
+        if (usuario == null || (!auth.validarRolAdmin(usuario) && !auth.validarRolBancario(usuario))) {
+            response.sendRedirect(request.getContextPath() + "/ServletLogin");
+            return;
+        }
+        
         request.getRequestDispatcher("/jsp/admin/reportes.jsp").forward(request, response);
     }
  
     @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
- 
+    	HttpSession session = request.getSession(false);
+		Usuario usuario = (Usuario) session.getAttribute("usuario");
+
+		AutenticacionNegocioImpl auth = new AutenticacionNegocioImpl();
+
+        if (usuario == null || (!auth.validarRolAdmin(usuario) && !auth.validarRolBancario(usuario))) {
+            response.sendRedirect(request.getContextPath() + "/ServletLogin");
+            return;
+        }
+        
         String tipoReporte = request.getParameter("tipoReporte");
         String inicioPeriodoStr = request.getParameter("inicioPeriodo");
         String finPeriodoStr = request.getParameter("finPeriodo");

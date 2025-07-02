@@ -37,10 +37,10 @@ public class ServletActivarUsuario extends HttpServlet {
 
 		AutenticacionNegocioImpl auth = new AutenticacionNegocioImpl();
 
-		if (usuario == null || !auth.validarRolAdmin(usuario)) {
-		    response.sendRedirect(request.getContextPath() + "/ServletMenuAdmin");
-		    return;
-		}
+        if (usuario == null || (!auth.validarRolAdmin(usuario) && !auth.validarRolBancario(usuario))) {
+            response.sendRedirect(request.getContextPath() + "/ServletMenuAdmin");
+            return;
+        }
 		
         try {
             int id = Integer.parseInt(request.getParameter("id"));

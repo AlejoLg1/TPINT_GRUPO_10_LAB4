@@ -29,14 +29,14 @@ public class ServletModificarUsuario extends HttpServlet {
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
     	HttpSession session = request.getSession(false);
-		Usuario usuarioSession = (Usuario) session.getAttribute("usuario");
+		Usuario usuarioSS = (Usuario) session.getAttribute("usuario");
 
 		AutenticacionNegocioImpl auth = new AutenticacionNegocioImpl();
 
-		if (usuarioSession == null || !auth.validarRolAdmin(usuarioSession)) {
-		    response.sendRedirect(request.getContextPath() + "/ServletMenuAdmin");
-		    return;
-		}
+        if (usuarioSS == null || (!auth.validarRolAdmin(usuarioSS) && !auth.validarRolBancario(usuarioSS))) {
+            response.sendRedirect(request.getContextPath() + "/ServletLogin");
+            return;
+        }
 		
         int id = Integer.parseInt(request.getParameter("id"));
 
@@ -59,17 +59,17 @@ public class ServletModificarUsuario extends HttpServlet {
     	boolean status = false;
     	int idUsuario = -1;
         
-        HttpSession session = request.getSession(false);
-		Usuario usuarioSession = (Usuario) session.getAttribute("usuario");
-		
-        UsuarioDao dao = new UsuarioDaoImpl();
-        
+    	HttpSession session = request.getSession(false);
+		Usuario usuarioSS = (Usuario) session.getAttribute("usuario");
+
 		AutenticacionNegocioImpl auth = new AutenticacionNegocioImpl();
 
-		if (usuarioSession == null || !auth.validarRolAdmin(usuarioSession)) {
-		    response.sendRedirect(request.getContextPath() + "/ServletMenuAdmin");
-		    return;
-		}
+        if (usuarioSS == null || (!auth.validarRolAdmin(usuarioSS) && !auth.validarRolBancario(usuarioSS))) {
+            response.sendRedirect(request.getContextPath() + "/ServletLogin");
+            return;
+        }
+		
+        UsuarioDao dao = new UsuarioDaoImpl();
 
         try {
             String idParam = request.getParameter("id");

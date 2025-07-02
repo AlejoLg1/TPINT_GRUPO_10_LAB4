@@ -33,12 +33,11 @@ public class ServletListarCliente extends HttpServlet {
 		Usuario usuario = (Usuario) session.getAttribute("usuario");
 
 		AutenticacionNegocioImpl auth = new AutenticacionNegocioImpl();
-		
-		//if (usuario == null || !auth.validarRolAdmin(usuario)) {
-		if (usuario == null) {
-		    response.sendRedirect(request.getContextPath() + "/ServletMenuAdmin");
-		    return;
-		}
+
+        if (usuario == null || (!auth.validarRolAdmin(usuario) && !auth.validarRolBancario(usuario))) {
+            response.sendRedirect(request.getContextPath() + "/ServletLogin");
+            return;
+        }
 		
 		ClienteDao dao = new ClienteDaoImpl();
 		List<Cliente> listaCliente = dao.Listar2();
@@ -54,11 +53,10 @@ public class ServletListarCliente extends HttpServlet {
 
 		AutenticacionNegocioImpl auth = new AutenticacionNegocioImpl();
 
-		//if (usuario == null || !auth.validarRolAdmin(usuario)) {
-		if (usuario == null) {
-		    response.sendRedirect(request.getContextPath() + "/ServletMenuAdmin");
-		    return;
-		}
+        if (usuario == null || (!auth.validarRolAdmin(usuario) && !auth.validarRolBancario(usuario))) {
+            response.sendRedirect(request.getContextPath() + "/ServletLogin");
+            return;
+        }
 		
 		doGet(request, response);
 	}

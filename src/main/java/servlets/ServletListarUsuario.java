@@ -23,15 +23,15 @@ public class ServletListarUsuario extends HttpServlet {
 	}
 
 	protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-	    HttpSession session = request.getSession(false);
-	    Usuario usuario = (Usuario) session.getAttribute("usuario");
+		HttpSession session = request.getSession(false);
+		Usuario usuario = (Usuario) session.getAttribute("usuario");
 
-	    AutenticacionNegocioImpl auth = new AutenticacionNegocioImpl();
+		AutenticacionNegocioImpl auth = new AutenticacionNegocioImpl();
 
-	    if (usuario == null) {
-	        response.sendRedirect(request.getContextPath() + "/ServletMenuAdmin");
-	        return;
-	    }
+        if (usuario == null || (!auth.validarRolAdmin(usuario) && !auth.validarRolBancario(usuario))) {
+            response.sendRedirect(request.getContextPath() + "/ServletLogin");
+            return;
+        }
 
 	    // Obtener filtros desde request
 	    String nombreUsuario = request.getParameter("usuario");
@@ -46,6 +46,16 @@ public class ServletListarUsuario extends HttpServlet {
 	}
 
 	protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+		HttpSession session = request.getSession(false);
+		Usuario usuario = (Usuario) session.getAttribute("usuario");
+
+		AutenticacionNegocioImpl auth = new AutenticacionNegocioImpl();
+
+        if (usuario == null || (!auth.validarRolAdmin(usuario) && !auth.validarRolBancario(usuario))) {
+            response.sendRedirect(request.getContextPath() + "/ServletLogin");
+            return;
+        }
+        
 		doGet(request, response);
 	}
 }

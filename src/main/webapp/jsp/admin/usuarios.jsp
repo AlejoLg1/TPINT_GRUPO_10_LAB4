@@ -47,7 +47,8 @@
         <div class="card-body">
             <div class="d-flex justify-content-between align-items-center mb-4">
                 <h2 class="mb-0">Listado de Usuarios</h2>
-                <a href="${pageContext.request.contextPath}/jsp/admin/altaUsuario.jsp" class="btn btn-primary">+ Crear Usuario</a>
+                <a href="<%= request.getContextPath() %>/ServletAltaUsuario" class="btn btn-primary">+ Crear Usuario</a>
+                
             </div>
 
             <!-- 🔎 Filtros -->
