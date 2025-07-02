@@ -55,6 +55,8 @@ public class ServletAltaCliente extends HttpServlet {
       
         cargarDatosProvinciaYLocalidad(request);
         reenviarDatos(request,response);
+        System.out.println("Provincia seleccionada: " + request.getParameter("idProvincia"));
+
 
         RequestDispatcher rd = request.getRequestDispatcher("/jsp/admin/altaCliente.jsp");
         rd.forward(request, response);
