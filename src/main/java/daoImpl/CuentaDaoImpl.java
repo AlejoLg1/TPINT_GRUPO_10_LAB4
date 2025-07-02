@@ -330,7 +330,7 @@ public class CuentaDaoImpl implements CuentaDao {
 	@Override
 	public List<Object[]> filtrarCuentas(String busqueda, String tipoCuenta, BigDecimal saldoMin, BigDecimal saldoMax) {
 	    List<Object[]> lista = new ArrayList<>();
-	    Connection cn = Conexion.getConexion().getSQLConexion();
+	    
 
 	    StringBuilder query = new StringBuilder(
 	        "SELECT c.nro_cuenta, c.cbu, tc.descripcion AS tipo_cuenta, cli.nombre, cli.apellido, c.saldo, c.fecha_creacion, c.estado " +
@@ -366,7 +366,9 @@ public class CuentaDaoImpl implements CuentaDao {
 
 	    query.append("ORDER BY c.nro_cuenta ASC");
 
-	    try (PreparedStatement pst = cn.prepareStatement(query.toString())) {
+	    try (
+	    		Connection cn = Conexion.getConexion().getSQLConexion();
+	    		PreparedStatement pst = cn.prepareStatement(query.toString())) {
 	        for (int i = 0; i < params.size(); i++) {
 	            pst.setObject(i + 1, params.get(i));
 	        }
