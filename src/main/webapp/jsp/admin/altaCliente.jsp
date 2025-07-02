@@ -52,8 +52,6 @@
                 <input type="hidden" name="idCliente" value="<%= clienteMod.getIdCliente() %>">
                 <input type="hidden" name="idDireccion" value="<%= clienteMod.getDireccion() != null ? clienteMod.getDireccion().getId() : 0 %>">
                 <input type="hidden" name="idUsuario" value="<%= clienteMod.getUsuario() != null ? clienteMod.getUsuario().getIdUsuario() : 0 %>">
-                <input type="hidden" name="idProvincia" value="<%= clienteMod.getProvincia() != null ? clienteMod.getProvincia().getId() : 0 %>">
-                <input type="hidden" name="idLocalidad" value="<%= clienteMod.getLocalidad() != null ? clienteMod.getLocalidad().getId() : 0 %>">
             <% } %>
 
 <div class="form-item">
@@ -62,7 +60,10 @@
         <option value="">--Seleccione provincia--</option>
         <% 
             List<Provincia> provincias = (List<Provincia>) request.getAttribute("provincias");
-            String idProvinciaSel = request.getParameter("idProvincia");
+	        String idProvinciaSel = request.getParameter("idProvincia");
+	        if (idProvinciaSel == null && esModificacion && clienteMod.getProvincia() != null) {
+	            idProvinciaSel = String.valueOf(clienteMod.getProvincia().getId());
+	        }
 
             if (provincias != null) {
                 for (Provincia p : provincias) {
@@ -88,7 +89,15 @@
 			      if (localidades != null && !localidades.isEmpty()) {
 			        for (Localidad loc : localidades) {
 			      %>
-			        <option value="<%= loc.getId() %>"><%= loc.getNombre() %></option>
+				  <%
+				    String idLocalidadSel = request.getParameter("idLocalidad");
+				    if (idLocalidadSel == null && esModificacion && clienteMod.getLocalidad() != null) {
+				        idLocalidadSel = String.valueOf(clienteMod.getLocalidad().getId());
+				    }
+				  %>
+
+				<option value="<%= loc.getId() %>" <%= idLocalidadSel != null && idLocalidadSel.equals(String.valueOf(loc.getId())) ? "selected" : "" %>><%= loc.getNombre() %></option>
+
 			      <%
 			        }
 			      }
@@ -133,7 +142,7 @@
 
             <div class="form-group">
                 <div class="form-item">
-                    <label for="direccion">Dirección:</label>
+                    <label for="direccion">Calle:</label>
                     <input type="text" id="direccion" name="direccion" value="<%= request.getAttribute("direccion") != null ? request.getAttribute("direccion") : (esModificacion && clienteMod.getDireccion() != null ? clienteMod.getDireccion().getCalle() : "") %>" required>
                 </div>
 
@@ -225,5 +234,41 @@ function onProvinciaChange(select) {
         .catch(error => console.error('Error al cargar localidades:', error));
 }
 </script>
+
+<% if (esModificacion && clienteMod.getProvincia() != null) { %>
+<script>
+    window.addEventListener('DOMContentLoaded', () => {
+        const idProvincia = '<%= clienteMod.getProvincia().getId() %>';
+        const idLocalidad = '<%= clienteMod.getLocalidad() != null ? clienteMod.getLocalidad().getId() : "" %>';
+        const localidadSelect = document.getElementById('localidad');
+
+        fetch('<%= request.getContextPath() %>/ServletLocalidades?idProvincia=' + idProvincia)
+            .then(response => response.json())
+            .then(data => {
+                localidadSelect.innerHTML = '';
+
+                // Opción por defecto
+                const defaultOption = document.createElement('option');
+                defaultOption.value = '';
+                defaultOption.text = '--Seleccione localidad--';
+                localidadSelect.appendChild(defaultOption);
+
+                data.forEach(localidad => {
+                    const option = document.createElement('option');
+                    option.value = localidad.id;
+                    option.text = localidad.nombre;
+
+                    if (String(localidad.id) === idLocalidad) {
+                        option.selected = true;
+                    }
+
+                    localidadSelect.appendChild(option);
+                });
+            })
+            .catch(error => console.error('Error al cargar localidades:', error));
+    });
+</script>
+<% } %>
+
 
 </html>
