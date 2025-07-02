@@ -172,13 +172,15 @@ public class ClienteDaoImpl implements ClienteDao {
 	public boolean Eliminar(Cliente cliente, int idUsuario) {
 		   Connection cn = Conexion.getConexion().getSQLConexion();
 	        boolean eliminado = false;
+	        PreparedStatement pstCliente = null;
+	        PreparedStatement pstUsuario = null;
 
 	        String queryCliente = "UPDATE cliente SET estado = false WHERE id_cliente = ?";
 	        String queryUsuario = "UPDATE usuario SET estado = false WHERE id_usuario = ?";
 
 	        try {
-	            PreparedStatement pstCliente = cn.prepareStatement(queryCliente);
-	            PreparedStatement pstUsuario = cn.prepareStatement(queryUsuario);
+	            pstCliente = cn.prepareStatement(queryCliente);
+	            pstUsuario = cn.prepareStatement(queryUsuario);
 	            pstCliente.setInt(1, cliente.getIdCliente());
 	            pstUsuario.setInt(1, idUsuario);
 	            int filasCliente = pstCliente.executeUpdate();
@@ -188,7 +190,23 @@ public class ClienteDaoImpl implements ClienteDao {
 	                eliminado = true;
 	            }
 	        } catch (Exception e) {
+	        	try {
+	        		if(cn != null) cn.rollback();
+	  		
+	        	}catch(SQLException ex)
+	        	 {
+	        		ex.printStackTrace();
+	        	 }
+	        	
 	            e.printStackTrace();
+	        } finally {
+	        	try {
+	                if (pstCliente != null) pstCliente.close();
+	                if (pstUsuario != null) pstUsuario.close();
+	                if (cn != null) cn.close();
+	            } catch (SQLException e) {
+	                e.printStackTrace();
+	            }
 	        }
 
 	        return eliminado;
@@ -272,8 +290,8 @@ public class ClienteDaoImpl implements ClienteDao {
 	            int idLocalidad = rs.getInt("id_localidad");
 	            String calle = rs.getString("calle");
 	            String numero = rs.getString("numero");
-	            String localidad = rs.getString("localidad");
-	            String provincia = rs.getString("provincia");
+	            String localidad = rs.getString("nombre_localidad");
+	            String provincia = rs.getString("nombre_provincia");
 	            cliente.setCorreo(rs.getString("correo"));
 	            cliente.setTelefono(rs.getString("telefono"));
 	            cliente.setEstado(rs.getBoolean("estado"));
@@ -301,12 +319,13 @@ public class ClienteDaoImpl implements ClienteDao {
 	@Override
 	public List<Cliente> Listar2() {
 		  Connection cn = Conexion.getConexion().getSQLConexion();
+		  PreparedStatement pst = null;
 	        List<Cliente> lista = new ArrayList<>();
 
 	        String query = "SELECT id_cliente, nombre, apellido, dni, cuil, estado FROM cliente";
 
 	        try {
-	            PreparedStatement pst = cn.prepareStatement(query);
+	            pst = cn.prepareStatement(query);
 	            ResultSet rs = pst.executeQuery();
 
 	            while (rs.next()) {
@@ -323,6 +342,14 @@ public class ClienteDaoImpl implements ClienteDao {
 
 	        } catch (Exception e) {
 	            e.printStackTrace();
+	        }finally
+	        {
+	        	try {
+		            if (pst != null) pst.close();
+		            if (cn != null) cn.close();
+		        } catch (SQLException e) {
+		            e.printStackTrace();
+		        }
 	        }
 
 	        return lista;
@@ -440,14 +467,16 @@ public class ClienteDaoImpl implements ClienteDao {
 	@Override
 	public boolean Activar(Cliente cliente, int idUsuario) {
 		  Connection cn = Conexion.getConexion().getSQLConexion();
+		  PreparedStatement pstCliente = null;
+          PreparedStatement pstUsuario = null;
 	        boolean activado = false;
 
 	        String queryCliente = "UPDATE cliente SET estado = true WHERE id_cliente = ?";
 	        String queryUsuario = "UPDATE usuario SET estado = true WHERE id_usuario = ?";
 
 	        try {
-	            PreparedStatement pstCliente = cn.prepareStatement(queryCliente);
-	            PreparedStatement pstUsuario = cn.prepareStatement(queryUsuario);
+	            pstCliente = cn.prepareStatement(queryCliente);
+	            pstUsuario = cn.prepareStatement(queryUsuario);
 	            pstCliente.setInt(1, cliente.getIdCliente());
 	            pstUsuario.setInt(1, idUsuario);
 
@@ -459,6 +488,15 @@ public class ClienteDaoImpl implements ClienteDao {
 	            }
 	        } catch (Exception e) {
 	            e.printStackTrace();
+	        }finally 
+	        {
+	        	try {
+		            if (pstCliente != null) pstCliente.close();
+		            if (pstUsuario != null) pstUsuario.close();
+		            if (cn != null) cn.close();
+		        } catch (SQLException e) {
+		            e.printStackTrace();
+		        }
 	        }
 
 	        return activado;

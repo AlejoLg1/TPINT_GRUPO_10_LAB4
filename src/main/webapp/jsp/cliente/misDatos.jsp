@@ -25,8 +25,11 @@
 
 <%
 	Cliente cliente = (Cliente)request.getAttribute("infoCliente");
-	if(cliente == null)
-		response.sendRedirect(request.getContextPath() + "/jsp/cliente/menuCliente.jsp");
+   if(cliente == null) {
+    response.sendRedirect(request.getContextPath() + "/jsp/cliente/menuCliente.jsp");
+    return;
+}
+
 %>
 
 
