@@ -28,8 +28,19 @@ public class AutenticacionNegocioImpl implements AutenticacionNegocio {
         return usuario;
     }
     
+    @Override
     public boolean validarRolAdmin(Usuario usuario) {
-        return usuario != null && usuario.isAdmin();
+        return usuario != null && "BANCARIO".equals(usuario.getTipo()) && usuario.isAdmin();
+    }
+    
+    @Override
+    public boolean validarRolBancario(Usuario usuario) {
+    	return usuario != null && "BANCARIO".equals(usuario.getTipo());
+    }
+    
+    @Override
+    public boolean validarRolCliente(Usuario usuario) {
+    	return usuario != null && "CLIENTE".equals(usuario.getTipo());
     }
     
     public int obtenerIdClientePorUsuario(int idUsuario) {
