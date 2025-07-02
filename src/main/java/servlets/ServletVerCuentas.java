@@ -6,7 +6,7 @@ import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.HttpSession;
-
+import negocioImpl.AutenticacionNegocioImpl;
 import daoImpl.CuentaDaoImpl;
 import daoImpl.ClienteDaoImpl;
 import dominio.Cuenta;
@@ -22,11 +22,13 @@ public class ServletVerCuentas extends HttpServlet {
 
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
+    	
+    	HttpSession session = request.getSession(false);
+		Usuario usuario = (Usuario) session.getAttribute("usuario");
 
-        HttpSession session = request.getSession();
-        Usuario usuario = (Usuario) session.getAttribute("usuario");
+		AutenticacionNegocioImpl auth = new AutenticacionNegocioImpl();
 
-        if (usuario == null) {
+        if (usuario == null || !auth.validarRolCliente(usuario)) {
             response.sendRedirect(request.getContextPath() + "/ServletLogin");
             return;
         }

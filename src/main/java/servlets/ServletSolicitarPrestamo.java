@@ -19,6 +19,7 @@ import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.HttpSession;
+import negocioImpl.AutenticacionNegocioImpl;
 
 @WebServlet("/ServletSolicitarPrestamo")
 public class ServletSolicitarPrestamo extends HttpServlet {
@@ -29,11 +30,12 @@ public class ServletSolicitarPrestamo extends HttpServlet {
     }
 
     protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-        // Obtener usuario de sesión
-        HttpSession session = request.getSession();
-        Usuario usuario = (Usuario) session.getAttribute("usuario");
+    	HttpSession session = request.getSession(false);
+		Usuario usuario = (Usuario) session.getAttribute("usuario");
 
-        if (usuario == null) {
+		AutenticacionNegocioImpl auth = new AutenticacionNegocioImpl();
+
+        if (usuario == null || !auth.validarRolCliente(usuario)) {
             response.sendRedirect(request.getContextPath() + "/ServletLogin");
             return;
         }
@@ -72,7 +74,16 @@ public class ServletSolicitarPrestamo extends HttpServlet {
     }
 
     protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+    	HttpSession sessionSS = request.getSession(false);
+		Usuario usuarioSS = (Usuario) sessionSS.getAttribute("usuario");
 
+		AutenticacionNegocioImpl auth = new AutenticacionNegocioImpl();
+
+        if (usuarioSS == null || !auth.validarRolCliente(usuarioSS)) {
+            response.sendRedirect(request.getContextPath() + "/ServletLogin");
+            return;
+        }
+        
         boolean status = false;
         String msg = "✅ Solicitud realizado con exito";
 

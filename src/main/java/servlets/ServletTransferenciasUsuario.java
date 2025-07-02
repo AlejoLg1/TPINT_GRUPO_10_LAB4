@@ -1,6 +1,5 @@
 package servlets;
 
-import jakarta.servlet.RequestDispatcher;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.HttpServlet;
@@ -9,7 +8,6 @@ import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.HttpSession;
 
 import java.io.IOException;
-import java.math.BigDecimal;
 import java.util.List;
 
 import daoImpl.ClienteDaoImpl;
@@ -19,35 +17,31 @@ import dominio.Cuenta;
 import dominio.Usuario;
 import dominio.Transferencia;
 import negocio.TransferenciaNegocio;
+import negocioImpl.AutenticacionNegocioImpl;
 import negocioImpl.TransferenciaNegocioImpl;
 import excepciones.CuentaExistenteExcenption;
-import excepciones.MontoInsuficienteException;
 import excepciones.MovimientoException;
 import excepciones.TransferenciaException;
 
-/**
- * Servlet implementation class ServletTransferenciasUsuario
- */
+
 @WebServlet("/ServletTransferenciasUsuario")
 public class ServletTransferenciasUsuario extends HttpServlet {
 	private static final long serialVersionUID = 1L;
        
-    /**
-     * @see HttpServlet#HttpServlet()
-     */
+
     public ServletTransferenciasUsuario() {
         super();
         // TODO Auto-generated constructor stub
     }
 
-	/**
-	 * @see HttpServlet#doGet(HttpServletRequest request, HttpServletResponse response)
-	 */
-	protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-		HttpSession session = request.getSession();
-        Usuario usuario = (Usuario) session.getAttribute("usuario");
 
-        if (usuario == null) {
+	protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+		HttpSession session = request.getSession(false);
+		Usuario usuario = (Usuario) session.getAttribute("usuario");
+
+		AutenticacionNegocioImpl auth = new AutenticacionNegocioImpl();
+
+        if (usuario == null || !auth.validarRolCliente(usuario)) {
             response.sendRedirect(request.getContextPath() + "/ServletLogin");
             return;
         }
@@ -84,11 +78,18 @@ public class ServletTransferenciasUsuario extends HttpServlet {
         
 	}
 
-	/**
-	 * @see HttpServlet#doPost(HttpServletRequest request, HttpServletResponse response)
-	 */
 	
 	protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+		HttpSession sessionSS = request.getSession(false);
+		Usuario usuario = (Usuario) sessionSS.getAttribute("usuario");
+
+		AutenticacionNegocioImpl auth = new AutenticacionNegocioImpl();
+
+        if (usuario == null || !auth.validarRolCliente(usuario)) {
+            response.sendRedirect(request.getContextPath() + "/ServletLogin");
+            return;
+        }
+        
         HttpSession session = request.getSession();
         String msg = "✅ Operacion realizada con exito";
         boolean status = false;

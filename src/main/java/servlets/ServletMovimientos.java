@@ -3,8 +3,10 @@ package servlets;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.*;
+import negocioImpl.AutenticacionNegocioImpl;
 import daoImpl.MovimientoDaoImpl;
 import dominio.Movimiento;
+import dominio.Usuario;
 
 import java.io.IOException;
 import java.util.List;
@@ -14,11 +16,13 @@ public class ServletMovimientos extends HttpServlet {
     private static final long serialVersionUID = 1L;
 
     protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-        HttpSession session = request.getSession();
-        Object usuario = session.getAttribute("usuario");
+    	HttpSession session = request.getSession(false);
+		Usuario usuario = (Usuario) session.getAttribute("usuario");
 
-        if (usuario == null) {
-            response.sendRedirect(request.getContextPath() + "/jsp/comunes/login.jsp");
+		AutenticacionNegocioImpl auth = new AutenticacionNegocioImpl();
+
+        if (usuario == null || !auth.validarRolCliente(usuario)) {
+            response.sendRedirect(request.getContextPath() + "/ServletLogin");
             return;
         }
 

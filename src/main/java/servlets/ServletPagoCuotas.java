@@ -12,7 +12,9 @@ import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpSession;
 
 import dominio.Cuota;
+import dominio.Usuario;
 import dominio.Cuenta;
+import negocioImpl.AutenticacionNegocioImpl;
 import negocioImpl.CuotaNegocioImpl;
 import daoImpl.CuentaDaoImpl;
 
@@ -21,7 +23,16 @@ public class ServletPagoCuotas extends HttpServlet {
     private static final long serialVersionUID = 1L;
 
     protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-        HttpSession session = request.getSession();
+    	HttpSession session = request.getSession(false);
+		Usuario usuario = (Usuario) session.getAttribute("usuario");
+
+		AutenticacionNegocioImpl auth = new AutenticacionNegocioImpl();
+
+        if (usuario == null || !auth.validarRolCliente(usuario)) {
+            response.sendRedirect(request.getContextPath() + "/ServletLogin");
+            return;
+        }
+        
         Object idClienteObj = session.getAttribute("idCliente");
 
         if (idClienteObj == null) {

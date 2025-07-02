@@ -6,12 +6,14 @@ import java.util.List;
 
 import dominio.Cuenta;
 import dominio.Cuota;
+import dominio.Usuario;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.HttpSession;
+import negocioImpl.AutenticacionNegocioImpl;
 import negocioImpl.CuentaNegocioImpl;
 import negocioImpl.CuotaNegocioImpl;
 
@@ -20,7 +22,16 @@ public class ServletConfirmarPagoCuotas extends HttpServlet {
     private static final long serialVersionUID = 1L;
 
     protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-        HttpSession session = request.getSession();
+    	HttpSession session = request.getSession(false);
+		Usuario usuario = (Usuario) session.getAttribute("usuario");
+
+		AutenticacionNegocioImpl auth = new AutenticacionNegocioImpl();
+
+        if (usuario == null || !auth.validarRolCliente(usuario)) {
+            response.sendRedirect(request.getContextPath() + "/ServletLogin");
+            return;
+        }
+        
         Object idClienteObj = session.getAttribute("idCliente");
 
         if (idClienteObj == null) {
