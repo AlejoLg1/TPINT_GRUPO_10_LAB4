@@ -382,35 +382,6 @@ END //
 
 DELIMITER ;
 
-CREATE VIEW DatosCliente AS
-SELECT 
-  C.id_cliente,
-  C.id_usuario,
-  C.dni,
-  C.cuil,
-  C.nombre,
-  C.apellido,
-  C.sexo,
-  C.nacionalidad,
-  C.fecha_nacimiento,
-  D.id_direccion,
-  D.calle,
-  D.numero,
-  l.id_localidad,
-  l.nombre_localidad,
-  p.id_provincia,
-  p.nombre_provincia,
-  C.correo,
-  C.telefono,
-  C.estado
-FROM Cliente C
-inner join Provincia p on p.id_provincia = c.id_provincia
-inner join Localidad l on l.id_localidad = c.id_localidad
-INNER JOIN Direccion D ON C.id_direccion = D.id_direccion
-
-DELIMITER ;
-
-
 DELIMITER $$
 
 CREATE PROCEDURE sp_ejecutar_movimiento(
@@ -460,3 +431,29 @@ END;
 //
 
 DELIMITER ;
+
+CREATE VIEW DatosCliente AS
+SELECT 
+  C.id_cliente,
+  C.id_usuario,
+  C.dni,
+  C.cuil,
+  C.nombre,
+  C.apellido,
+  C.sexo,
+  C.nacionalidad,
+  C.fecha_nacimiento,
+  D.id_direccion,
+  D.calle,
+  D.numero,
+  l.id_localidad,
+  l.nombre_localidad,
+  p.id_provincia,
+  p.nombre_provincia,
+  C.correo,
+  C.telefono,
+  C.estado
+FROM Cliente C
+inner join Provincia p on p.id_provincia = c.id_provincia
+inner join Localidad l on l.id_localidad = c.id_localidad
+INNER JOIN Direccion D ON C.id_direccion = D.id_direccion
