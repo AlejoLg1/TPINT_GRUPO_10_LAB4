@@ -53,7 +53,7 @@
                         for (Cuenta cuenta : cuentasCliente) {
                 %>
                     <option value="<%= cuenta.getNroCuenta() %>">
-                        <%= i %>- <%= cuenta.getTipoCuenta() %> 
+                        <%= i %>- <%= cuenta.getTipoCuenta() %> - CBU: <%= cuenta.getCbu() %>
                          
                     </option>
                 <% 
