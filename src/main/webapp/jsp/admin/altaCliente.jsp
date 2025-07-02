@@ -54,57 +54,6 @@
                 <input type="hidden" name="idUsuario" value="<%= clienteMod.getUsuario() != null ? clienteMod.getUsuario().getIdUsuario() : 0 %>">
             <% } %>
 
-<div class="form-item">
-    <label for="provincia">Provincia:</label>
-    <select name="idProvincia" id="provincia" required onchange="onProvinciaChange(this)">
-        <option value="">--Seleccione provincia--</option>
-        <% 
-            List<Provincia> provincias = (List<Provincia>) request.getAttribute("provincias");
-	        String idProvinciaSel = request.getParameter("idProvincia");
-	        if (idProvinciaSel == null && esModificacion && clienteMod.getProvincia() != null) {
-	            idProvinciaSel = String.valueOf(clienteMod.getProvincia().getId());
-	        }
-
-            if (provincias != null) {
-                for (Provincia p : provincias) {
-                    boolean selected = idProvinciaSel != null && idProvinciaSel.equals(String.valueOf(p.getId()));
-        %>
-                    <option value="<%= p.getId() %>" <%= selected ? "selected" : "" %>><%= p.getNombre() %></option>
-        <%
-                }
-            }
-        %>
-    </select>
-</div>
-
-
-
-			<div class="form-group">
-			  <div class="form-item">
-			    <label for="localidad">Localidad:</label>
-			    <select name="idLocalidad" id="localidad" required>
-			      <option value="">--Seleccione localidad--</option>
-			      <%
-			      List<Localidad> localidades = (List<Localidad>) request.getAttribute("localidades");
-			      if (localidades != null && !localidades.isEmpty()) {
-			        for (Localidad loc : localidades) {
-			      %>
-				  <%
-				    String idLocalidadSel = request.getParameter("idLocalidad");
-				    if (idLocalidadSel == null && esModificacion && clienteMod.getLocalidad() != null) {
-				        idLocalidadSel = String.valueOf(clienteMod.getLocalidad().getId());
-				    }
-				  %>
-
-				<option value="<%= loc.getId() %>" <%= idLocalidadSel != null && idLocalidadSel.equals(String.valueOf(loc.getId())) ? "selected" : "" %>><%= loc.getNombre() %></option>
-
-			      <%
-			        }
-			      }
-			      %>
-			    </select>
-			  </div>
-			</div>
 
             <div class="form-group">
                 <div class="form-item">
@@ -152,6 +101,58 @@
                 </div>
             </div>
             
+           <div class="form-group">
+			<div class="form-item">
+			    <label for="provincia">Provincia:</label>
+			    <select name="idProvincia" id="provincia" required onchange="onProvinciaChange(this)">
+			        <option value="">--Seleccione provincia--</option>
+			        <% 
+			            List<Provincia> provincias = (List<Provincia>) request.getAttribute("provincias");
+				        String idProvinciaSel = request.getParameter("idProvincia");
+				        if (idProvinciaSel == null && esModificacion && clienteMod.getProvincia() != null) {
+				            idProvinciaSel = String.valueOf(clienteMod.getProvincia().getId());
+				        }
+			
+			            if (provincias != null) {
+			                for (Provincia p : provincias) {
+			                    boolean selected = idProvinciaSel != null && idProvinciaSel.equals(String.valueOf(p.getId()));
+			        %>
+			                    <option value="<%= p.getId() %>" <%= selected ? "selected" : "" %>><%= p.getNombre() %></option>
+			        <%
+			                }
+			            }
+			        %>
+			    </select>
+			</div>
+
+
+
+			
+			  <div class="form-item">
+			    <label for="localidad">Localidad:</label>
+			    <select name="idLocalidad" id="localidad" required>
+			      <option value="">--Seleccione localidad--</option>
+			      <%
+			      List<Localidad> localidades = (List<Localidad>) request.getAttribute("localidades");
+			      if (localidades != null && !localidades.isEmpty()) {
+			        for (Localidad loc : localidades) {
+			      %>
+				  <%
+				    String idLocalidadSel = request.getParameter("idLocalidad");
+				    if (idLocalidadSel == null && esModificacion && clienteMod.getLocalidad() != null) {
+				        idLocalidadSel = String.valueOf(clienteMod.getLocalidad().getId());
+				    }
+				  %>
+
+				<option value="<%= loc.getId() %>" <%= idLocalidadSel != null && idLocalidadSel.equals(String.valueOf(loc.getId())) ? "selected" : "" %>><%= loc.getNombre() %></option>
+
+			      <%
+			        }
+			      }
+			      %>
+			    </select>
+			  </div>
+			</div>
 
 
             <div class="form-group">
