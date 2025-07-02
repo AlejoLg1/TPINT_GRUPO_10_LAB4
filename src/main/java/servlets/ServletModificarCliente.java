@@ -50,22 +50,15 @@ public class ServletModificarCliente extends HttpServlet {
 		    ClienteDao dao = new ClienteDaoImpl();
 		    Cliente cliente = dao.obtenerPorIdCliente(id);
 
-		    ProvinciaDao pdao = new daoImpl.ProvinciaDaoImpl();
-		    LocalidadDao ldao = new LocalidadDaoImpl();
+		    ProvinciaDao pdao = new ProvinciaDaoImpl();
+	      
 
-		    // ✅ Cargar provincias siempre
-		    List<Provincia> provincias = pdao.obtenerTodas();
-		    request.setAttribute("provincias", provincias);
+	        List<Provincia> provincias = pdao.obtenerTodas();
+	        request.setAttribute("provincias", provincias);
+	        
 
-		    // ✅ Cargar localidades solo si hay provincia
-		    if (cliente != null && cliente.getProvincia() != null) {
-		        int idProv = cliente.getProvincia().getId();
-		        List<Localidad> localidades = ldao.obtenerPorProvincia(idProv);
-		        request.setAttribute("localidades", localidades);
-		    }
-       
-
-
+	   
+	        
         if (cliente != null) {
             request.setAttribute("clienteMod", cliente);
             
@@ -116,12 +109,14 @@ public class ServletModificarCliente extends HttpServlet {
         // Datos de dirección
 	    String Calle = request.getParameter("direccion");
 	    String numero = request.getParameter("numero");
-	   
+	    
+	    
 	    int idProvincia = Integer.parseInt(request.getParameter("idProvincia"));
 	    int idLocalidad = Integer.parseInt(request.getParameter("idLocalidad"));
 	   
 	   
-		 
+	    System.out.println("Provincia seleccionada: " + idProvincia);
+	    System.out.println("Localidad seleccionada: " + idLocalidad);
 
 	    try {
         
@@ -149,6 +144,13 @@ public class ServletModificarCliente extends HttpServlet {
 		    Localidad loc = new Localidad();
 		    loc.setId(idLocalidad);
 		    
+		    
+		    //Datos Direccion
+		    Direccion direccion = new Direccion();
+		    direccion.setCalle(Calle);
+		    direccion.setNumero(numero);
+		    direccion.setId(idDireccion);
+		    
 		    //Datos cliente
 		    Cliente Cliente = new Cliente();
 		    Cliente.setApellido(apellido);
@@ -164,6 +166,7 @@ public class ServletModificarCliente extends HttpServlet {
 		    Cliente.setIdCliente(idCliente);
 		    Cliente.setProvincia(prov);
 		    Cliente.setLocalidad(loc);
+		    Cliente.setDireccion(direccion);
 		    
 		    
 		  //Datos Usuario
@@ -174,13 +177,6 @@ public class ServletModificarCliente extends HttpServlet {
 		    Usuario.setNombreUsuario(username);
 		    Usuario.setTipo("Cliente");
 		    Usuario.setIdUsuario(idUsuario);
-		    
-		    
-		  //Datos Direccion
-		    Direccion direccion = new Direccion();
-		    direccion.setCalle(Calle);
-		    direccion.setNumero(numero);
-		    direccion.setId(idDireccion);
 	        // Guardar
 	        status = dao.Modificar(Cliente, Usuario, direccion);
 
@@ -203,6 +199,14 @@ public class ServletModificarCliente extends HttpServlet {
 		}
 	    
         Cliente cliente= dao.obtenerPorIdCliente(id);
+        ProvinciaDao pdao = new ProvinciaDaoImpl();
+        LocalidadDao ldao = new LocalidadDaoImpl();
+
+        List<Provincia> provincias = pdao.obtenerTodas();
+        request.setAttribute("provincias", provincias);
+
+
+
 
 	    request.setAttribute("estado", status);
 	    request.setAttribute("mensaje", msg);
