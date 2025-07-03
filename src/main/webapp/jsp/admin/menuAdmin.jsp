@@ -34,7 +34,7 @@
 				<a href="${pageContext.request.contextPath}/ServletListarUsuario" class="action-button">Gestionar usuarios</a>
 			    <a href="${pageContext.request.contextPath}/ServletCuenta" class="action-button">Ver cuentas</a>
 			    <a href="${pageContext.request.contextPath}/ServletListarPrestamos" class="action-button">Gestionar prestamos</a>
-			    <a href="${pageContext.request.contextPath}/jsp/admin/reportes.jsp" class="action-button">Reportes</a>
+			    <a href="${pageContext.request.contextPath}/ServletReporte" class="action-button">Reportes</a>
 			</div>
 
 	    </div>

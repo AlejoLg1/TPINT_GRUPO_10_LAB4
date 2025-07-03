@@ -63,7 +63,7 @@
 			                String cbu = String.valueOf(cuenta.getCbu());			//cbu
 			                count++;
     			%>			
-		        			<option value="<%= nroCuenta %>"><%=count%> - <%=cbu%></option>
+		        			<option value="<%= nroCuenta %>"><%= count %> - <%= cuenta.getTipoCuenta() %> - CBU: <%= cuenta.getCbu() %></option>
     			<%
 			            }
 			        } 
