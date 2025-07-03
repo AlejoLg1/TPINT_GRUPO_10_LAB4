@@ -6,10 +6,11 @@ import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.HttpSession;
+
 import negocioImpl.AutenticacionNegocioImpl;
-import dao.UsuarioDao;
-import daoImpl.UsuarioDaoImpl;
 import dominio.Usuario;
+import negocio.UsuarioNegocio;
+import negocioImpl.UsuarioNegocioImpl;
 
 import java.io.IOException;
 import java.util.List;
@@ -22,28 +23,29 @@ public class ServletListarUsuario extends HttpServlet {
 		super();
 	}
 
+	@Override
 	protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-		HttpSession session = request.getSession(false);
-		Usuario usuario = (Usuario) session.getAttribute("usuario");
+	    HttpSession session = request.getSession(false);
+	    Usuario usuario = (Usuario) session.getAttribute("usuario");
 
-		AutenticacionNegocioImpl auth = new AutenticacionNegocioImpl();
+	    AutenticacionNegocioImpl auth = new AutenticacionNegocioImpl();
 
-        if (usuario == null || (!auth.validarRolAdmin(usuario) && !auth.validarRolBancario(usuario))) {
-            response.sendRedirect(request.getContextPath() + "/ServletLogin");
-            return;
-        }
+	    if (usuario == null || (!auth.validarRolAdmin(usuario) && !auth.validarRolBancario(usuario))) {
+	        response.sendRedirect(request.getContextPath() + "/ServletLogin");
+	        return;
+	    }
 
-	    // Obtener filtros desde request
 	    String nombreUsuario = request.getParameter("usuario");
 	    String rol = request.getParameter("rol");
 	    String estado = request.getParameter("estado");
 
-	    UsuarioDao dao = new UsuarioDaoImpl();
-	    List<Usuario> listaUsuarios = dao.listarConFiltros(nombreUsuario, rol, estado);
+	    UsuarioNegocio usuarioNegocio = new UsuarioNegocioImpl();
+	    List<Usuario> listaUsuarios = usuarioNegocio.listarConFiltros(nombreUsuario, rol, estado);
 
 	    request.setAttribute("usuarios", listaUsuarios);
 	    request.getRequestDispatcher("/jsp/admin/usuarios.jsp").forward(request, response);
 	}
+
 
 	protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 		HttpSession session = request.getSession(false);
