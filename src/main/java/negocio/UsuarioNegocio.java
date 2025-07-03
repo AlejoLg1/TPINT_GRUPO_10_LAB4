@@ -5,4 +5,8 @@ import java.util.List;
 
 public interface UsuarioNegocio {
     List<Usuario> listarConFiltros(String nombreUsuario, String rol, String estado);
+    
+    void bajaUsuario(int idUsuario, int idUsuarioLogueado) throws Exception;
+    
+    
 }

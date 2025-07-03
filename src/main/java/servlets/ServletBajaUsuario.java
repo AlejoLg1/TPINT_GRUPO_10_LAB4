@@ -6,13 +6,13 @@ import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.HttpSession;
-import negocioImpl.AutenticacionNegocioImpl;
-
 import java.io.IOException;
 
-import dao.UsuarioDao;
-import daoImpl.UsuarioDaoImpl;
+
 import dominio.Usuario;
+import negocio.UsuarioNegocio;
+import negocioImpl.UsuarioNegocioImpl;
+import negocioImpl.AutenticacionNegocioImpl;
 
 @WebServlet("/ServletBajaUsuario")
 public class ServletBajaUsuario extends HttpServlet {
@@ -42,38 +42,28 @@ public class ServletBajaUsuario extends HttpServlet {
 
 	@Override
 	protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-		HttpSession session = request.getSession(false);
-		Usuario usuario = (Usuario) session.getAttribute("usuario");
+	    HttpSession session = request.getSession(false);
+	    Usuario usuario = (Usuario) session.getAttribute("usuario");
 
-		AutenticacionNegocioImpl auth = new AutenticacionNegocioImpl();
+	    AutenticacionNegocioImpl auth = new AutenticacionNegocioImpl();
 
-        if (usuario == null || (!auth.validarRolAdmin(usuario) && !auth.validarRolBancario(usuario))) {
-            response.sendRedirect(request.getContextPath() + "/ServletLogin");
-            return;
-        }
+	    if (usuario == null || (!auth.validarRolAdmin(usuario) && !auth.validarRolBancario(usuario))) {
+	        response.sendRedirect(request.getContextPath() + "/ServletLogin");
+	        return;
+	    }
 
 	    int id = Integer.parseInt(request.getParameter("id"));
-	    UsuarioDao dao = new UsuarioDaoImpl();
+	    UsuarioNegocio usuarioNegocio = new UsuarioNegocioImpl();
 
-	    Usuario usuarioADesactivar = dao.obtenerPorId(id);
-
-	    if (usuarioADesactivar.isAdmin() && dao.contarAdminsActivos() == 1) {
-	        request.setAttribute("errorUsuario", "No se puede desactivar al último administrador activo.");
+	    try {
+	        usuarioNegocio.bajaUsuario(id, usuario.getIdUsuario());
+	        response.sendRedirect(request.getContextPath() + "/ServletListarUsuario");
+	    } catch (Exception e) {
+	        request.setAttribute("errorUsuario", e.getMessage());
 	        request.getRequestDispatcher("/ServletListarUsuario").forward(request, response);
-	        return;
 	    }
-	    
-	    if (usuario.getIdUsuario() == usuarioADesactivar.getIdUsuario()) {
-	        request.setAttribute("errorUsuario", "No podés desactivarte a vos mismo. Contactá a un otro administrador para realizar la desactivación.");
-	        request.getRequestDispatcher("/ServletListarUsuario").forward(request, response);
-	        return;
-	    }
-	    
-	    usuarioADesactivar.setEstado(false);
-	    dao.Eliminar(usuarioADesactivar);
-
-	    response.sendRedirect(request.getContextPath() + "/ServletListarUsuario");
 	}
+
 
 
 }
