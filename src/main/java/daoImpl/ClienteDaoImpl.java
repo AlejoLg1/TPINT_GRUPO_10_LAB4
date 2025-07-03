@@ -317,43 +317,73 @@ public class ClienteDaoImpl implements ClienteDao {
 
 
 	@Override
-	public List<Cliente> Listar2() {
-		  Connection cn = Conexion.getConexion().getSQLConexion();
-		  PreparedStatement pst = null;
-	        List<Cliente> lista = new ArrayList<>();
+	public List<Cliente> Listar2(String nombre, String apellido, String dni, String estado) {
+	    Connection cn = Conexion.getConexion().getSQLConexion();
+	    PreparedStatement pst = null;
+	    List<Cliente> lista = new ArrayList<>();
 
-	        String query = "SELECT id_cliente, nombre, apellido, dni, cuil, estado FROM cliente";
+	    StringBuilder query = new StringBuilder("SELECT id_cliente, nombre, apellido, dni, cuil, estado FROM cliente WHERE 1=1 ");
 
-	        try {
-	            pst = cn.prepareStatement(query);
-	            ResultSet rs = pst.executeQuery();
+	    // Armado dinámico de filtros
+	    if (nombre != null && !nombre.trim().isEmpty()) {
+	        query.append("AND nombre LIKE ? ");
+	    }
+	    if (apellido != null && !apellido.trim().isEmpty()) {
+	        query.append("AND apellido LIKE ? ");
+	    }
+	    if (dni != null && !dni.trim().isEmpty()) {
+	        query.append("AND dni LIKE ? ");
+	    }
+	    if (estado != null && !estado.isEmpty()) {
+	        if (estado.equals("Activo")) {
+	            query.append("AND estado = 1 ");
+	        } else if (estado.equals("Inactivo")) {
+	            query.append("AND estado = 0 ");
+	        }
+	    }
 
-	            while (rs.next()) {
-	                Cliente c = new Cliente();
-	                c.setIdCliente(rs.getInt("id_cliente"));
-	                c.setNombre(rs.getString("nombre"));
-	                c.setApellido(rs.getString("apellido"));
-	                c.setDni(rs.getString("dni"));
-	                c.setCuil(rs.getString("cuil"));
-	                c.setEstado(rs.getBoolean("estado"));
+	    try {
+	        pst = cn.prepareStatement(query.toString());
+	        int index = 1;
 
-	                lista.add(c);
-	            }
-
-	        } catch (Exception e) {
-	            e.printStackTrace();
-	        }finally
-	        {
-	        	try {
-		            if (pst != null) pst.close();
-		            if (cn != null) cn.close();
-		        } catch (SQLException e) {
-		            e.printStackTrace();
-		        }
+	        if (nombre != null && !nombre.trim().isEmpty()) {
+	            pst.setString(index++, "%" + nombre + "%");
+	        }
+	        if (apellido != null && !apellido.trim().isEmpty()) {
+	            pst.setString(index++, "%" + apellido + "%");
+	        }
+	        if (dni != null && !dni.trim().isEmpty()) {
+	            pst.setString(index++, "%" + dni + "%");
 	        }
 
-	        return lista;
+	        ResultSet rs = pst.executeQuery();
+
+	        while (rs.next()) {
+	            Cliente c = new Cliente();
+	            c.setIdCliente(rs.getInt("id_cliente"));
+	            c.setNombre(rs.getString("nombre"));
+	            c.setApellido(rs.getString("apellido"));
+	            c.setDni(rs.getString("dni"));
+	            c.setCuil(rs.getString("cuil"));
+	            c.setEstado(rs.getBoolean("estado"));
+
+	            lista.add(c);
+	        }
+
+	    } catch (Exception e) {
+	        e.printStackTrace();
+	    } finally {
+	        try {
+	            if (pst != null) pst.close();
+	            if (cn != null) cn.close();
+	        } catch (SQLException e) {
+	            e.printStackTrace();
+	        }
+	    }
+
+	    return lista;
 	}
+
 
 
 	@Override
