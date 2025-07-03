@@ -12,4 +12,6 @@ public interface UsuarioNegocio {
 
     Usuario obtenerPorId(int idUsuario);
 
+    boolean altaUsuario(String tipoUser, String username, String pass, String passRepetida, Usuario usuarioLogueado) throws Exception;
+
 }
