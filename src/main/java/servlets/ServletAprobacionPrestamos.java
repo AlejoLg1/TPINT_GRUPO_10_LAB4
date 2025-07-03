@@ -42,7 +42,7 @@ public class ServletAprobacionPrestamos extends HttpServlet {
 
         String busqueda = request.getParameter("busqueda"); 
         String montoMinStr = request.getParameter("montoMin");
-        String montoMaxStr = request.getParameter("MontoMax"); // 
+        String montoMaxStr = request.getParameter("montoMax"); // 
         String estadoPrestamo = request.getParameter("estadoPrestamo"); 
         String fechaSolicitud = request.getParameter("fechaSolicitud"); 
 
