@@ -260,7 +260,7 @@ public class CuentaDaoImpl implements CuentaDao {
 
 	        int filas = stmt.executeUpdate();
 	        if (filas > 0) {
-	            conexion.commit();  // ✅ Confirmamos los cambios
+	            conexion.commit();
 	            actualizado = true;
 	        }
 

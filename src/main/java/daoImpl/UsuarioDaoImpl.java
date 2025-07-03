@@ -215,7 +215,7 @@ public class UsuarioDaoImpl implements UsuarioDao {
             }
 
         } catch (SQLException e) {
-            e.printStackTrace(); // o lanzás una excepción personalizada
+            e.printStackTrace();
         }
 
         return usuario;

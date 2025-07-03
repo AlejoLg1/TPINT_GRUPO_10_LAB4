@@ -11,8 +11,10 @@ import negocioImpl.AutenticacionNegocioImpl;
 import java.io.IOException;
 import java.util.List;
 
+import daoImpl.ClienteDaoImpl;
 import daoImpl.PrestamoDaoImpl;
 import dao.PrestamoDao;
+import dominio.Cliente;
 import dominio.Prestamo;
 import dominio.Usuario;
 
@@ -84,51 +86,61 @@ public class ServletAprobacionPrestamos extends HttpServlet {
     }
 
 
-	protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-		HttpSession session = request.getSession(false);
-		Usuario usuario = (Usuario) session.getAttribute("usuario");
+    protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+        HttpSession session = request.getSession(false);
+        Usuario usuario = (Usuario) session.getAttribute("usuario");
 
-		AutenticacionNegocioImpl auth = new AutenticacionNegocioImpl();
+        AutenticacionNegocioImpl auth = new AutenticacionNegocioImpl();
 
         if (usuario == null || (!auth.validarRolAdmin(usuario) && !auth.validarRolBancario(usuario))) {
             response.sendRedirect(request.getContextPath() + "/ServletLogin");
             return;
         }
-        
-		String idPrestamoStr = request.getParameter("idPrestamo");
-        String accion = request.getParameter("accion"); 
-        
+
+        String idPrestamoStr = request.getParameter("idPrestamo");
+        String accion = request.getParameter("accion");
+
         PrestamoDao dao = new PrestamoDaoImpl();
 
         if (idPrestamoStr != null && !idPrestamoStr.isEmpty() && accion != null && !accion.isEmpty()) {
             try {
                 int idPrestamo = Integer.parseInt(idPrestamoStr);
 
+                // Obtener el préstamo antes de operar
+                Prestamo prestamo = dao.obtenerPrestamoPorId(idPrestamo);
+
+                if (prestamo == null) {
+                    String mensaje = "Préstamo no encontrado.";
+                    response.sendRedirect(request.getContextPath() + "/ServletListarPrestamos?status=error&message=" + java.net.URLEncoder.encode(mensaje, "UTF-8"));
+                    return;
+                }
+
+                // Validar si el cliente está activo
+                if (!prestamo.get_cliente().isEstado()) {
+                    String mensaje = "No se puede realizar la operación porque el cliente asociado está inactivo.";
+                    response.sendRedirect(request.getContextPath() + "/ServletListarPrestamos?status=error&message=" + java.net.URLEncoder.encode(mensaje, "UTF-8"));
+                    return;
+                }
+
                 boolean operacionExitosa = false;
                 String mensaje = "";
 
                 if ("aprobar".equals(accion)) {
                     operacionExitosa = dao.aprobarPrestamo(idPrestamo);
-                    if (operacionExitosa) {
-                        mensaje = "Préstamo " + idPrestamo + " aprobado exitosamente.";
-                    } else {
-                        mensaje = "Error al aprobar el préstamo " + idPrestamo + ".";
-                    }
+                    mensaje = operacionExitosa
+                            ? "Préstamo " + idPrestamo + " aprobado exitosamente."
+                            : "Error al aprobar el préstamo " + idPrestamo + ".";
                 } else if ("rechazar".equals(accion)) {
                     operacionExitosa = dao.rechazarPrestamo(idPrestamo);
-                    if (operacionExitosa) {
-                        mensaje = "Préstamo " + idPrestamo + " rechazado exitosamente.";
-                    } else {
-                        mensaje = "Error al rechazar el préstamo " + idPrestamo + ".";
-                    }
+                    mensaje = operacionExitosa
+                            ? "Préstamo " + idPrestamo + " rechazado exitosamente."
+                            : "Error al rechazar el préstamo " + idPrestamo + ".";
                 } else {
                     mensaje = "Acción no reconocida.";
                 }
 
-                
-                String status = operacionExitosa ? "success" : "error"; 
+                String status = operacionExitosa ? "success" : "error";
                 response.sendRedirect(request.getContextPath() + "/ServletListarPrestamos?status=" + status + "&message=" + java.net.URLEncoder.encode(mensaje, "UTF-8"));
-
 
             } catch (NumberFormatException e) {
                 System.err.println("ID de préstamo inválido: " + idPrestamoStr);
