@@ -1,19 +1,18 @@
 package servlets;
 
-import jakarta.servlet.RequestDispatcher;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.HttpSession;
-import negocioImpl.AutenticacionNegocioImpl;
-
 import java.io.IOException;
 
-import dao.UsuarioDao;
-import daoImpl.UsuarioDaoImpl;
 import dominio.Usuario;
+import negocio.UsuarioNegocio;
+import negocioImpl.UsuarioNegocioImpl;
+import negocioImpl.AutenticacionNegocioImpl;
+
 
 @WebServlet("/ServletModificarUsuario")
 public class ServletModificarUsuario extends HttpServlet {
@@ -28,20 +27,20 @@ public class ServletModificarUsuario extends HttpServlet {
 
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-    	HttpSession session = request.getSession(false);
-		Usuario usuarioSS = (Usuario) session.getAttribute("usuario");
+        HttpSession session = request.getSession(false);
+        Usuario usuarioSS = (Usuario) session.getAttribute("usuario");
 
-		AutenticacionNegocioImpl auth = new AutenticacionNegocioImpl();
+        AutenticacionNegocioImpl auth = new AutenticacionNegocioImpl();
 
         if (usuarioSS == null || (!auth.validarRolAdmin(usuarioSS) && !auth.validarRolBancario(usuarioSS))) {
             response.sendRedirect(request.getContextPath() + "/ServletLogin");
             return;
         }
-		
+
         int id = Integer.parseInt(request.getParameter("id"));
 
-        UsuarioDao dao = new UsuarioDaoImpl();
-        Usuario usuario = dao.obtenerPorId(id);
+        UsuarioNegocio usuarioNegocio = new UsuarioNegocioImpl();
+        Usuario usuario = usuarioNegocio.obtenerPorId(id);
 
         if (usuario != null) {
             request.setAttribute("usuarioMod", usuario);
@@ -50,75 +49,45 @@ public class ServletModificarUsuario extends HttpServlet {
             response.sendRedirect(request.getContextPath() + "/jsp/admin/usuarios.jsp");
         }
     }
+
 
 
 
     @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-		String msg = "✅ Usuario modificado correctamente ";
-    	boolean status = false;
-    	int idUsuario = -1;
-        
-    	HttpSession session = request.getSession(false);
-		Usuario usuarioSS = (Usuario) session.getAttribute("usuario");
+        HttpSession session = request.getSession(false);
+        Usuario usuarioSS = (Usuario) session.getAttribute("usuario");
 
-		AutenticacionNegocioImpl auth = new AutenticacionNegocioImpl();
+        AutenticacionNegocioImpl auth = new AutenticacionNegocioImpl();
 
         if (usuarioSS == null || (!auth.validarRolAdmin(usuarioSS) && !auth.validarRolBancario(usuarioSS))) {
             response.sendRedirect(request.getContextPath() + "/ServletLogin");
             return;
         }
-		
-        UsuarioDao dao = new UsuarioDaoImpl();
+
+        UsuarioNegocio usuarioNegocio = new UsuarioNegocioImpl();
+        String msg = "✅ Usuario modificado correctamente";
+        boolean status = false;
+
+        int idUsuario = Integer.parseInt(request.getParameter("id"));
+        String tipoUser = request.getParameter("tipoUser");
+        String pass = request.getParameter("pass");
+        String passRepetida = request.getParameter("passRepetida");
 
         try {
-            String idParam = request.getParameter("id");
-            String tipoUser = request.getParameter("tipoUser");
-            String pass = request.getParameter("pass");
-            String passRepetida = request.getParameter("passRepetida");
-
-            if (idParam == null) throw new IllegalArgumentException("Falta el ID de usuario.");
-            idUsuario = Integer.parseInt(idParam);
-
-            Usuario usuario = new Usuario();
-            usuario.setIdUsuario(idUsuario);
-            usuario.setTipo("BANCARIO");
-
-            String modo = "";
-
-            // Si viene cambio de tipo de usuario
-            if (tipoUser != null) {
-                usuario.setIsAdmin(tipoUser.equals("Admin"));
-                modo = "tipo";
-            }
-
-            // Si viene cambio de contraseña
-            if (pass != null && !pass.isEmpty()) {
-                if (!pass.equals(passRepetida)) {
-                    throw new IllegalArgumentException("Las contraseñas no coinciden.");
-                }
-                usuario.setClave(pass);
-                modo = modo.equals("tipo") ? "ambos" : "clave";
-            }
-
-            if (modo.isEmpty()) throw new IllegalArgumentException("No se enviaron cambios válidos.");
-
-            status = dao.Modificar(usuario, modo);
-            
+            status = usuarioNegocio.modificarUsuario(idUsuario, tipoUser, pass, passRepetida);
         } catch (IllegalArgumentException e) {
-            status = false;
             msg = "❌ " + e.getMessage();
             e.printStackTrace();
         } catch (Exception e) {
-            status = false;
-            msg = "❌ Ocurrio un error durante la modificacion";
+            msg = "❌ Ocurrio un error durante la modificación";
             e.printStackTrace();
         }
 
-        Usuario usuario = dao.obtenerPorId(idUsuario);
-        
-	    request.setAttribute("estado", status);
-	    request.setAttribute("mensaje", msg);
+        Usuario usuario = usuarioNegocio.obtenerPorId(idUsuario);
+
+        request.setAttribute("estado", status);
+        request.setAttribute("mensaje", msg);
 
         if (usuario != null) {
             request.setAttribute("usuarioMod", usuario);
@@ -126,8 +95,8 @@ public class ServletModificarUsuario extends HttpServlet {
         } else {
             response.sendRedirect(request.getContextPath() + "/jsp/admin/usuarios.jsp");
         }
-        
     }
+
 
 
 }

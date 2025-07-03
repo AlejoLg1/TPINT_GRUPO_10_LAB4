@@ -8,5 +8,8 @@ public interface UsuarioNegocio {
     
     void bajaUsuario(int idUsuario, int idUsuarioLogueado) throws Exception;
     
-    
+    boolean modificarUsuario(int idUsuario, String tipoUser, String pass, String passRepetida) throws Exception;
+
+    Usuario obtenerPorId(int idUsuario);
+
 }
