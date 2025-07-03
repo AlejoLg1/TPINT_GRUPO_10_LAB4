@@ -140,7 +140,7 @@ public class CuotaDaoImpl implements CuotaDao {
         }
 
         if (fechaVencimiento != null && !fechaVencimiento.isEmpty()) {
-            query += " AND DATE(c.fecha_pago) = ?";
+            query += " AND DATE(c.fecha_vencimiento) = ?";
             params.add(java.sql.Date.valueOf(fechaVencimiento));
         }
 

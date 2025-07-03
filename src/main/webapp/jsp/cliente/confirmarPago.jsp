@@ -76,11 +76,17 @@
                     <label for="cuentaSeleccionada" class="form-label">Seleccionar cuenta</label>
                     <select name="nroCuenta" class="form-select" required <%= pagoExitoso ? "disabled" : "" %>>
                         <% if (cuentas != null && !cuentas.isEmpty()) { %>
-                            <% for (Cuenta cuenta : cuentas) { %>
-                                <option value="<%= cuenta.getNroCuenta() %>">
-                                    Cuenta N° <%= cuenta.getNroCuenta() %> - Saldo: $<%= cuenta.getSaldo() %>
-                                </option>
-                            <% } %>
+                            <%
+							    int i = 1; // inicializa el contador
+							    for (Cuenta cuenta : cuentas) {
+							%>
+							    <option value="<%= cuenta.getNroCuenta() %>">
+							        <%= i %> - <%= cuenta.getTipoCuenta() %> - CBU: <%= cuenta.getCbu() %>
+							    </option>
+							<%
+							        i++; // incrementa el contador
+							    }
+							%>
                         <% } else { %>
                             <option disabled>No hay cuentas disponibles</option>
                         <% } %>
