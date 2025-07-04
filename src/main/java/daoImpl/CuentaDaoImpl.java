@@ -327,9 +327,8 @@ public class CuentaDaoImpl implements CuentaDao {
 
 	
 	@Override
-	public List<Object[]> filtrarCuentas(String busqueda, String tipoCuenta, BigDecimal saldoMin, BigDecimal saldoMax) {
+	public List<Object[]> filtrarCuentas(String busqueda, String dniCliente, String tipoCuenta, BigDecimal saldoMin, BigDecimal saldoMax) {
 	    List<Object[]> lista = new ArrayList<>();
-	    
 
 	    StringBuilder query = new StringBuilder(
 	        "SELECT c.nro_cuenta, c.cbu, tc.descripcion AS tipo_cuenta, cli.nombre, cli.apellido, c.saldo, c.fecha_creacion, c.estado " +
@@ -346,6 +345,11 @@ public class CuentaDaoImpl implements CuentaDao {
 	        params.add("%" + busqueda + "%");
 	        params.add("%" + busqueda + "%");
 	        params.add("%" + busqueda + "%");
+	    }
+
+	    if (dniCliente != null && !dniCliente.isEmpty()) {
+	        query.append("AND cli.dni = ? ");
+	        params.add(dniCliente);
 	    }
 
 	    if (tipoCuenta != null && !tipoCuenta.isEmpty()) {
@@ -366,8 +370,9 @@ public class CuentaDaoImpl implements CuentaDao {
 	    query.append("ORDER BY c.nro_cuenta ASC");
 
 	    try (
-	    		Connection cn = Conexion.getConexion().getSQLConexion();
-	    		PreparedStatement pst = cn.prepareStatement(query.toString())) {
+	        Connection cn = Conexion.getConexion().getSQLConexion();
+	        PreparedStatement pst = cn.prepareStatement(query.toString())) {
+
 	        for (int i = 0; i < params.size(); i++) {
 	            pst.setObject(i + 1, params.get(i));
 	        }
@@ -385,11 +390,13 @@ public class CuentaDaoImpl implements CuentaDao {
 	            fila[7] = rs.getInt("nro_cuenta");
 	            lista.add(fila);
 	        }
+
 	    } catch (SQLException e) {
 	        e.printStackTrace();
 	    }
 
 	    return lista;
 	}
+
 
 }

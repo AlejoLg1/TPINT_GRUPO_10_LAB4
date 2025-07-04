@@ -50,33 +50,39 @@
 
             <!-- Filtros -->
             <form action="ServletCuenta" method="get" class="row g-3 mb-4">
-                <div class="col-md-4">
-                    <input type="text" name="busqueda" class="form-control" placeholder="Buscar por CBU">
-                </div>
-                <div class="col-md-2">
-                    <select name="tipoCuenta" class="form-select">
-                        <option value="">-- Tipo de Cuenta --</option>
-                        <option value="Caja de ahorro">Caja de ahorro</option>
-                        <option value="Cuenta corriente">Cuenta corriente</option>
-                    </select>
-                </div>
-                <div class="col-md-2">
-                    <input type="number" name="saldoMin" class="form-control" placeholder="Saldo desde" step="0.01" min="0">
-                </div>
-                <div class="col-md-2">
-                    <input type="number" name="saldoMax" class="form-control" placeholder="Saldo hasta" step="0.01" min="0">
-                </div>
-                
-     			<div class="w-100"></div>
-     			
-                <div class="col-md-2">
-                    <button type="submit" class="btn btn-outline-primary w-100">Filtrar</button>
-                </div>
-                <div class="col-md-2">
-				    <a href="ServletCuenta" class="btn btn-outline-secondary w-100">Limpiar</a>
-				</div>
-				
-            </form>
+			    <div class="col-md-4">
+			        <input type="text" name="busqueda" class="form-control" placeholder="Buscar por CBU">
+			    </div>
+			
+			    <div class="col-md-2">
+			        <input type="text" name="dniCliente" class="form-control" placeholder="Buscar por DNI">
+			    </div>
+			
+			    <div class="col-md-2">
+			        <select name="tipoCuenta" class="form-select">
+			            <option value="">-- Tipo de Cuenta --</option>
+			            <option value="Caja de ahorro">Caja de ahorro</option>
+			            <option value="Cuenta corriente">Cuenta corriente</option>
+			        </select>
+			    </div>
+			
+			    <div class="col-md-2">
+			        <input type="number" name="saldoMin" class="form-control" placeholder="Saldo desde" step="0.01" min="0">
+			    </div>
+			
+			    <div class="col-md-2">
+			        <input type="number" name="saldoMax" class="form-control" placeholder="Saldo hasta" step="0.01" min="0">
+			    </div>
+			    
+			    <div class="w-100"></div>
+			    
+			    <div class="col-md-2">
+			        <button type="submit" class="btn btn-outline-primary w-100">Filtrar</button>
+			    </div>
+			    <div class="col-md-2">
+			        <a href="ServletCuenta" class="btn btn-outline-secondary w-100">Limpiar</a>
+			    </div>
+			</form>
 
             <!-- Tabla de cuentas -->
             <table class="table table-striped table-hover tabla-cuentas" style="width:100%;">

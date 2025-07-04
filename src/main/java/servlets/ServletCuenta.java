@@ -39,12 +39,13 @@ public class ServletCuenta extends HttpServlet {
         }
 
         String busqueda = request.getParameter("busqueda");
+        String dniCliente = request.getParameter("dniCliente");
         String tipoCuenta = request.getParameter("tipoCuenta");
         String saldoMinStr = request.getParameter("saldoMin");
         String saldoMaxStr = request.getParameter("saldoMax");
 
         CuentaNegocio cuentaNegocio = new CuentaNegocioImpl();
-        java.util.List<Object[]> listaCuentas = cuentaNegocio.filtrarCuentas(busqueda, tipoCuenta, saldoMinStr, saldoMaxStr);
+        java.util.List<Object[]> listaCuentas = cuentaNegocio.filtrarCuentas(busqueda, dniCliente, tipoCuenta, saldoMinStr, saldoMaxStr);
 
         String errorCuenta = (String) request.getSession().getAttribute("errorCuenta");
         if (errorCuenta != null) {
@@ -55,6 +56,7 @@ public class ServletCuenta extends HttpServlet {
         request.setAttribute("listaCuentas", listaCuentas);
         request.getRequestDispatcher("/jsp/admin/cuentas.jsp").forward(request, response);
     }
+
 
 
 

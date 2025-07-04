@@ -19,7 +19,7 @@ public class CuentaNegocioImpl implements CuentaNegocio {
     }
     
     @Override
-    public List<Object[]> filtrarCuentas(String busqueda, String tipoCuenta, String saldoMinStr, String saldoMaxStr) {
+    public List<Object[]> filtrarCuentas(String busqueda, String dniCliente, String tipoCuenta, String saldoMinStr, String saldoMaxStr) {
         BigDecimal saldoMin = null;
         BigDecimal saldoMax = null;
 
@@ -34,7 +34,7 @@ public class CuentaNegocioImpl implements CuentaNegocio {
             e.printStackTrace();
         }
 
-        return cuentaDao.filtrarCuentas(busqueda, tipoCuenta, saldoMin, saldoMax);
+        return cuentaDao.filtrarCuentas(busqueda, dniCliente, tipoCuenta, saldoMin, saldoMax);
     }
     
     @Override

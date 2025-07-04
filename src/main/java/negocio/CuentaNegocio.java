@@ -7,7 +7,7 @@ import dominio.Cuenta;
 public interface CuentaNegocio {
     List<Cuenta> obtenerCuentasPorCliente(int idCliente) throws Exception;
     
-    List<Object[]> filtrarCuentas(String busqueda, String tipoCuenta, String saldoMinStr, String saldoMaxStr);
+    List<Object[]> filtrarCuentas(String busqueda, String dniCliente, String tipoCuenta, String saldoMinStr, String saldoMaxStr);
     
     void bajaCuenta(int idCuenta) throws Exception;
     
