@@ -44,4 +44,20 @@ public class CuentaNegocioImpl implements CuentaNegocio {
 
         cuentaDao.cambiarEstado(idCuenta, false);
     }
+    
+    @Override
+    public void activarCuenta(int idCuenta) throws Exception {
+        if (idCuenta <= 0) {
+            throw new IllegalArgumentException("ID de cuenta inválido.");
+        }
+
+        int idCliente = cuentaDao.obtenerIdClientePorCuenta(idCuenta);
+        int cuentasActivas = cuentaDao.contarCuentasActivasPorCliente(idCliente);
+
+        if (cuentasActivas >= 3) {
+            throw new Exception("El cliente ya tiene 3 cuentas activas. No se puede activar otra.");
+        }
+
+        cuentaDao.cambiarEstado(idCuenta, true);
+    }
 }

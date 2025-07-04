@@ -11,8 +11,9 @@ import negocioImpl.AutenticacionNegocioImpl;
 import java.io.IOException;
 
 import dominio.Usuario;
-import dao.CuentaDao;
-import daoImpl.CuentaDaoImpl;
+import negocio.CuentaNegocio;
+import negocioImpl.CuentaNegocioImpl;
+
 
 @WebServlet("/ServletActivarCuenta")
 public class ServletActivarCuenta extends HttpServlet {
@@ -31,32 +32,31 @@ public class ServletActivarCuenta extends HttpServlet {
 	}
 
 
+	@Override
 	protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-		HttpSession session = request.getSession(false);
-		Usuario usuario = (Usuario) session.getAttribute("usuario");
+	    HttpSession session = request.getSession(false);
+	    Usuario usuario = (Usuario) session.getAttribute("usuario");
 
-		AutenticacionNegocioImpl auth = new AutenticacionNegocioImpl();
+	    AutenticacionNegocioImpl auth = new AutenticacionNegocioImpl();
 
-        if (usuario == null || (!auth.validarRolAdmin(usuario) && !auth.validarRolBancario(usuario))) {
-            response.sendRedirect(request.getContextPath() + "/ServletMenuAdmin");
-            return;
-        }
-        
-		int idCuenta = Integer.parseInt(request.getParameter("id"));
-	    CuentaDao cuentaDao = new CuentaDaoImpl();
-	    
-	    int idCliente = cuentaDao.obtenerIdClientePorCuenta(idCuenta);
-	    int cuentasActivas = cuentaDao.contarCuentasActivasPorCliente(idCliente);
-
-	    if (cuentasActivas >= 3) {
-	        request.getSession().setAttribute("errorCuenta", "El cliente ya tiene 3 cuentas activas. No se puede activar otra.");
-	        response.sendRedirect(request.getContextPath() + "/ServletCuenta");
+	    if (usuario == null || (!auth.validarRolAdmin(usuario) && !auth.validarRolBancario(usuario))) {
+	        response.sendRedirect(request.getContextPath() + "/ServletMenuAdmin");
 	        return;
 	    }
 
-	    cuentaDao.cambiarEstado(idCuenta, true);
+	    int idCuenta = Integer.parseInt(request.getParameter("id"));
+	    CuentaNegocio cuentaNegocio = new CuentaNegocioImpl();
+
+	    try {
+	        cuentaNegocio.activarCuenta(idCuenta);
+	    } catch (Exception e) {
+	        request.getSession().setAttribute("errorCuenta", "❌ " + e.getMessage());
+	        e.printStackTrace();
+	    }
+
 	    response.sendRedirect(request.getContextPath() + "/ServletCuenta");
 	}
+
 
 
 }

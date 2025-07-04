@@ -10,5 +10,7 @@ public interface CuentaNegocio {
     List<Object[]> filtrarCuentas(String busqueda, String tipoCuenta, String saldoMinStr, String saldoMaxStr);
     
     void bajaCuenta(int idCuenta) throws Exception;
+    
+    void activarCuenta(int idCuenta) throws Exception;
 
 }
