@@ -6,12 +6,17 @@ import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.HttpSession;
+import negocio.ClienteNegocio;
+import negocio.CuentaNegocio;
 import negocioImpl.AutenticacionNegocioImpl;
+import negocioImpl.ClienteNegocioImpl;
+import negocioImpl.CuentaNegocioImpl;
 import daoImpl.CuentaDaoImpl;
 import daoImpl.ClienteDaoImpl;
 import dominio.Cuenta;
 import dominio.Cliente;
 import dominio.Usuario;
+import excepciones.ClienteNoVinculadoException;
 
 import java.io.IOException;
 import java.util.List;
@@ -20,8 +25,7 @@ import java.util.List;
 public class ServletVerCuentas extends HttpServlet {
     private static final long serialVersionUID = 1L;
 
-    protected void doGet(HttpServletRequest request, HttpServletResponse response)
-            throws ServletException, IOException {
+    protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
     	
     	HttpSession session = request.getSession(false);
 		Usuario usuario = (Usuario) session.getAttribute("usuario");
@@ -34,21 +38,25 @@ public class ServletVerCuentas extends HttpServlet {
         }
 
         
-        ClienteDaoImpl clienteDao = new ClienteDaoImpl();
-        Cliente cliente = clienteDao.obtenerPorIdUsuario(usuario.getIdUsuario());
-
-        if (cliente == null) {
-            
-            response.sendRedirect(request.getContextPath() + "/ServletLogin");
-            return;
-        }
-
-        int idCliente = cliente.getIdCliente();
-
-        CuentaDaoImpl cuentaDao = new CuentaDaoImpl();
-        List<Cuenta> cuentas = cuentaDao.listarPorCliente(idCliente);
-
+        ClienteNegocio clienteNeg = new ClienteNegocioImpl();
+        CuentaNegocio cuentaNeg = new CuentaNegocioImpl();
+        List<Cuenta> cuentas = null;
+        Cliente cliente = null;
+        
+        try {
+			cliente = clienteNeg.obtenerPorIdUsuario(usuario.getIdUsuario());
+			cuentas = cuentaNeg.obtenerCuentasPorCliente(cliente.getIdCliente());
+			
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+        
+        
         request.setAttribute("cuentas", cuentas);
-        request.getRequestDispatcher("/jsp/cliente/verCuentas.jsp").forward(request, response);
+        
+        if (cliente == null)
+            response.sendRedirect(request.getContextPath() + "/ServletLogin");
+        else
+        	request.getRequestDispatcher("/jsp/cliente/verCuentas.jsp").forward(request, response);
     }
 }

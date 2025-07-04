@@ -45,8 +45,6 @@ public class ServletMisDatosCliente extends HttpServlet {
 		
         	cliente = clienteNeg.obtenerPorIdUsuario(usuario.getIdUsuario());
         	
-		} catch (ClienteNoVinculadoException e) {
-			e.printStackTrace();
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
