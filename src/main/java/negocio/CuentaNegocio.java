@@ -12,5 +12,10 @@ public interface CuentaNegocio {
     void bajaCuenta(int idCuenta) throws Exception;
     
     void activarCuenta(int idCuenta) throws Exception;
+    
+    Cuenta obtenerCuentaPorId(int idCuenta);
 
+    String crearCuenta(int idCliente, int idTipoCuenta, java.math.BigDecimal monto);
+
+    String modificarCuenta(int idCuenta, int idCliente, int idTipoCuenta, java.math.BigDecimal monto);
 }

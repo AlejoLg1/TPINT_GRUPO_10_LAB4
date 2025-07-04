@@ -6,22 +6,23 @@ import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.HttpSession;
-import negocioImpl.AutenticacionNegocioImpl;
 
 import java.io.IOException;
 import java.util.List;
 import java.math.BigDecimal;
 
 import dao.ClienteDao;
-import dao.CuentaDao;
 import dao.TipoCuentaDao;
 import daoImpl.ClienteDaoImpl;
-import daoImpl.CuentaDaoImpl;
 import daoImpl.TipoCuentaDaoImpl;
 import dominio.Cliente;
 import dominio.Cuenta;
 import dominio.TipoCuenta;
 import dominio.Usuario;
+import negocio.CuentaNegocio;
+import negocioImpl.CuentaNegocioImpl;
+import negocioImpl.AutenticacionNegocioImpl;
+
 
 @WebServlet("/ServletAltaCuenta")
 public class ServletAltaCuenta extends HttpServlet {
@@ -33,23 +34,23 @@ public class ServletAltaCuenta extends HttpServlet {
 
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-    	HttpSession session = request.getSession(false);
-		Usuario usuario = (Usuario) session.getAttribute("usuario");
+        HttpSession session = request.getSession(false);
+        Usuario usuario = (Usuario) session.getAttribute("usuario");
 
-		AutenticacionNegocioImpl auth = new AutenticacionNegocioImpl();
+        AutenticacionNegocioImpl auth = new AutenticacionNegocioImpl();
 
         if (usuario == null || (!auth.validarRolAdmin(usuario) && !auth.validarRolBancario(usuario))) {
             response.sendRedirect(request.getContextPath() + "/ServletLogin");
             return;
         }
-        
-    	String idParam = request.getParameter("id");
+
+        String idParam = request.getParameter("id");
 
         if (idParam != null) {
             try {
                 int idCuenta = Integer.parseInt(idParam);
-                CuentaDao cuentaDao = new CuentaDaoImpl();
-                Cuenta cuenta = cuentaDao.obtenerCuentaPorId(idCuenta);
+                CuentaNegocio cuentaNegocio = new CuentaNegocioImpl();
+                Cuenta cuenta = cuentaNegocio.obtenerCuentaPorId(idCuenta);
 
                 if (cuenta != null) {
                     request.setAttribute("cuentaMod", cuenta);
@@ -63,19 +64,19 @@ public class ServletAltaCuenta extends HttpServlet {
         request.getRequestDispatcher("/jsp/admin/altaCuentas.jsp").forward(request, response);
     }
 
+
+
     @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-    	HttpSession session = request.getSession(false);
-		Usuario usuario = (Usuario) session.getAttribute("usuario");
+        HttpSession session = request.getSession(false);
+        Usuario usuario = (Usuario) session.getAttribute("usuario");
 
-		AutenticacionNegocioImpl auth = new AutenticacionNegocioImpl();
+        AutenticacionNegocioImpl auth = new AutenticacionNegocioImpl();
 
         if (usuario == null || (!auth.validarRolAdmin(usuario) && !auth.validarRolBancario(usuario))) {
             response.sendRedirect(request.getContextPath() + "/ServletLogin");
             return;
         }
-        
-    	CuentaDao cuentaDao = new CuentaDaoImpl();
 
         try {
             String idCuentaParam = request.getParameter("cuentaId");
@@ -83,36 +84,19 @@ public class ServletAltaCuenta extends HttpServlet {
             int idTipoCuenta = Integer.parseInt(request.getParameter("tipoCuenta"));
             BigDecimal monto = new BigDecimal(request.getParameter("montoInicial"));
 
+            CuentaNegocio cuentaNegocio = new CuentaNegocioImpl();
+            String mensaje;
+
             if (idCuentaParam != null && !idCuentaParam.isEmpty()) {
-                // MODO MODIFICACIÓN
                 int idCuenta = Integer.parseInt(idCuentaParam);
-                Cuenta cuenta = cuentaDao.obtenerCuentaPorId(idCuenta);
-                if (cuenta != null) {
-                    cuenta.setIdCliente(idCliente);
-                    cuenta.setIdTipoCuenta(idTipoCuenta);
-                    cuenta.setSaldo(monto);
-
-                    boolean actualizado = cuentaDao.actualizar(cuenta);
-                    request.setAttribute("mensaje", actualizado ? "✅ Cuenta modificada correctamente." : "❌ Error al modificar la cuenta.");
-                    request.setAttribute("cuentaMod", cuenta);
-                } else {
-                    request.setAttribute("mensaje", "❌ No se encontró la cuenta a modificar.");
-                }
+                mensaje = cuentaNegocio.modificarCuenta(idCuenta, idCliente, idTipoCuenta, monto);
+                Cuenta cuenta = cuentaNegocio.obtenerCuentaPorId(idCuenta);
+                request.setAttribute("cuentaMod", cuenta);
             } else {
-                // MODO CREACIÓN
-                int cuentasActivas = cuentaDao.contarCuentasActivasPorCliente(idCliente);
-                if (cuentasActivas >= 3) {
-                    request.setAttribute("mensaje", "❌ El cliente ya tiene 3 cuentas activas.");
-                } else {
-                    Cuenta nueva = new Cuenta();
-                    nueva.setSaldo(monto);
-                    nueva.setFechaCreacion(java.time.LocalDateTime.now());
-
-                    boolean creada = cuentaDao.agregar(nueva, idCliente, idTipoCuenta);
-                    request.setAttribute("mensaje", creada ? "✅ Cuenta creada correctamente." : "❌ Error al crear la cuenta.");
-                }
+                mensaje = cuentaNegocio.crearCuenta(idCliente, idTipoCuenta, monto);
             }
 
+            request.setAttribute("mensaje", mensaje);
             cargarDatosFormulario(request);
             request.getRequestDispatcher("/jsp/admin/altaCuentas.jsp").forward(request, response);
 
@@ -122,6 +106,7 @@ public class ServletAltaCuenta extends HttpServlet {
             response.sendRedirect("ServletCuenta");
         }
     }
+
 
     private void cargarDatosFormulario(HttpServletRequest request) {
         ClienteDao clienteDao = new ClienteDaoImpl();
