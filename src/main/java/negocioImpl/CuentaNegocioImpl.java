@@ -35,4 +35,13 @@ public class CuentaNegocioImpl implements CuentaNegocio {
 
         return cuentaDao.filtrarCuentas(busqueda, tipoCuenta, saldoMin, saldoMax);
     }
+    
+    @Override
+    public void bajaCuenta(int idCuenta) throws Exception {
+        if (idCuenta <= 0) {
+            throw new IllegalArgumentException("ID de cuenta inválido.");
+        }
+
+        cuentaDao.cambiarEstado(idCuenta, false);
+    }
 }

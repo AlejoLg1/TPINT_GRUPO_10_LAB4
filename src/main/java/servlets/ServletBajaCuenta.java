@@ -10,10 +10,9 @@ import negocioImpl.AutenticacionNegocioImpl;
 
 import java.io.IOException;
 
-import dominio.Cuenta;
 import dominio.Usuario;
-import dao.CuentaDao;
-import daoImpl.CuentaDaoImpl;
+import negocio.CuentaNegocio;
+import negocioImpl.CuentaNegocioImpl;
 
 @WebServlet("/ServletBajaCuenta")
 public class ServletBajaCuenta extends HttpServlet {
@@ -40,23 +39,30 @@ public class ServletBajaCuenta extends HttpServlet {
 	}
 
 
+	@Override
 	protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-		HttpSession session = request.getSession(false);
-		Usuario usuario = (Usuario) session.getAttribute("usuario");
+	    HttpSession session = request.getSession(false);
+	    Usuario usuario = (Usuario) session.getAttribute("usuario");
 
-		AutenticacionNegocioImpl auth = new AutenticacionNegocioImpl();
+	    AutenticacionNegocioImpl auth = new AutenticacionNegocioImpl();
 
-        if (usuario == null || (!auth.validarRolAdmin(usuario) && !auth.validarRolBancario(usuario))) {
-            response.sendRedirect(request.getContextPath() + "/ServletLogin");
-            return;
-        }
-        
-		int idCuenta = Integer.parseInt(request.getParameter("id"));
-		
-        CuentaDao cuentaDao = new CuentaDaoImpl();
-        cuentaDao.cambiarEstado(idCuenta, false);
+	    if (usuario == null || (!auth.validarRolAdmin(usuario) && !auth.validarRolBancario(usuario))) {
+	        response.sendRedirect(request.getContextPath() + "/ServletLogin");
+	        return;
+	    }
 
-        response.sendRedirect(request.getContextPath() + "/ServletCuenta");
-    }
+	    int idCuenta = Integer.parseInt(request.getParameter("id"));
+	    CuentaNegocio cuentaNegocio = new CuentaNegocioImpl();
+
+	    try {
+	        cuentaNegocio.bajaCuenta(idCuenta);
+	    } catch (Exception e) {
+	        e.printStackTrace();
+	        request.getSession().setAttribute("errorCuenta", "❌ Error al dar de baja la cuenta.");
+	    }
+
+	    response.sendRedirect(request.getContextPath() + "/ServletCuenta");
+	}
+
 
 }
