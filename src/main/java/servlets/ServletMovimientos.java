@@ -3,7 +3,9 @@ package servlets;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.*;
+import negocio.MovimientoNegocio;
 import negocioImpl.AutenticacionNegocioImpl;
+import negocioImpl.MovimientoNegocioImpl;
 import daoImpl.MovimientoDaoImpl;
 import dominio.Movimiento;
 import dominio.Usuario;
@@ -32,16 +34,20 @@ public class ServletMovimientos extends HttpServlet {
             return;
         }
 
-        int nroCuenta;
+        MovimientoNegocio movimientoNeg = new MovimientoNegocioImpl();
+        List<Movimiento> movimientos = null;
+        int nroCuenta = -1;
+        
         try {
-            nroCuenta = Integer.parseInt(nroCuentaParam);
-        } catch (NumberFormatException e) {
-            response.sendError(HttpServletResponse.SC_BAD_REQUEST, "Número de cuenta inválido.");
-            return;
-        }
-
-        MovimientoDaoImpl movimientoDao = new MovimientoDaoImpl();
-        List<Movimiento> movimientos = movimientoDao.listarPorCuenta(nroCuenta);
+        	nroCuenta = Integer.parseInt(nroCuentaParam);
+			movimientos = movimientoNeg.ObtenerMovimientosPorNroCuenta(nroCuenta);
+			
+		} catch (NumberFormatException e) {
+			response.sendError(HttpServletResponse.SC_BAD_REQUEST, "Número de cuenta inválido.");
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+        
 
         request.setAttribute("movimientos", movimientos);
         request.setAttribute("nroCuenta", nroCuenta);
