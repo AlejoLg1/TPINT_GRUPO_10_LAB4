@@ -12,7 +12,6 @@ import java.util.List;
 import dao.CuentaDao;
 import dominio.Cuenta;
 import utils.Conexion;
-import dominio.Cuota;
 import java.math.BigDecimal;
 
 public class CuentaDaoImpl implements CuentaDao {
