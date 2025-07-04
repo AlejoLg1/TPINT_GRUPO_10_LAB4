@@ -6,15 +6,15 @@ import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.HttpSession;
+import negocio.PrestamoNegocio;
 import negocioImpl.AutenticacionNegocioImpl;
+import negocioImpl.PrestamoNegocioImpl;
 
 import java.io.IOException;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
-import daoImpl.ClienteDaoImpl;
-import daoImpl.PrestamoDaoImpl;
-import dao.PrestamoDao;
-import dominio.Cliente;
 import dominio.Prestamo;
 import dominio.Usuario;
 
@@ -39,30 +39,20 @@ public class ServletAprobacionPrestamos extends HttpServlet {
             response.sendRedirect(request.getContextPath() + "/ServletLogin");
             return;
         }
-    	
-        PrestamoDao dao = new PrestamoDaoImpl(); 
 
-        String busqueda = request.getParameter("busqueda"); 
-        String montoMinStr = request.getParameter("montoMin");
-        String montoMaxStr = request.getParameter("montoMax"); // 
-        String estadoPrestamo = request.getParameter("estadoPrestamo"); 
-        String fechaSolicitud = request.getParameter("fechaSolicitud"); 
-
-        List<Prestamo> listaPrestamos = null;
 
         try {
-            Double montoMin = null;
-            if (montoMinStr != null && !montoMinStr.isEmpty()) {
-                montoMin = Double.parseDouble(montoMinStr);
-            }
-            
-            Double montoMax = null;
-            if (montoMaxStr != null && !montoMaxStr.isEmpty()) {
-                montoMax = Double.parseDouble(montoMaxStr);
-            }
-
-            
-            listaPrestamos = dao.obtenerPrestamosFiltrados(busqueda, montoMin, montoMax, estadoPrestamo, fechaSolicitud);
+                        
+        	String busqueda = request.getParameter("busqueda"); 
+        	String montoMinStr = request.getParameter("montoMin");
+        	String montoMaxStr = request.getParameter("montoMax"); // 
+        	String estadoPrestamo = request.getParameter("estadoPrestamo"); 
+        	String fechaSolicitud = request.getParameter("fechaSolicitud"); 
+        	
+        	PrestamoNegocio negocio = new PrestamoNegocioImpl();
+        	List<Prestamo> listaPrestamos = null;
+        	
+            listaPrestamos = negocio.ListarPrestamosFiltrados(busqueda, montoMinStr, montoMaxStr, estadoPrestamo, fechaSolicitud);
 
             request.setAttribute("prestamos", listaPrestamos);
 
@@ -100,14 +90,13 @@ public class ServletAprobacionPrestamos extends HttpServlet {
         String idPrestamoStr = request.getParameter("idPrestamo");
         String accion = request.getParameter("accion");
 
-        PrestamoDao dao = new PrestamoDaoImpl();
+        PrestamoNegocio negocio = new PrestamoNegocioImpl();
 
         if (idPrestamoStr != null && !idPrestamoStr.isEmpty() && accion != null && !accion.isEmpty()) {
             try {
-                int idPrestamo = Integer.parseInt(idPrestamoStr);
 
                 // Obtener el préstamo antes de operar
-                Prestamo prestamo = dao.obtenerPrestamoPorId(idPrestamo);
+                Prestamo prestamo = negocio.ObtenerPrestamo(idPrestamoStr);
 
                 if (prestamo == null) {
                     String mensaje = "Préstamo no encontrado.";
@@ -124,20 +113,20 @@ public class ServletAprobacionPrestamos extends HttpServlet {
 
                 boolean operacionExitosa = false;
                 String mensaje = "";
+                int idPrestamo = Integer.parseInt(idPrestamoStr);
+                
+                Map<String, Object> resultadoMap = null;
 
-                if ("aprobar".equals(accion)) {
-                    operacionExitosa = dao.aprobarPrestamo(idPrestamo);
-                    mensaje = operacionExitosa
-                            ? "Préstamo " + idPrestamo + " aprobado exitosamente."
-                            : "Error al aprobar el préstamo " + idPrestamo + ".";
-                } else if ("rechazar".equals(accion)) {
-                    operacionExitosa = dao.rechazarPrestamo(idPrestamo);
-                    mensaje = operacionExitosa
-                            ? "Préstamo " + idPrestamo + " rechazado exitosamente."
-                            : "Error al rechazar el préstamo " + idPrestamo + ".";
-                } else {
-                    mensaje = "Acción no reconocida.";
+                if ("aprobar".equals(accion) || "rechazar".equals(accion)) {
+                    resultadoMap = negocio.RealizarAccion(idPrestamo, accion);
+                } else {                    
+                    resultadoMap = new HashMap<>();
+                    resultadoMap.put("exito", false);
+                    resultadoMap.put("mensaje", "Acción no reconocida.");
                 }
+                
+                operacionExitosa = (boolean) resultadoMap.get("exito");
+                mensaje = (String) resultadoMap.get("mensaje");
 
                 String status = operacionExitosa ? "success" : "error";
                 response.sendRedirect(request.getContextPath() + "/ServletListarPrestamos?status=" + status + "&message=" + java.net.URLEncoder.encode(mensaje, "UTF-8"));
