@@ -6,12 +6,15 @@ import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.HttpSession;
+import negocio.ClienteNegocio;
 import negocioImpl.AutenticacionNegocioImpl;
+import negocioImpl.ClienteNegocioImpl;
 
 import java.io.IOException;
 import daoImpl.ClienteDaoImpl;
 import dominio.Cliente;
 import dominio.Usuario;
+import excepciones.ClienteNoVinculadoException;
 
 
 @WebServlet("/ServletMisDatosCliente")
@@ -25,35 +28,38 @@ public class ServletMisDatosCliente extends HttpServlet {
     }
 
 	protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-		HttpSession sessionSS = request.getSession(false);
-		Usuario usuarioSS = (Usuario) sessionSS.getAttribute("usuario");
+		HttpSession session = request.getSession(false);
+		Usuario usuario = (Usuario) session.getAttribute("usuario");
 
 		AutenticacionNegocioImpl auth = new AutenticacionNegocioImpl();
 
-        if (usuarioSS == null || !auth.validarRolCliente(usuarioSS)) {
+        if (usuario == null || !auth.validarRolCliente(usuario)) {
             response.sendRedirect(request.getContextPath() + "/ServletLogin");
             return;
         }
         
-		HttpSession session = request.getSession();
-        Usuario usuario = (Usuario) session.getAttribute("usuario");
+        ClienteNegocio clienteNeg = new ClienteNegocioImpl();
+        Cliente cliente = null;
+        
+        try {
+		
+        	cliente = clienteNeg.obtenerPorIdUsuario(usuario.getIdUsuario());
+        	
+		} catch (ClienteNoVinculadoException e) {
+			e.printStackTrace();
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+        
 
-        if (usuario == null) {
-            response.sendRedirect(request.getContextPath() + "/ServletLogin");
-            return;
-        }
-
-        ClienteDaoImpl clienteDao = new ClienteDaoImpl();
-        Cliente cliente = clienteDao.obtenerPorIdUsuario(usuario.getIdUsuario());
-
-        if (cliente == null) {
-            
-            response.sendRedirect(request.getContextPath() + "/ServletLogin");
-            return;
-        }
-
+        
         request.setAttribute("infoCliente", cliente);
-        request.getRequestDispatcher("/jsp/cliente/misDatos.jsp").forward(request, response);
+
+        if (cliente == null)
+            response.sendRedirect(request.getContextPath() + "/ServletLogin");
+        else 
+        	request.getRequestDispatcher("/jsp/cliente/misDatos.jsp").forward(request, response);
+	
 	}
 
 
@@ -67,6 +73,7 @@ public class ServletMisDatosCliente extends HttpServlet {
             response.sendRedirect(request.getContextPath() + "/ServletLogin");
             return;
         }
+        
 		doGet(request, response);
 	}
 
