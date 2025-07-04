@@ -113,5 +113,17 @@ public class UsuarioNegocioImpl implements UsuarioNegocio {
         return dao.Agregar(nuevoUsuario);
     }
 
+    @Override
+    public void activarUsuario(int idUsuario) throws Exception {
+        if (idUsuario <= 0) {
+            throw new IllegalArgumentException("ID de usuario inválido.");
+        }
 
+        Usuario usuario = new Usuario();
+        usuario.setIdUsuario(idUsuario);
+        usuario.setEstado(true);
+
+        usuarioDao.Modificar(usuario, "estado");
+    }
+    
 }

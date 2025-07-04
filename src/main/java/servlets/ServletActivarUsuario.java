@@ -10,9 +10,9 @@ import negocioImpl.AutenticacionNegocioImpl;
 
 import java.io.IOException;
 
-import dao.UsuarioDao;
-import daoImpl.UsuarioDaoImpl;
 import dominio.Usuario;
+import negocio.UsuarioNegocio;
+import negocioImpl.UsuarioNegocioImpl;
 
 @WebServlet("/ServletActivarUsuario")
 public class ServletActivarUsuario extends HttpServlet {
@@ -31,32 +31,28 @@ public class ServletActivarUsuario extends HttpServlet {
 	}
 
 
+	@Override
 	protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-		HttpSession session = request.getSession(false);
-		Usuario usuario = (Usuario) session.getAttribute("usuario");
+	    HttpSession session = request.getSession(false);
+	    Usuario usuario = (Usuario) session.getAttribute("usuario");
 
-		AutenticacionNegocioImpl auth = new AutenticacionNegocioImpl();
+	    AutenticacionNegocioImpl auth = new AutenticacionNegocioImpl();
 
-        if (usuario == null || (!auth.validarRolAdmin(usuario) && !auth.validarRolBancario(usuario))) {
-            response.sendRedirect(request.getContextPath() + "/ServletMenuAdmin");
-            return;
-        }
-		
-        try {
-            int id = Integer.parseInt(request.getParameter("id"));
+	    if (usuario == null || (!auth.validarRolAdmin(usuario) && !auth.validarRolBancario(usuario))) {
+	        response.sendRedirect(request.getContextPath() + "/ServletMenuAdmin");
+	        return;
+	    }
 
-            UsuarioDao dao = new UsuarioDaoImpl();
-            Usuario u = new Usuario();
-            u.setIdUsuario(id);
-            u.setEstado(true);
+	    try {
+	        int id = Integer.parseInt(request.getParameter("id"));
+	        UsuarioNegocio usuarioNegocio = new UsuarioNegocioImpl();
+	        usuarioNegocio.activarUsuario(id);
+	    } catch (Exception e) {
+	        e.printStackTrace();
+	    }
 
-            dao.Modificar(u, "estado");
+	    response.sendRedirect(request.getContextPath() + "/ServletListarUsuario");
+	}
 
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-
-        response.sendRedirect(request.getContextPath() + "/ServletListarUsuario");
-    }
 
 }
