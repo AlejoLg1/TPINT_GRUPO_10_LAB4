@@ -229,7 +229,7 @@ public class ClienteDaoImpl implements ClienteDao {
 
 	    try {
 	        conexion = Conexion.getConexion().getSQLConexion();
-	        String query = "SELECT id_cliente, nombre, apellido FROM Cliente WHERE estado = 1";
+	        String query = "SELECT id_cliente, nombre, apellido, dni FROM Cliente WHERE estado = 1";
 	        stmt = conexion.prepareStatement(query);
 	        rs = stmt.executeQuery();
 
@@ -238,6 +238,7 @@ public class ClienteDaoImpl implements ClienteDao {
 	            cliente.setIdCliente(rs.getInt("id_cliente"));
 	            cliente.setNombre(rs.getString("nombre"));
 	            cliente.setApellido(rs.getString("apellido"));
+	            cliente.setDni(rs.getString("dni"));
 	            clientes.add(cliente);
 	        }
 

@@ -66,7 +66,7 @@
                             for (Cliente c : listaClientes) {
                                 boolean seleccionado = esModificacion && cuentaMod.getIdCliente() == c.getIdCliente();
                     %>
-                        <option value="<%= c.getIdCliente() %>" <%= seleccionado ? "selected" : "" %>><%= c.getNombre() + " " + c.getApellido() %></option>
+                        <option value="<%= c.getIdCliente() %>" <%= seleccionado ? "selected" : "" %>><%= c.getNombre() + " " + c.getApellido()  + " - DNI: " + c.getDni()%></option>
                     <%
                             }
                         }
