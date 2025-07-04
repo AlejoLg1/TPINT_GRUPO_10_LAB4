@@ -1,6 +1,9 @@
 package negocioImpl;
 
 import negocio.ClienteNegocio;
+
+import java.util.List;
+
 import dao.ClienteDao;
 import daoImpl.ClienteDaoImpl;
 import dominio.Cliente;
@@ -18,5 +21,9 @@ public class ClienteNegocioImpl implements ClienteNegocio {
 	    return cliente;
 	}
 
-
+	@Override
+	public List<Cliente> obtenerTodosLosClientes() {
+	    ClienteDao clienteDao = new ClienteDaoImpl();
+	    return clienteDao.Listar();
+	}
 }

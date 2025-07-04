@@ -11,10 +11,6 @@ import java.io.IOException;
 import java.util.List;
 import java.math.BigDecimal;
 
-import dao.ClienteDao;
-import dao.TipoCuentaDao;
-import daoImpl.ClienteDaoImpl;
-import daoImpl.TipoCuentaDaoImpl;
 import dominio.Cliente;
 import dominio.Cuenta;
 import dominio.TipoCuenta;
@@ -22,6 +18,11 @@ import dominio.Usuario;
 import negocio.CuentaNegocio;
 import negocioImpl.CuentaNegocioImpl;
 import negocioImpl.AutenticacionNegocioImpl;
+import negocio.ClienteNegocio;
+import negocio.TipoCuentaNegocio;
+import negocioImpl.ClienteNegocioImpl;
+import negocioImpl.TipoCuentaNegocioImpl;
+
 
 
 @WebServlet("/ServletAltaCuenta")
@@ -109,13 +110,14 @@ public class ServletAltaCuenta extends HttpServlet {
 
 
     private void cargarDatosFormulario(HttpServletRequest request) {
-        ClienteDao clienteDao = new ClienteDaoImpl();
-        TipoCuentaDao tipoCuentaDao = new TipoCuentaDaoImpl();
-
-        List<Cliente> listaClientes = clienteDao.Listar();
-        List<TipoCuenta> listaTiposCuenta = tipoCuentaDao.listar();
+        ClienteNegocio clienteNegocio = new ClienteNegocioImpl();
+        TipoCuentaNegocio tipoCuentaNegocio = new TipoCuentaNegocioImpl();
+        
+        List<Cliente> listaClientes = clienteNegocio.obtenerTodosLosClientes();
+        List<TipoCuenta> listaTiposCuenta = tipoCuentaNegocio.obtenerTiposDeCuenta();
 
         request.setAttribute("listaClientes", listaClientes);
         request.setAttribute("listaTiposCuenta", listaTiposCuenta);
     }
+
 }
