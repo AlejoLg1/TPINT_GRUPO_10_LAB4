@@ -9,8 +9,8 @@ import negocioImpl.AutenticacionNegocioImpl;
 
 import java.io.IOException;
  
-import dao.ReporteDao;
-import daoImpl.ReporteDaoImpl;
+import negocio.ReporteNegocio;
+import negocioImpl.ReporteNegocioImpl;
 import dominio.Reporte;
 import dominio.Usuario;
 
@@ -20,79 +20,65 @@ import java.util.List;
  
 @WebServlet("/ServletReporte")
 public class ServletReporte extends HttpServlet {
- 
-    private ReporteDao reporteDAO = new ReporteDaoImpl();
- 
+
+    private static final long serialVersionUID = 1L;
+
+    private final ReporteNegocio reporteNegocio = new ReporteNegocioImpl();
+    private final AutenticacionNegocioImpl auth = new AutenticacionNegocioImpl();
+
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
-    	HttpSession session = request.getSession(false);
-		Usuario usuario = (Usuario) session.getAttribute("usuario");
-
-		AutenticacionNegocioImpl auth = new AutenticacionNegocioImpl();
-
-        if (usuario == null || (!auth.validarRolAdmin(usuario) && !auth.validarRolBancario(usuario))) {
+        if (!usuarioValido(request)) {
             response.sendRedirect(request.getContextPath() + "/ServletLogin");
             return;
         }
-        
+
         request.getRequestDispatcher("/jsp/admin/reportes.jsp").forward(request, response);
     }
- 
+
     @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
-    	HttpSession session = request.getSession(false);
-		Usuario usuario = (Usuario) session.getAttribute("usuario");
-
-		AutenticacionNegocioImpl auth = new AutenticacionNegocioImpl();
-
-        if (usuario == null || (!auth.validarRolAdmin(usuario) && !auth.validarRolBancario(usuario))) {
+        if (!usuarioValido(request)) {
             response.sendRedirect(request.getContextPath() + "/ServletLogin");
             return;
         }
-        
+
         String tipoReporte = request.getParameter("tipoReporte");
         String inicioPeriodoStr = request.getParameter("inicioPeriodo");
         String finPeriodoStr = request.getParameter("finPeriodo");
- 
-        Date inicioPeriodo = null;
-        Date finPeriodo = null;
-        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
- 
+
         try {
-            if (inicioPeriodoStr != null && !inicioPeriodoStr.isEmpty()) {
-                inicioPeriodo = sdf.parse(inicioPeriodoStr);
-            }
-            if (finPeriodoStr != null && !finPeriodoStr.isEmpty()) {
-                finPeriodo = sdf.parse(finPeriodoStr);
-            }
-        } catch (Exception e) {
-            e.printStackTrace();
-            request.setAttribute("error", "Formato de fecha inválido.");
-            request.getRequestDispatcher("/jsp/admin/reportes.jsp").forward(request, response);
-            return;
-        }
- 
-        if (tipoReporte == null || tipoReporte.trim().isEmpty()) {
-            request.setAttribute("error", "Debe seleccionar un tipo de reporte.");
-            request.getRequestDispatcher("/jsp/admin/reportes.jsp").forward(request, response);
-            return;
-        }
- 
-        try {
-            List<Reporte> listaReportes = reporteDAO.generarReporte(tipoReporte, inicioPeriodo, finPeriodo);
- 
-            request.setAttribute("reportes", listaReportes);
+            Date inicio = parseFecha(inicioPeriodoStr);
+            Date fin = parseFecha(finPeriodoStr);
+
+            List<Reporte> lista = reporteNegocio.generarReporte(tipoReporte, inicio, fin);
+
+            request.setAttribute("reportes", lista);
             request.setAttribute("titulo", tipoReporte);
- 
-            // Forward a la misma JSP donde está el formulario y los resultados
-            request.getRequestDispatcher("/jsp/admin/reportes.jsp").forward(request, response);
- 
+        } catch (IllegalArgumentException e) {
+            request.setAttribute("error", e.getMessage());
         } catch (Exception e) {
             e.printStackTrace();
             request.setAttribute("error", "Error al generar el reporte.");
-            request.getRequestDispatcher("/jsp/admin/reportes.jsp").forward(request, response);
+        }
+
+        request.getRequestDispatcher("/jsp/admin/reportes.jsp").forward(request, response);
+    }
+
+    private boolean usuarioValido(HttpServletRequest request) {
+        HttpSession session = request.getSession(false);
+        Usuario usuario = (Usuario) session.getAttribute("usuario");
+        return usuario != null && (auth.validarRolAdmin(usuario) || auth.validarRolBancario(usuario));
+    }
+
+    private Date parseFecha(String fechaStr) {
+        if (fechaStr == null || fechaStr.trim().isEmpty()) return null;
+        try {
+            return new SimpleDateFormat("yyyy-MM-dd").parse(fechaStr);
+        } catch (Exception e) {
+            throw new IllegalArgumentException("Formato de fecha inválido.");
         }
     }
 }

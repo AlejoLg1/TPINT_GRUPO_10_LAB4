@@ -6,17 +6,58 @@ import java.time.LocalDateTime;
 import java.math.BigDecimal;
 
 import dao.MovimientosDao;
+import dao.CuentaDao;
+import daoImpl.CuentaDaoImpl;
 import dao.TransferenciaDao;
 import daoImpl.MovimientoDaoImpl;
 import daoImpl.TransferenciaDaoImpl;
+import dominio.Cuenta;
 import dominio.Movimiento;
 import dominio.Transferencia;
+import excepciones.CuentaExistenteExcenption;
 import excepciones.MovimientoException;
 import excepciones.TransferenciaException;
 import negocio.TransferenciaNegocio;
 import utils.Conexion;
 
 public class TransferenciaNegocioImpl implements TransferenciaNegocio {
+	
+	@Override
+	public boolean transferirDesdeFormulario(String nroCuentaOrigen, String cbuDestino, String montoStr) throws Exception {
+	    if (nroCuentaOrigen == null || montoStr == null || cbuDestino == null ||
+	        nroCuentaOrigen.trim().isEmpty() || montoStr.trim().isEmpty() || cbuDestino.trim().isEmpty()) {
+	        throw new IllegalArgumentException("Todos los campos son obligatorios.");
+	    }
+
+	    if (nroCuentaOrigen.equals("invalid")) {
+	        throw new TransferenciaException("Seleccione una cuenta de origen válida.");
+	    }
+
+	    int nroOrigen = Integer.parseInt(nroCuentaOrigen);
+	    int nroDestino = obtenerNroCuentaDestino(cbuDestino);
+	    double monto = Double.parseDouble(montoStr);
+
+	    Transferencia transferencia = new Transferencia();
+	    transferencia.setNroCuentaOrigen(nroOrigen);
+	    transferencia.setNroCuentaDestino(nroDestino);
+	    transferencia.setImporte(monto);
+
+	    return registrarTransferencia(transferencia);
+	}
+
+	private int obtenerNroCuentaDestino(String cbu) throws CuentaExistenteExcenption {
+	    CuentaDao cuentaDao = new CuentaDaoImpl();
+	    try {
+	        Cuenta cuenta = cuentaDao.obtenerCuentaPorCBU(cbu);
+	        if (cuenta == null || !cuenta.isEstado()) {
+	            throw new CuentaExistenteExcenption("No se encontró la cuenta con CBU: " + cbu);
+	        }
+	        return cuenta.getNroCuenta();
+	    } catch (Exception e) {
+	        throw new CuentaExistenteExcenption("Error al obtener datos de la cuenta destino.");
+	    }
+	}
+
 
 	@Override
 	public boolean registrarTransferencia(Transferencia transferencia)throws MovimientoException, TransferenciaException, Exception {
@@ -92,4 +133,6 @@ public class TransferenciaNegocioImpl implements TransferenciaNegocio {
 
 	    return resultado;
 	}
+	
+	
 }
