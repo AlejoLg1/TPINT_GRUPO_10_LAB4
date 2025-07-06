@@ -1,7 +1,7 @@
 package servlets;
 
 import java.io.IOException;
-import java.util.ArrayList;
+
 import java.util.List;
 
 import dominio.Cuenta;
@@ -14,26 +14,26 @@ import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.HttpSession;
 import negocioImpl.AutenticacionNegocioImpl;
-import negocioImpl.CuentaNegocioImpl;
-import negocioImpl.CuotaNegocioImpl;
+import negocioImpl.PagoNegocioImpl;
 
 @WebServlet("/ServletConfirmarPagoCuotas")
 public class ServletConfirmarPagoCuotas extends HttpServlet {
     private static final long serialVersionUID = 1L;
 
-    protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-    	HttpSession session = request.getSession(false);
-		Usuario usuario = (Usuario) session.getAttribute("usuario");
+    private final AutenticacionNegocioImpl auth = new AutenticacionNegocioImpl();
+    private final PagoNegocioImpl pagoNegocio = new PagoNegocioImpl();
 
-		AutenticacionNegocioImpl auth = new AutenticacionNegocioImpl();
+    @Override
+    protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+        HttpSession session = request.getSession(false);
+        Usuario usuario = (Usuario) session.getAttribute("usuario");
 
         if (usuario == null || !auth.validarRolCliente(usuario)) {
             response.sendRedirect(request.getContextPath() + "/ServletLogin");
             return;
         }
-        
-        Object idClienteObj = session.getAttribute("idCliente");
 
+        Object idClienteObj = session.getAttribute("idCliente");
         if (idClienteObj == null) {
             response.sendRedirect(request.getContextPath() + "/jsp/comunes/login.jsp");
             return;
@@ -48,18 +48,8 @@ public class ServletConfirmarPagoCuotas extends HttpServlet {
                 return;
             }
 
-            CuotaNegocioImpl cuotaNegocio = new CuotaNegocioImpl();
-            CuentaNegocioImpl cuentaNegocio = new CuentaNegocioImpl();
-
-            List<Cuota> cuotas = new ArrayList<>();
-            for (String idCuotaStr : cuotasSeleccionadas) {
-                Cuota cuota = cuotaNegocio.obtenerCuotaPorId(Integer.parseInt(idCuotaStr));
-                if (cuota != null) {
-                    cuotas.add(cuota);
-                }
-            }
-
-            List<Cuenta> cuentas = cuentaNegocio.obtenerCuentasPorCliente(idCliente);
+            List<Cuota> cuotas = pagoNegocio.obtenerCuotasPorIds(cuotasSeleccionadas);
+            List<Cuenta> cuentas = pagoNegocio.obtenerCuentasPorCliente(idCliente);
 
             request.setAttribute("cuotasSeleccionadas", cuotas);
             request.setAttribute("cuentasDisponibles", cuentas);
