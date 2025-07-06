@@ -13,217 +13,156 @@ import java.io.IOException;
 import java.time.LocalDate;
 import java.util.List;
 
-import dao.ProvinciaDao;
-import dao.LocalidadDao;
-import daoImpl.LocalidadDaoImpl;
-import daoImpl.ProvinciaDaoImpl;
-import dao.ClienteDao;
-import daoImpl.ClienteDaoImpl;
+import negocio.ProvinciaNegocio;
+import negocio.ClienteNegocio;
+import negocioImpl.ClienteNegocioImpl;
+import negocioImpl.ProvinciaNegocioImpl;
 import dominio.Cliente;
 import dominio.Direccion;
 import dominio.Localidad;
 import dominio.Provincia;
 import dominio.Usuario;
-import excepciones.AutenticacionException;
-import excepciones.ContrasenasNoCoincidenException;
-import excepciones.DniYaRegistradoException;
-import excepciones.NombreUsuarioExistenteException;
+
 
 
 @WebServlet("/ServletModificarCliente")
 public class ServletModificarCliente extends HttpServlet {
-	private static final long serialVersionUID = 1L;
-       
+    private static final long serialVersionUID = 1L;
 
-    public ServletModificarCliente() {
-        super();
-        // TODO Auto-generated constructor stub
+    protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+        HttpSession session = request.getSession(false);
+        Usuario usuario = (Usuario) session.getAttribute("usuario");
+
+        AutenticacionNegocioImpl auth = new AutenticacionNegocioImpl();
+        if (usuario == null || (!auth.validarRolAdmin(usuario) && !auth.validarRolBancario(usuario))) {
+            response.sendRedirect(request.getContextPath() + "/ServletLogin");
+            return;
+        }
+
+        int idCliente = Integer.parseInt(request.getParameter("id"));
+        ClienteNegocio clienteNegocio = new ClienteNegocioImpl();
+        ProvinciaNegocio provinciaNegocio = new ProvinciaNegocioImpl();
+
+        Cliente cliente = clienteNegocio.obtenerClientePorId(idCliente);
+        List<Provincia> provincias = provinciaNegocio.obtenerTodas();
+
+        request.setAttribute("provincias", provincias);
+        request.setAttribute("clienteMod", cliente);
+
+        String jspDestino = (cliente != null)
+            ? "/jsp/admin/altaCliente.jsp"
+            : "/jsp/admin/clientes.jsp";
+
+        request.getRequestDispatcher(jspDestino).forward(request, response);
     }
 
+    protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+        HttpSession session = request.getSession(false);
+        Usuario usuarioSesion = (Usuario) session.getAttribute("usuario");
 
-	protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-		HttpSession session = request.getSession(false);
-		Usuario usuario = (Usuario) session.getAttribute("usuario");
-
-		AutenticacionNegocioImpl auth = new AutenticacionNegocioImpl();
-
-        if (usuario == null || (!auth.validarRolAdmin(usuario) && !auth.validarRolBancario(usuario))) {
+        AutenticacionNegocioImpl auth = new AutenticacionNegocioImpl();
+        if (usuarioSesion == null || (!auth.validarRolAdmin(usuarioSesion) && !auth.validarRolBancario(usuarioSesion))) {
             response.sendRedirect(request.getContextPath() + "/ServletLogin");
             return;
         }
-		
-		 int id = Integer.parseInt(request.getParameter("id"));
 
-		    ClienteDao dao = new ClienteDaoImpl();
-		    Cliente cliente = dao.obtenerPorIdCliente(id);
+        String msg = "✅ Modificación realizada exitosamente";
+        boolean status = false;
 
-		    ProvinciaDao pdao = new ProvinciaDaoImpl();
-	      
+        try {
+            // Mapear objetos
+            Cliente cliente = mapearCliente(request);
+            Usuario usuario = mapearUsuario(request);
+            Direccion direccion = mapearDireccion(request);
 
-	        List<Provincia> provincias = pdao.obtenerTodas();
-	        request.setAttribute("provincias", provincias);
-	        
+            ClienteNegocio clienteNegocio = new ClienteNegocioImpl();
+            status = clienteNegocio.modificarCliente(cliente, usuario, direccion);
 
-	   
-	        
-        if (cliente != null) {
-            request.setAttribute("clienteMod", cliente);
-            
-            request.getRequestDispatcher("/jsp/admin/altaCliente.jsp").forward(request, response);
-        } else {
-            response.sendRedirect(request.getContextPath() + "/jsp/admin/clientes.jsp");
+        } catch (Exception e) {
+            status = false;
+            msg = "❌ " + e.getMessage();
+            e.printStackTrace();
         }
-	}
 
+        // Recargar datos
+        ClienteNegocio clienteNegocio = new ClienteNegocioImpl();
+        ProvinciaNegocio provinciaNegocio = new ProvinciaNegocioImpl();
 
-	protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-		HttpSession session = request.getSession(false);
-		Usuario usuario = (Usuario) session.getAttribute("usuario");
+        Cliente clienteActualizado = clienteNegocio.obtenerClientePorId(Integer.parseInt(request.getParameter("idCliente")));
+        List<Provincia> provincias = provinciaNegocio.obtenerTodas();
 
-		AutenticacionNegocioImpl auth = new AutenticacionNegocioImpl();
-
-        if (usuario == null || (!auth.validarRolAdmin(usuario) && !auth.validarRolBancario(usuario))) {
-            response.sendRedirect(request.getContextPath() + "/ServletLogin");
-            return;
-        }
-		
-		int id = Integer.parseInt(request.getParameter("idCliente"));
-		String msg = "✅ Modificacion realizada exitosamente !";
-		boolean status = false;
-		
-		 ClienteDao dao = new ClienteDaoImpl();
-		
-        int idCliente = Integer.parseInt(request.getParameter("idCliente"));
-        int idDireccion = Integer.parseInt(request.getParameter("idDireccion"));
-        int idUsuario = Integer.parseInt(request.getParameter("idUsuario"));
-
-        // Datos del cliente
-        String nombre = request.getParameter("nombre");
-        String apellido = request.getParameter("apellido");
-        String dni = request.getParameter("dni");
-        String cuil = request.getParameter("cuil");
-        String nacionalidad = request.getParameter("nacionalidad");
-        LocalDate fechaNac = LocalDate.parse(request.getParameter("fechanac"));
-        String correo = request.getParameter("email");
-        String telefono = request.getParameter("telefono");
-        String sexoCompleto = request.getParameter("sexo");
-        
-        //Datos de Usuario
-        String username = request.getParameter("username");
-	    String pass = request.getParameter("pass");
-	    String passRepetida = request.getParameter("passRepetida");
-
-        // Datos de dirección
-	    String Calle = request.getParameter("direccion");
-	    String numero = request.getParameter("numero");
-	    
-	    
-	    int idProvincia = Integer.parseInt(request.getParameter("idProvincia"));
-	    int idLocalidad = Integer.parseInt(request.getParameter("idLocalidad"));
-	   
-	   
-	    System.out.println("Provincia seleccionada: " + idProvincia);
-	    System.out.println("Localidad seleccionada: " + idLocalidad);
-
-	    try {
-        
-	        String sexo;
-	        switch (sexoCompleto) {
-	            case "Masculino": sexo = "M"; break;
-	            case "Femenino": sexo = "F"; break;
-	            case "Otro": sexo = "X"; break;
-	            default: sexo = "X"; break;
-	        }
-
-		    if (!pass.equals(passRepetida)) 
-		    	throw new ContrasenasNoCoincidenException("Las contraseñas no coinciden.");
-
-		    if(!cuil.contains(dni))
-		    	throw new AutenticacionException("El cuil no contiene el dni ingresado");
-		    
-		    
-		    //Datos Provinvcia
-		    Provincia prov = new Provincia();
-		    prov.setId(idProvincia);
-		    
-		    
-		    //Datos Localidad
-		    Localidad loc = new Localidad();
-		    loc.setId(idLocalidad);
-		    
-		    
-		    //Datos Direccion
-		    Direccion direccion = new Direccion();
-		    direccion.setCalle(Calle);
-		    direccion.setNumero(numero);
-		    direccion.setId(idDireccion);
-		    
-		    //Datos cliente
-		    Cliente Cliente = new Cliente();
-		    Cliente.setApellido(apellido);
-		    Cliente.setCorreo(correo);
-		    Cliente.setCuil(cuil);
-		    Cliente.setDni(dni);
-		    Cliente.setEstado(true);
-		    Cliente.setFechaNacimiento(fechaNac);
-		    Cliente.setNacionalidad(nacionalidad);
-		    Cliente.setNombre(nombre);
-		    Cliente.setSexo(sexo);
-		    Cliente.setTelefono(telefono);
-		    Cliente.setIdCliente(idCliente);
-		    Cliente.setProvincia(prov);
-		    Cliente.setLocalidad(loc);
-		    Cliente.setDireccion(direccion);
-		    
-		    
-		  //Datos Usuario
-		    Usuario Usuario = new Usuario();
-		    Usuario.setClave(pass);
-		    Usuario.setEstado(true);
-		    Usuario.setIsAdmin(false);
-		    Usuario.setNombreUsuario(username);
-		    Usuario.setTipo("Cliente");
-		    Usuario.setIdUsuario(idUsuario);
-	        // Guardar
-	        status = dao.Modificar(Cliente, Usuario, direccion);
-
-		}catch(NombreUsuarioExistenteException ex1) {
-			status = false;
-			msg = "❌ " + ex1.getMessage();
-		}catch(DniYaRegistradoException ex2) {
-			status = false;
-			msg = "❌ " + ex2.getMessage();
-		}catch (ContrasenasNoCoincidenException e) {
-			status = false;
-			msg = "❌ " + e.getMessage();
-		}catch (AutenticacionException e) {
-			status = false;
-			msg = "❌ " + e.getMessage();
-		}catch (Exception e) {
-			status = false;
-			msg = "❌ Ocurrio un error durante la modificacion";
-			e.printStackTrace();
-		}
-	    
-        Cliente cliente= dao.obtenerPorIdCliente(id);
-        ProvinciaDao pdao = new ProvinciaDaoImpl();
-        LocalidadDao ldao = new LocalidadDaoImpl();
-
-        List<Provincia> provincias = pdao.obtenerTodas();
+        request.setAttribute("estado", status);
+        request.setAttribute("mensaje", msg);
+        request.setAttribute("clienteMod", clienteActualizado);
         request.setAttribute("provincias", provincias);
 
+        request.getRequestDispatcher("/jsp/admin/altaCliente.jsp").forward(request, response);
+    }
 
+    // Métodos de mapeo
+    private Cliente mapearCliente(HttpServletRequest request) {
+        Cliente c = new Cliente();
+        c.setIdCliente(Integer.parseInt(request.getParameter("idCliente")));
+        c.setNombre(request.getParameter("nombre"));
+        c.setApellido(request.getParameter("apellido"));
+        c.setDni(request.getParameter("dni"));
+        c.setCuil(request.getParameter("cuil"));
+        c.setNacionalidad(request.getParameter("nacionalidad"));
+        c.setFechaNacimiento(LocalDate.parse(request.getParameter("fechanac")));
+        c.setCorreo(request.getParameter("email"));
+        c.setTelefono(request.getParameter("telefono"));
+        c.setSexo(obtenerSexo(request.getParameter("sexo")));
+        c.setEstado(true);
 
+        Provincia provincia = new Provincia();
+        provincia.setId(Integer.parseInt(request.getParameter("idProvincia")));
+        c.setProvincia(provincia);
 
-	    request.setAttribute("estado", status);
-	    request.setAttribute("mensaje", msg);
-	    
-        if (cliente != null) {
-            request.setAttribute("clienteMod", cliente);
-            request.getRequestDispatcher("/jsp/admin/altaCliente.jsp").forward(request, response);
-        } else {
-            response.sendRedirect(request.getContextPath() + "/jsp/admin/clientes.jsp");
+        Localidad localidad = new Localidad();
+        localidad.setId(Integer.parseInt(request.getParameter("idLocalidad")));
+        c.setLocalidad(localidad);
+
+        Direccion direccion = new Direccion();
+        direccion.setId(Integer.parseInt(request.getParameter("idDireccion")));
+        direccion.setCalle(request.getParameter("direccion"));
+        direccion.setNumero(request.getParameter("numero"));
+        c.setDireccion(direccion);
+
+        return c;
+    }
+
+    private Usuario mapearUsuario(HttpServletRequest request) {
+        Usuario u = new Usuario();
+        u.setIdUsuario(Integer.parseInt(request.getParameter("idUsuario")));
+        u.setNombreUsuario(request.getParameter("username"));
+        u.setClave(request.getParameter("pass"));
+        u.setTipo("Cliente");
+        u.setEstado(true);
+
+        String pass = request.getParameter("pass");
+        String passRepetida = request.getParameter("passRepetida");
+
+        if (!pass.equals(passRepetida)) {
+            throw new RuntimeException("Las contraseñas no coinciden.");
         }
-	}
-	
+
+        return u;
+    }
+
+    private Direccion mapearDireccion(HttpServletRequest request) {
+        Direccion d = new Direccion();
+        d.setId(Integer.parseInt(request.getParameter("idDireccion")));
+        d.setCalle(request.getParameter("direccion"));
+        d.setNumero(request.getParameter("numero"));
+        return d;
+    }
+
+    private String obtenerSexo(String sexoCompleto) {
+        switch (sexoCompleto) {
+            case "Masculino": return "M";
+            case "Femenino": return "F";
+            case "Otro": return "X";
+            default: return "X";
+        }
+    }
 }
