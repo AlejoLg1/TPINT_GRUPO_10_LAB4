@@ -10,69 +10,49 @@ import negocioImpl.AutenticacionNegocioImpl;
 
 import java.io.IOException;
 
-import dao.ClienteDao;
-import daoImpl.ClienteDaoImpl;
-import dominio.Cliente;
 import dominio.Usuario;
 
-import dao.UsuarioDao;
-import daoImpl.UsuarioDaoImpl;
+import negocio.ClienteNegocio;
+import negocioImpl.ClienteNegocioImpl;
 
 
 @WebServlet("/ServletBajaCliente")
 public class ServletBajaCliente extends HttpServlet {
-	private static final long serialVersionUID = 1L;
-       
+    private static final long serialVersionUID = 1L;
 
     public ServletBajaCliente() {
         super();
-        // TODO Auto-generated constructor stub
     }
 
+    protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+        HttpSession session = request.getSession(false);
+        Usuario usuario = (Usuario) session.getAttribute("usuario");
 
-	protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-		HttpSession session = request.getSession(false);
-		Usuario usuario = (Usuario) session.getAttribute("usuario");
-
-		AutenticacionNegocioImpl auth = new AutenticacionNegocioImpl();
-
+        AutenticacionNegocioImpl auth = new AutenticacionNegocioImpl();
         if (usuario == null || (!auth.validarRolAdmin(usuario) && !auth.validarRolBancario(usuario))) {
             response.sendRedirect(request.getContextPath() + "/ServletLogin");
             return;
         }
-		
-		response.getWriter().append("Served at: ").append(request.getContextPath());
-	}
 
+        int idCliente = Integer.parseInt(request.getParameter("id"));
 
-	protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-		HttpSession session = request.getSession(false);
-		Usuario usuario = (Usuario) session.getAttribute("usuario");
-
-		AutenticacionNegocioImpl auth = new AutenticacionNegocioImpl();
-
-        if (usuario == null || (!auth.validarRolAdmin(usuario) && !auth.validarRolBancario(usuario))) {
-            response.sendRedirect(request.getContextPath() + "/ServletLogin");
+        ClienteNegocio clienteNegocio = new ClienteNegocioImpl();
+        try {
+            boolean resultado = clienteNegocio.darDeBajaCliente(idCliente);
+            if (!resultado) {
+                throw new Exception("No se pudo dar de baja al cliente.");
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+            request.setAttribute("mensaje", "❌ Error al dar de baja al cliente: " + e.getMessage());
+            request.getRequestDispatcher("/jsp/admin/error.jsp").forward(request, response);
             return;
         }
-		
-		int idCliente = Integer.parseInt(request.getParameter("id"));
-		
-		ClienteDao dao = new ClienteDaoImpl();
-		UsuarioDao daoUsuario = new UsuarioDaoImpl();
-		
-		Cliente c = new Cliente();
-		Usuario u = daoUsuario.obtenerPorIdCliente(idCliente);
-		
-		c.setIdCliente(idCliente);
-		c.setEstado(false);
-		System.out.println("ID USUARIO: " + u.getIdUsuario());
 
-		dao.Eliminar(c, u.getIdUsuario());
-		
-		
-		
-		response.sendRedirect(request.getContextPath() + "/ServletListarCliente");
-	}
+        response.sendRedirect(request.getContextPath() + "/ServletListarCliente");
+    }
 
+    protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+        doPost(request, response); // permite manejar baja también por GET si es necesario
+    }
 }
