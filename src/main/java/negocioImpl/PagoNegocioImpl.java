@@ -50,7 +50,11 @@ public class PagoNegocioImpl implements PagoNegocio {
         if (cuota == null || cuota.getMonto() == null) {
             throw new Exception("La cuota no existe o está incompleta.");
         }
-
+        
+        if ("PAGADO".equalsIgnoreCase(cuota.getEstado())) {
+            throw new Exception("La cuota ya está pagada.");
+        }
+        
         List<Cuota> cuotas = new ArrayList<>();
         cuotas.add(cuota);
 
