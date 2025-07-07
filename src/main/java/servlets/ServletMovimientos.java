@@ -6,7 +6,6 @@ import jakarta.servlet.http.*;
 import negocio.MovimientoNegocio;
 import negocioImpl.AutenticacionNegocioImpl;
 import negocioImpl.MovimientoNegocioImpl;
-import daoImpl.MovimientoDaoImpl;
 import dominio.Movimiento;
 import dominio.Usuario;
 

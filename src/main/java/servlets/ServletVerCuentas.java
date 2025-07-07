@@ -11,13 +11,9 @@ import negocio.CuentaNegocio;
 import negocioImpl.AutenticacionNegocioImpl;
 import negocioImpl.ClienteNegocioImpl;
 import negocioImpl.CuentaNegocioImpl;
-import daoImpl.CuentaDaoImpl;
-import daoImpl.ClienteDaoImpl;
 import dominio.Cuenta;
 import dominio.Cliente;
 import dominio.Usuario;
-import excepciones.ClienteNoVinculadoException;
-
 import java.io.IOException;
 import java.util.List;
 

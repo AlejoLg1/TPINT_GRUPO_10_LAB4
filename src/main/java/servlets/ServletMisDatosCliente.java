@@ -11,10 +11,8 @@ import negocioImpl.AutenticacionNegocioImpl;
 import negocioImpl.ClienteNegocioImpl;
 
 import java.io.IOException;
-import daoImpl.ClienteDaoImpl;
 import dominio.Cliente;
 import dominio.Usuario;
-import excepciones.ClienteNoVinculadoException;
 
 
 @WebServlet("/ServletMisDatosCliente")
