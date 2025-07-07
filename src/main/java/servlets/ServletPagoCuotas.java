@@ -1,6 +1,7 @@
 package servlets;
 
 import java.io.IOException;
+
 import java.util.List;
 import java.util.ArrayList;
 
@@ -12,29 +13,31 @@ import jakarta.servlet.ServletException;
 import jakarta.servlet.http.HttpSession;
 
 import dominio.Cuota;
+
 import dominio.Usuario;
 import dominio.Cuenta;
 import negocioImpl.AutenticacionNegocioImpl;
-import negocioImpl.CuotaNegocioImpl;
-import daoImpl.CuentaDaoImpl;
+import negocioImpl.PagoNegocioImpl;
+import negocio.PagoNegocio;
 
 @WebServlet("/ServletPagoCuotas")
 public class ServletPagoCuotas extends HttpServlet {
     private static final long serialVersionUID = 1L;
 
-    protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-    	HttpSession session = request.getSession(false);
-		Usuario usuario = (Usuario) session.getAttribute("usuario");
+    private final AutenticacionNegocioImpl auth = new AutenticacionNegocioImpl();
+    private final PagoNegocio pagoNegocio = new PagoNegocioImpl();
 
-		AutenticacionNegocioImpl auth = new AutenticacionNegocioImpl();
+    @Override
+    protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+        HttpSession session = request.getSession(false);
+        Usuario usuario = (Usuario) session.getAttribute("usuario");
 
         if (usuario == null || !auth.validarRolCliente(usuario)) {
             response.sendRedirect(request.getContextPath() + "/ServletLogin");
             return;
         }
-        
-        Object idClienteObj = session.getAttribute("idCliente");
 
+        Object idClienteObj = session.getAttribute("idCliente");
         if (idClienteObj == null) {
             response.sendRedirect(request.getContextPath() + "/jsp/comunes/login.jsp");
             return;
@@ -42,7 +45,7 @@ public class ServletPagoCuotas extends HttpServlet {
 
         int idCliente = (int) idClienteObj;
 
-        // Obtener filtros
+        // Filtros opcionales
         String idPrestamoStr = request.getParameter("idPrestamo");
         String fechaVencimiento = request.getParameter("fechaVencimiento");
         String estado = request.getParameter("estado");
@@ -53,9 +56,8 @@ public class ServletPagoCuotas extends HttpServlet {
         }
 
         try {
-            CuotaNegocioImpl cuotaNegocio = new CuotaNegocioImpl();
-            List<Cuota> cuotasPendientes = cuotaNegocio.listarCuotasPendientesConFiltros(idCliente, idPrestamo, fechaVencimiento, estado);
-            request.setAttribute("cuotasPendientes", cuotasPendientes);
+            List<Cuota> cuotas = pagoNegocio.obtenerCuotasPendientesConFiltros(idCliente, idPrestamo, fechaVencimiento, estado);
+            request.setAttribute("cuotasPendientes", cuotas);
             request.getRequestDispatcher("jsp/cliente/pagarCuotas.jsp").forward(request, response);
         } catch (Exception e) {
             e.printStackTrace();
@@ -63,10 +65,9 @@ public class ServletPagoCuotas extends HttpServlet {
         }
     }
 
-
     @Override
     protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-        HttpSession session = request.getSession();
+        HttpSession session = request.getSession(false);
         Object idClienteObj = session.getAttribute("idCliente");
 
         if (idClienteObj == null) {
@@ -76,75 +77,42 @@ public class ServletPagoCuotas extends HttpServlet {
 
         int idCliente = (int) idClienteObj;
 
+        String idCuotaStr = request.getParameter("cuotas");
+        String nroCuentaStr = request.getParameter("nroCuenta");
+
+        if (idCuotaStr == null || nroCuentaStr == null) {
+            request.setAttribute("mensaje", "⚠️ No seleccionaste ninguna cuota o cuenta.");
+            request.getRequestDispatcher("jsp/cliente/pagarCuotas.jsp").forward(request, response);
+            return;
+        }
+
         try {
-            String idCuotaStr = request.getParameter("cuotas");
-            String nroCuentaStr = request.getParameter("nroCuenta");
-
-            if (idCuotaStr == null || nroCuentaStr == null) {
-                request.setAttribute("mensaje", "⚠️ No seleccionaste ninguna cuota o cuenta.");
-                request.getRequestDispatcher("jsp/cliente/pagarCuotas.jsp").forward(request, response);
-                return;
-            }
-
-            int nroCuenta = Integer.parseInt(nroCuentaStr);
             int idCuota = Integer.parseInt(idCuotaStr);
+            int nroCuenta = Integer.parseInt(nroCuentaStr);
 
-            CuotaNegocioImpl cuotaNegocio = new CuotaNegocioImpl();
-            Cuota cuota = cuotaNegocio.obtenerCuotaPorId(idCuota);
+            boolean exito = pagoNegocio.procesarPagoCuotaIndividual(idCuota, nroCuenta);
 
-            if (cuota == null || cuota.getMonto() == null) {
-                request.setAttribute("mensaje", "⚠️ No se pudo obtener la cuota seleccionada.");
-                request.getRequestDispatcher("jsp/cliente/pagarCuotas.jsp").forward(request, response);
-                return;
+            List<Cuota> cuotas = new ArrayList<>();
+            Cuota cuota = pagoNegocio.obtenerCuotaPorId(idCuota);
+            if (cuota != null) {
+                cuotas.add(cuota);
             }
 
-            List<Cuota> cuotasAPagar = new ArrayList<>();
-            cuotasAPagar.add(cuota);
+            String mensaje = exito
+                    ? "✅ La cuota fue pagada correctamente."
+                    : "❌ No se pudo realizar el pago. Verificá tu saldo.";
 
-            boolean exito = cuotaNegocio.procesarPagoCuotas(cuotasAPagar, nroCuenta);
+            List<Cuenta> cuentas = pagoNegocio.obtenerCuentasPorCliente(idCliente);
 
-            if (exito) {
-                request.setAttribute("mensaje", "✅ La cuota fue pagada correctamente.");
-            } else {
-                request.setAttribute("mensaje", "❌ No se pudo realizar el pago. Verificá tu saldo.");
-
-                Cuota cuotaActualizada = cuotaNegocio.obtenerCuotaPorId(idCuota);
-                cuotasAPagar.clear();
-                if (cuotaActualizada != null) {
-                    cuotasAPagar.add(cuotaActualizada);
-                }
-            }
-
-            // Volver a mostrar la pantalla de confirmación con datos
-            CuentaDaoImpl cuentaDao = new CuentaDaoImpl();
-            List<Cuenta> cuentas = cuentaDao.listarPorCliente(idCliente);
-
-            request.setAttribute("cuotasSeleccionadas", cuotasAPagar);
+            request.setAttribute("mensaje", mensaje);
+            request.setAttribute("cuotasSeleccionadas", cuotas);
             request.setAttribute("cuentasDisponibles", cuentas);
             request.getRequestDispatcher("jsp/cliente/confirmarPago.jsp").forward(request, response);
 
         } catch (Exception e) {
             e.printStackTrace();
             request.setAttribute("mensaje", "❌ Error inesperado al procesar el pago.");
-
-            try {
-                String idCuotaStr = request.getParameter("cuotas");
-                if (idCuotaStr != null) {
-                    CuotaNegocioImpl cuotaNegocio = new CuotaNegocioImpl();
-                    Cuota cuotaError = cuotaNegocio.obtenerCuotaPorId(Integer.parseInt(idCuotaStr));
-                    if (cuotaError != null) {
-                        List<Cuota> cuotasError = new ArrayList<>();
-                        cuotasError.add(cuotaError);
-                        request.setAttribute("cuotasSeleccionadas", cuotasError);
-                    }
-                }
-            } catch (Exception ex2) {
-                ex2.printStackTrace();
-            }
-
             request.getRequestDispatcher("jsp/cliente/confirmarPago.jsp").forward(request, response);
         }
     }
-
-
 }
