@@ -155,7 +155,7 @@ public class PrestamoDaoImpl implements PrestamoDao {
 
 	    try {
 	        conexion = Conexion.getConexion().getSQLConexion();
-	        conexion.setAutoCommit(false); // Habilitar control de transacciones manual
+	        conexion.setAutoCommit(false);
 
 	        // 1. Actualizar estado del préstamo
 	        String query = "UPDATE prestamo SET autorizacion = 1, estado = 'Aprobado' WHERE id_prestamo = ?";
@@ -437,7 +437,6 @@ public class PrestamoDaoImpl implements PrestamoDao {
 	            cuenta.setNroCuenta(rs.getInt("nro_cuenta"));
 	            prestamo.set_cuenta(cuenta);
 
-	            // Si necesitas el cliente completo, usa ClienteDaoImpl aquí.
 	            ClienteDaoImpl clienteDao = new ClienteDaoImpl();
 	            Cliente cliente = clienteDao.obtenerPorIdCliente(rs.getInt("id_cliente"));
 	            prestamo.set_cliente(cliente);

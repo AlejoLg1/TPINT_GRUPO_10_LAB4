@@ -69,7 +69,7 @@ public class TransferenciaNegocioImpl implements TransferenciaNegocio {
 	        MovimientosDao movimientoDao = new MovimientoDaoImpl();
 	        TransferenciaDao transferenciaDao = new TransferenciaDaoImpl();
 
-	        //  VALIDACIONES BÃSICAS
+	        //  VALIDACIONES
 	        if (transferencia.getImporte() <= 0)
 	            throw new TransferenciaException("El importe debe ser mayor a cero.");
 

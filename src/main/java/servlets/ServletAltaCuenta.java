@@ -88,7 +88,7 @@ public class ServletAltaCuenta extends HttpServlet {
             CuentaNegocio cuentaNegocio = new CuentaNegocioImpl();
             String mensaje;
 
-            if (idCuentaParam != null && !idCuentaParam.isEmpty()) {
+            if (idCuentaParam != null && !idCuentaParam.isEmpty()) { // Modificar
                 int idCuenta = Integer.parseInt(idCuentaParam);
                 mensaje = cuentaNegocio.modificarCuenta(idCuenta, idCliente, idTipoCuenta, monto);
                 Cuenta cuenta = cuentaNegocio.obtenerCuentaPorId(idCuenta);

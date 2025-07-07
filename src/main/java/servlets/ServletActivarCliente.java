@@ -54,6 +54,6 @@ public class ServletActivarCliente extends HttpServlet {
     }
 
     protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-        doPost(request, response); // opcional: permite activar por GET si querés
+        doPost(request, response);
     }
 }
