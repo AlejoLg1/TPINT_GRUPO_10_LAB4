@@ -12,7 +12,11 @@ public class LocalidadNegocioImpl implements LocalidadNegocio {
 	private LocalidadDao dao = new LocalidadDaoImpl();
 
 	@Override
-	public List<Localidad> obtenerPorProvincia(int idProvincia) {
+	public List<Localidad> obtenerPorProvincia(int idProvincia){
+		
+		if (idProvincia <= 0) {
+            throw new IllegalArgumentException("El ID de provincia es inválido.");
+        }
 		
 		return dao.obtenerPorProvincia(idProvincia);
 	}

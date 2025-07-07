@@ -5,44 +5,50 @@ import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.util.List;
 
 import com.google.gson.Gson;
 
-import dao.LocalidadDao;
-import daoImpl.LocalidadDaoImpl;
 import dominio.Localidad;
-
+import negocioImpl.LocalidadNegocioImpl;
 
 @WebServlet("/ServletLocalidades")
 public class ServletLocalidades extends HttpServlet {
-	private static final long serialVersionUID = 1L;
+    private static final long serialVersionUID = 1L;
 
     public ServletLocalidades() {
         super();
-        // TODO Auto-generated constructor stub
     }
 
     protected void doGet(HttpServletRequest request, HttpServletResponse response)
             throws ServletException, IOException {
-        
+
         String idProvinciaStr = request.getParameter("idProvincia");
-        int idProvincia = Integer.parseInt(idProvinciaStr);
-        
-        LocalidadDao localidadDao = new LocalidadDaoImpl();
-        List<Localidad> localidades = localidadDao.obtenerPorProvincia(idProvincia);
+        LocalidadNegocioImpl localidadNegocio = new LocalidadNegocioImpl();
 
-        // Convertir lista a JSON
-        Gson gson = new Gson();
-        String json = gson.toJson(localidades);
+        try {
+            int idProvincia = Integer.parseInt(idProvinciaStr);
+            List<Localidad> localidades = localidadNegocio.obtenerPorProvincia(idProvincia);
 
-        // Configurar respuesta como JSON
-        response.setContentType("application/json");
-        response.setCharacterEncoding("UTF-8");
-        PrintWriter out = response.getWriter();
-        out.print(json);
-        out.flush();
+            // Convertir lista a JSON
+            Gson gson = new Gson();
+            String json = gson.toJson(localidades);
+
+            // Configurar respuesta como JSON
+            response.setContentType("application/json");
+            response.setCharacterEncoding("UTF-8");
+            PrintWriter out = response.getWriter();
+            out.print(json);
+            out.flush();
+
+        } catch (NumberFormatException e) {
+            response.sendError(HttpServletResponse.SC_BAD_REQUEST, "ID de provincia inválido.");
+        } catch (Exception e) {
+            e.printStackTrace();
+            response.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR, "Error al obtener localidades.");
+        }
     }
 }
