@@ -103,7 +103,7 @@
             </form>
             <% } else { %>
             <div class="text-center">
-                <p class="fw-bold text-success">Esta cuota ya fue pagada.</p>
+                
                 <button type="button" class="btn btn-secondary" onclick="window.location.href='ServletPagoCuotas'">Volver al listado</button>
             </div>
             <% } %>
