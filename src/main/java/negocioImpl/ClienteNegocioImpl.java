@@ -125,5 +125,10 @@ public class ClienteNegocioImpl implements ClienteNegocio {
 	    return clienteDao.Activar(cliente, usuario.getIdUsuario());
 	}
 	
+	@Override
+    public List<Cliente> listarClientesFiltrados(String nombre, String apellido, String dni, String estado) throws Exception {
+        ClienteDao dao = new ClienteDaoImpl();
+        return dao.Listar2(nombre, apellido, dni, estado);
+    }
 	
 }

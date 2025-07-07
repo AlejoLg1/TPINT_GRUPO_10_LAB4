@@ -29,5 +29,6 @@ public interface ClienteNegocio {
 	 boolean darDeBajaCliente(int idCliente) throws Exception;
 
 	 boolean activarCliente(int idCliente) throws Exception;
-
+	 
+	 List<Cliente> listarClientesFiltrados(String nombre, String apellido, String dni, String estado) throws Exception;
 }
