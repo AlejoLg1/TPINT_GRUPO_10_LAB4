@@ -1,11 +1,15 @@
 package daoImpl;
 
 import java.sql.*;
+
 import java.sql.Date;
 import java.util.*;
 import dao.CuotaDao;
 import dominio.Cuota;
+import dominio.Cuenta;
 import utils.Conexion;
+import java.time.LocalDateTime;
+import java.sql.Timestamp;
 
 public class CuotaDaoImpl implements CuotaDao {
 
@@ -184,6 +188,69 @@ public class CuotaDaoImpl implements CuotaDao {
         con.close();
 
         return lista;
+    }
+    
+    @Override
+    public boolean procesarPagoCuotas(List<Cuota> cuotas, int nroCuenta) throws Exception {
+        Connection conn = null;
+        boolean exito = true;
+
+        try {
+            conn = Conexion.getConexion().getSQLConexion();
+            conn.setAutoCommit(false);
+
+            for (Cuota cuota : cuotas) {
+                // 1. Verificar saldo
+                CuentaDaoImpl cuentaDao = new CuentaDaoImpl();
+                Cuenta cuenta = cuentaDao.obtenerCuentaPorId(nroCuenta);
+
+                if (cuenta.getSaldo().compareTo(cuota.getMonto()) < 0) {
+                    exito = false;
+                    break;
+                }
+
+                // 2. Descontar saldo
+                CallableStatement cs = conn.prepareCall("{CALL sp_ejecutar_movimiento(?, ?, ?, ?, ?, ?)}");
+                cs.setInt(1, nroCuenta);
+                cs.setInt(2, 3); // ID tipo movimiento 3 = PAGO PRESTAMO
+                cs.setTimestamp(3, Timestamp.valueOf(LocalDateTime.now()));
+                cs.setString(4, "Pago cuota préstamo N°" + cuota.getIdPrestamo() + " - Cuota " + cuota.getNumeroCuota());
+                cs.setBigDecimal(5, cuota.getMonto().negate()); // Negativo para debitar
+                cs.registerOutParameter(6, java.sql.Types.INTEGER); // ID de movimiento generado
+
+                cs.execute();
+                int idMovimiento = cs.getInt(6);
+                System.out.println("ID del movimiento generado: " + idMovimiento);
+                cs.close();
+
+                // 3. Marcar cuota como pagada
+                String sql = "UPDATE Cuota SET estado = 'PAGADO', fecha_pago = CURRENT_TIMESTAMP WHERE id_cuota = ?";
+                try (PreparedStatement stmt = conn.prepareStatement(sql)) {
+                    stmt.setInt(1, cuota.getIdCuota());
+                    int rows = stmt.executeUpdate();
+                    if (rows == 0) {
+                        exito = false;
+                        break;
+                    }
+                }
+            }
+
+            if (exito) {
+                conn.commit();
+            } else {
+                conn.rollback();
+            }
+
+        } catch (Exception e) {
+            if (conn != null) conn.rollback();
+            e.printStackTrace();
+            throw e;
+        } finally {
+            if (conn != null) conn.setAutoCommit(true);
+            if (conn != null) conn.close();
+        }
+
+        return exito;
     }
 
 

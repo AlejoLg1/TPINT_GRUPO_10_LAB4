@@ -14,4 +14,5 @@ public interface CuotaDao {
     Cuota obtenerCuotaPorId(int idCuota);
 	List<Cuota> obtenerCuotasPendientesConFiltros(int idCliente, Integer idPrestamo, String fechaVencimiento,
 			String estado) throws Exception;
+	boolean procesarPagoCuotas(List<Cuota> cuotas, int nroCuenta) throws Exception;
 }
