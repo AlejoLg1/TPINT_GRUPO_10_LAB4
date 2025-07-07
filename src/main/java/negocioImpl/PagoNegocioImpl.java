@@ -1,12 +1,15 @@
 package negocioImpl;
 
 import java.util.ArrayList;
+
 import java.util.List;
 import daoImpl.CuentaDaoImpl;
 import daoImpl.CuotaDaoImpl;
 import dominio.Cuenta;
 import dominio.Cuota;
 import negocio.PagoNegocio;
+
+
 
 public class PagoNegocioImpl implements PagoNegocio {
 
@@ -34,5 +37,31 @@ public class PagoNegocioImpl implements PagoNegocio {
     public List<Cuenta> obtenerCuentasPorCliente(int idCliente) throws Exception {
         return cuentaDao.listarPorCliente(idCliente);
     }
+    
+    
+    @Override
+    public List<Cuota> obtenerCuotasPendientesConFiltros(int idCliente, Integer idPrestamo, String fechaVencimiento, String estado) throws Exception {
+        return cuotaDao.obtenerCuotasPendientesConFiltros(idCliente, idPrestamo, fechaVencimiento, estado);
+    }
+
+    @Override
+    public boolean procesarPagoCuotaIndividual(int idCuota, int nroCuenta) throws Exception {
+        Cuota cuota = cuotaDao.obtenerCuotaPorId(idCuota);
+        if (cuota == null || cuota.getMonto() == null) {
+            throw new Exception("La cuota no existe o está incompleta.");
+        }
+
+        List<Cuota> cuotas = new ArrayList<>();
+        cuotas.add(cuota);
+
+        return cuotaDao.procesarPagoCuotas(cuotas, nroCuenta);
+    }
+
+    @Override
+    public Cuota obtenerCuotaPorId(int idCuota) throws Exception {
+        return cuotaDao.obtenerCuotaPorId(idCuota);
+    }
+
+
 }
 
