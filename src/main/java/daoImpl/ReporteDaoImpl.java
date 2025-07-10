@@ -39,8 +39,8 @@ public class ReporteDaoImpl implements dao.ReporteDao {
     private static final String SQL_REGISTRO_DEUDA = 
         "SELECT estado, COUNT(*) AS total, IFNULL(SUM(monto),0) AS monto_total FROM Cuota "
         + "WHERE estado IN ('PENDIENTE', 'ATRASADO') "
-        + "AND (? IS NULL OR fecha_pago >= ?) "
-        + "AND (? IS NULL OR fecha_pago <= ?) "
+        + "AND (? IS NULL OR fecha_vencimiento >= ?) "
+        + "AND (? IS NULL OR fecha_vencimiento <= ?) "
         + "GROUP BY estado";
     
     private static final String SQL_CLIENTES_MOROSOS = 
@@ -50,8 +50,8 @@ public class ReporteDaoImpl implements dao.ReporteDao {
     	    + "JOIN Prestamo p ON cu.id_prestamo = p.id_prestamo "
     	    + "JOIN Cliente c ON p.id_cliente = c.id_cliente "
     	    + "WHERE cu.estado IN ('PENDIENTE', 'ATRASADO') "
-    	    + "AND (? IS NULL OR cu.fecha_pago >= ?) "
-    	    + "AND (? IS NULL OR cu.fecha_pago <= ?) "
+    	    + "AND (? IS NULL OR cu.fecha_vencimiento >= ?) "
+    	    + "AND (? IS NULL OR cu.fecha_vencimiento <= ?) "
     	    + "GROUP BY c.nombre, c.apellido";
 
  
