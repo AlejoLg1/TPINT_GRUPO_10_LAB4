@@ -57,12 +57,12 @@ public class ServletReporte extends HttpServlet {
             Object resultado = reporteNegocio.generarReporte(tipoReporte, inicio, fin);
 
             if (resultado instanceof Map) {
-                @SuppressWarnings("unchecked")
+                @SuppressWarnings("unchecked") // evitamos hacer un checkeo del casteo ya que lo manejamos manualmente
                 Map<String, List<Reporte>> mapResultado = (Map<String, List<Reporte>>) resultado;
                 request.setAttribute("reportesResumen", mapResultado.get("resumenDeuda"));
                 request.setAttribute("morosos", mapResultado.get("clientesMorosos"));
             } else if (resultado instanceof List) {
-                @SuppressWarnings("unchecked")
+            	@SuppressWarnings("unchecked") // evitamos hacer un checkeo del casteo ya que lo manejamos manualmente
                 List<Reporte> lista = (List<Reporte>) resultado;
                 request.setAttribute("reportes", lista);
             }
