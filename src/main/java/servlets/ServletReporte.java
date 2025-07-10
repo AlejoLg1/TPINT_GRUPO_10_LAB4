@@ -1,23 +1,24 @@
 package servlets;
+
 import jakarta.servlet.ServletException;
 import jakarta.servlet.annotation.WebServlet;
 import jakarta.servlet.http.HttpServlet;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import jakarta.servlet.http.HttpSession;
-import negocioImpl.AutenticacionNegocioImpl;
 
-import java.io.IOException;
- 
+import negocioImpl.AutenticacionNegocioImpl;
 import negocio.ReporteNegocio;
 import negocioImpl.ReporteNegocioImpl;
 import dominio.Reporte;
 import dominio.Usuario;
 
+import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.List;
- 
+import java.util.Map;
+
 @WebServlet("/ServletReporte")
 public class ServletReporte extends HttpServlet {
 
@@ -53,10 +54,21 @@ public class ServletReporte extends HttpServlet {
             Date inicio = parseFecha(inicioPeriodoStr);
             Date fin = parseFecha(finPeriodoStr);
 
-            List<Reporte> lista = reporteNegocio.generarReporte(tipoReporte, inicio, fin);
+            Object resultado = reporteNegocio.generarReporte(tipoReporte, inicio, fin);
 
-            request.setAttribute("reportes", lista);
+            if (resultado instanceof Map) {
+                @SuppressWarnings("unchecked")
+                Map<String, List<Reporte>> mapResultado = (Map<String, List<Reporte>>) resultado;
+                request.setAttribute("reportesResumen", mapResultado.get("resumenDeuda"));
+                request.setAttribute("morosos", mapResultado.get("clientesMorosos"));
+            } else if (resultado instanceof List) {
+                @SuppressWarnings("unchecked")
+                List<Reporte> lista = (List<Reporte>) resultado;
+                request.setAttribute("reportes", lista);
+            }
+
             request.setAttribute("titulo", tipoReporte);
+
         } catch (IllegalArgumentException e) {
             request.setAttribute("error", e.getMessage());
         } catch (Exception e) {

@@ -1,4 +1,4 @@
-<%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8"%>
+<%@ page language="java" contentType="text/html; charset=UTF-8"%>
 <%@ page import="java.util.*" %>
 <%@ page import="dominio.Reporte" %>
 <%
@@ -10,6 +10,8 @@
 
     String titulo = (String) request.getAttribute("titulo");
     List<Reporte> reportes = (List<Reporte>) request.getAttribute("reportes");
+    List<Reporte> reportesResumen = (List<Reporte>) request.getAttribute("reportesResumen");
+    List<Reporte> morosos = (List<Reporte>) request.getAttribute("morosos");
     String error = (String) request.getAttribute("error");
 %>
 
@@ -65,53 +67,99 @@
         <% } %>
     </div>
 
+    <%-- Mostrar tablas si hay resultados --%>
     <% if (reportes != null) { %>
         <div class="reportes-generados mt-5">
             <h3><%= titulo != null ? titulo : "Resultados del Reporte" %></h3>
 
             <% if (!reportes.isEmpty()) { %>
-                <div class="mb-3 mt-3">
-                    <input type="text" id="filtroTexto" placeholder="Filtrar resultados..." class="form-control" />
-                </div>
-
-						   	<table class="table table-bordered table-hover align-middle tabla-cuentas">
-						    <thead class="table-primary">
-						        <tr>
-						            <th scope="col">Reporte</th>
-						            <th scope="col" class="text-center">Total</th>
-						            <th scope="col" class="text-end">Monto</th>
-						        </tr>
-						    </thead>
-						    <tbody>
-						        <%
-						            int sumaTotal = 0;
-						            java.math.BigDecimal sumaMonto = new java.math.BigDecimal("0");
-						            for (Reporte r : reportes) {
-						                boolean esMoroso = r.getNombreReporte() != null && r.getNombreReporte().startsWith("Moroso:");
-						                sumaTotal += r.getTotal();
-						                if (r.getMonto() != null) {
-						                    sumaMonto = sumaMonto.add(r.getMonto());
-						                }
-						        %>
-						        <tr class="<%= esMoroso ? "table-danger" : "" %>">
-						            <td><%= r.getNombreReporte() %></td>
-						            <td class="text-center"><%= r.getTotal() %></td>
-						            <td class="text-end"><%= r.getMonto() != null ? "$" + r.getMonto() : "-" %></td>
-						        </tr>
-						        <% } %>
-						    </tbody>
-						</table>
+                <table class="table table-bordered table-hover align-middle">
+                    <thead class="table-primary">
+                        <tr>
+                            <th>Reporte</th>
+                            <th class="text-center">Total</th>
+                            <th class="text-end">Monto</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <% for (Reporte r : reportes) { %>
+                            <tr>
+                                <td><%= r.getNombreReporte() %></td>
+                                <td class="text-center"><%= r.getTotal() %></td>
+                                <td class="text-end"><%= r.getMonto() != null ? "$" + r.getMonto() : "-" %></td>
+                            </tr>
+                        <% } %>
+                    </tbody>
+                </table>
             <% } else { %>
                 <p class="text-muted">No se encontraron resultados para el reporte seleccionado.</p>
             <% } %>
         </div>
     <% } %>
+
+    <%-- Mostrar resumen de deuda si existe --%>
+    <% if (reportesResumen != null) { %>
+        <div class="reportes-generados mt-5">
+            <h3>Resumen de Deuda</h3>
+
+            <% if (!reportesResumen.isEmpty()) { %>
+                <table class="table table-bordered table-hover align-middle">
+                    <thead class="table-primary">
+                        <tr>
+                            <th>Estado</th>
+                            <th class="text-center">Total</th>
+                            <th class="text-end">Monto Total</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <% for (Reporte r : reportesResumen) { %>
+                            <tr>
+                                <td><%= r.getNombreReporte() %></td>
+                                <td class="text-center"><%= r.getTotal() %></td>
+                                <td class="text-end"><%= r.getMonto() != null ? "$" + r.getMonto() : "-" %></td>
+                            </tr>
+                        <% } %>
+                    </tbody>
+                </table>
+            <% } else { %>
+                <p class="text-muted">No se encontraron resultados para el resumen de deuda.</p>
+            <% } %>
+        </div>
+    <% } %>
+
+    <%-- Mostrar clientes morosos si existen --%>
+    <% if (morosos != null) { %>
+        <div class="reportes-generados mt-5">
+            <h3>Clientes Morosos</h3>
+
+            <% if (!morosos.isEmpty()) { %>
+                <table class="table table-bordered table-hover align-middle">
+                    <thead class="table-danger">
+                        <tr>
+                            <th>Cliente</th>
+                            <th class="text-center">Cantidad de Cuotas</th>
+                            <th class="text-end">Monto Cuota</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <% for (Reporte r : morosos) { %>
+                            <tr>
+                                <td><%= r.getNombreReporte() %></td>
+                                <td class="text-center"><%= r.getTotal() %></td>
+                                <td class="text-end"><%= r.getMonto() != null ? "$" + r.getMonto() : "-" %></td>
+                            </tr>
+                        <% } %>
+                    </tbody>
+                </table>
+            <% } else { %>
+                <p class="text-muted">No se encontraron clientes morosos.</p>
+            <% } %>
+        </div>
+    <% } %>
+
 </div>
 
 <%@ include file="../comunes/footer.jsp" %>
-
-<!-- Script externo -->
-<script src="${pageContext.request.contextPath}/js/reporteFiltro.js"></script>
 
 </body>
 </html>
